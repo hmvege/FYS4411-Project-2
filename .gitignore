@@ -1,2 +1,5 @@
+#Ignoring all build files that go into the binary folder
 bin/*
-cleaner.py
+
+#OS junk
+*.DS_Store
