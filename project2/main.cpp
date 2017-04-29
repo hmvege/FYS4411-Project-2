@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cmath>
-#include "metropolis.h"
+#include "vmc.h"
 
 using namespace std;
 
@@ -17,12 +17,12 @@ int main()
     clock_t programStart, programEnd;
     programStart = clock();
 
-    Metropolis VMC_2Electron;
+    VMC VMC_2Electron;
     VMC_2Electron.setNParticles(nParticles);
     VMC_2Electron.setNDimensions(nDimensions);
     VMC_2Electron.setWaveFunction(&trialWF2Electron);
     VMC_2Electron.setEnergyFunc(&localEnergyTwoElectron);
-    VMC_2Electron.runMetropolis(MCCycles);
+    VMC_2Electron.runVMC(MCCycles);
 
     programEnd = clock();
     cout << "Program complete. Time used: " << ((programEnd - programStart)/((double)CLOCKS_PER_SEC)) << endl;

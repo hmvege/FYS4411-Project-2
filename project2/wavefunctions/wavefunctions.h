@@ -6,6 +6,9 @@ class WaveFunctions
 {
 public:
     WaveFunctions();
+    ~WaveFunctions();
+
+    virtual calculateWF(double ** positions);
 };
 
 #endif // WAVEFUNCTIONS_H

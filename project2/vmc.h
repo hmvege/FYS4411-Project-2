@@ -1,8 +1,8 @@
-#ifndef METROPOLIS_H
-#define METROPOLIS_H
+#ifndef VMC_H
+#define VMC_H
 
 
-class Metropolis
+class VMC
 {
 private:
     int nParticles;
@@ -18,9 +18,9 @@ private:
     double (*waveFunction)(double ** rPos);
     double (*localEnergy)(double ** rPos);
 public:
-    Metropolis();
-    ~Metropolis();
-    void runMetropolis(unsigned int MCCycles);
+    VMC();
+    ~VMC();
+    void runVMC(unsigned int MCCycles);
 
     void setRNGSeed(double newSeed);
 
@@ -33,4 +33,4 @@ public:
     void setEnergyFunc(double (*en)(double ** rPos)) { localEnergy= en;}
 };
 
-#endif // METROPOLIS_H
+#endif // VMC_H

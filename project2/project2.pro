@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     metropolis.cpp \
-    wavefunctions.cpp
+    wavefunctions.cpp \
+    vmc.cpp
 
 HEADERS += \
     metropolis.h \
-    wavefunctions.h
+    wavefunctions.h \
+    vmc.h

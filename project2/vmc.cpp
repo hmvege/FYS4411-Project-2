@@ -1,22 +1,22 @@
 #include <random>
 #include <iostream>
 #include <ctime>
-#include "metropolis.h"
+#include "vmc.h"
 
 using std::cout;
 using std::endl;
 
-Metropolis::Metropolis()
+VMC::VMC()
 {
 
 }
 
-Metropolis::~Metropolis()
+VMC::~VMC()
 {
 
 }
 
-void Metropolis::update()
+void VMC::update()
 {
     double oldWaveFunction = 0;
     double newWaveFunction = 0;
@@ -26,24 +26,24 @@ void Metropolis::update()
 
 }
 
-void Metropolis::sampleSystem()
+void VMC::sampleSystem()
 {
 
 }
 
-double Metropolis::R()
+double VMC::R()
 {
     /*
-     * Metropolis ratio
+     * VMC ratio
      */
 }
 
-void Metropolis::setRNGSeed(double newSeed)
+void VMC::setRNGSeed(double newSeed)
 {
     seed = newSeed;
 }
 
-void Metropolis::runMetropolis(unsigned int MCCycles)
+void VMC::runVMC(unsigned int MCCycles)
 {
     // Setting up random generators
     std::mt19937_64 generator(std::time(nullptr)); // Starting up the Mersenne-Twister19937 function
