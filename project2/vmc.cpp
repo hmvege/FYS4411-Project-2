@@ -16,16 +16,52 @@ VMC::~VMC()
 
 }
 
-void VMC::update(double ** oldPositions, double ** newPositions) // Finish this
+void VMC::update(double ** rPositionsOld,
+                 double ** rPositionsNew,
+                 double &oldWaveFunction,
+                 double &newWaveFunction,
+                 std::mt19937_64 generator,
+                 std::uniform_real_distribution<double> uniform_distribution)
 {
-    double oldWaveFunction = 0;
-    double newWaveFunction = 0;
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            rPositionsNew[i][j] = rPositionsOld[i][j] + stepLength * uniform_distribution(generator) - 0.5;
+        }
+        newWaveFunction = WF->calculate(rPositionsNew); // Find the position with updated wavefunctions
+        if (uniform_distribution(generator) <= (newWaveFunction*newWaveFunction)/(oldWaveFunction*oldWaveFunction))
+        {
+            for (int j = 0; j < nDimensions; j++)
+            {
+                rPositionsOld[i][j] = rPositionsNew[i][j];
+                oldWaveFunction = newWaveFunction;
+            }
+            acceptanceCounter++;
+        }
+        else
+        {
+            for (int j = 0; j < nDimensions; j++)
+            {
+                rPositionsNew[i][j] = rPositionsOld[i][j];
+            }
+        }
+        // Sample energy
+//        E = WF->localEnergy(rPositionsOld);
+//        ESum += E;
+//        ESumSquared += E*E;
+    }
 }
 
-void VMC::sampleSystem()
+void VMC::sampleSystem(double ** rPositionsOld)
 {
     // Should sample stats into an array for each run
-
+    for (int i = 0; i < nParticles; i++)
+    {
+        E = WF->localEnergy(rPositionsOld);
+        ESum += E;
+        ESumSquared += E*E;
+    }
 }
 
 double VMC::R()
@@ -41,6 +77,11 @@ void VMC::getStatistics()
 
 }
 
+//void VMC::initializePositions()
+//{
+
+//}
+
 void VMC::runVMC(unsigned int MCCycles)
 {
     // Setting up random generators
@@ -55,10 +96,9 @@ void VMC::runVMC(unsigned int MCCycles)
     double oldWaveFunction = 0;
     double newWaveFunction = 0;
 
-    double E = 0;
-    double ESum = 0;
-    double ESumSquared = 0;
-    double * MCSamples = new double[MCCycles];
+//    double E = 0;
+//    double ESum = 0;
+//    double ESumSquared = 0;
     double ** rPositionsOld = new double * [nParticles];
     double ** rPositionsNew = new double * [nParticles];
 
@@ -76,7 +116,8 @@ void VMC::runVMC(unsigned int MCCycles)
     oldWaveFunction = WF->calculate(rPositionsOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
-//        MCSamples[i] = 0;
+//        update(rPositionsOld, rPositionsNew, oldWaveFunction, newWaveFunction, generator, uniform_distribution);
+//        sampleSystem(rPositionsOld);
         for (int i = 0; i < nParticles; i++)
         {
             for (int j = 0; j < nDimensions; j++)
@@ -91,6 +132,7 @@ void VMC::runVMC(unsigned int MCCycles)
                     rPositionsOld[i][j] = rPositionsNew[i][j];
                     oldWaveFunction = newWaveFunction;
                 }
+                acceptanceCounter++;
             }
             else
             {
@@ -99,6 +141,7 @@ void VMC::runVMC(unsigned int MCCycles)
                     rPositionsNew[i][j] = rPositionsOld[i][j];
                 }
             }
+            // Sample energy
             E = WF->localEnergy(rPositionsOld);
             ESum += E;
             ESumSquared += E*E;
@@ -108,6 +151,7 @@ void VMC::runVMC(unsigned int MCCycles)
     ESumSquared /= double(nParticles*MCCycles);
     cout << "Energy = " << ESum << endl;
     cout << "Variance = " << (ESumSquared - ESum*ESum) << endl;
+    cout << "Acceptance rate = " << double(acceptanceCounter) / double(nParticles * MCCycles)<< endl;
 
 
     for (int i = 0; i < nDimensions; i++)
@@ -115,7 +159,6 @@ void VMC::runVMC(unsigned int MCCycles)
         delete [] rPositionsNew[i];
         delete [] rPositionsOld[i];
     }
-    delete [] MCSamples; // Fix this!! Gives warning!!
     delete [] rPositionsNew;
     delete [] rPositionsOld;
 }
