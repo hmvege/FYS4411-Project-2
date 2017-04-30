@@ -4,11 +4,16 @@
 
 class WaveFunctions
 {
+protected:
+    int nParticles;
+    int nDimensions;
 public:
-    WaveFunctions();
-    ~WaveFunctions();
+    WaveFunctions() { }
+    WaveFunctions(int new_nParticles, int new_nDimensions);
+    virtual ~WaveFunctions() {}
 
-    virtual calculateWF(double ** positions);
+    virtual double calculate(double **positions);
+    virtual double localEnergy(double ** positions);
 };
 
 #endif // WAVEFUNCTIONS_H

@@ -1,36 +1,35 @@
 #ifndef VMC_H
 #define VMC_H
 
+#include "wavefunctions/wavefunctions.h"
 
 class VMC
 {
 private:
     int nParticles;
     int nDimensions;
+    int acceptanceCounter;
+    double seed = false;
+    double stepLength = 1.0;
 
-    double seed;
-
-    void update();
+    void update(double **oldPositions, double **newPositions);
     void sampleSystem();
     double R();
 
-    // Temporary instance till more generalized class is made
-    double (*waveFunction)(double ** rPos);
-    double (*localEnergy)(double ** rPos);
+    WaveFunctions *WF = nullptr;
 public:
     VMC();
     ~VMC();
     void runVMC(unsigned int MCCycles);
 
-    void setRNGSeed(double newSeed);
+    void getStatistics();
 
     // Setters
+    void setStepLength(double newStepLength) { stepLength = newStepLength; }
+    void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }
     void setNParticles(int new_nParticles) { nParticles = new_nParticles; }
     void setNDimensions(int new_nDimensions) { nDimensions= new_nDimensions; }
-
-    // Temporary instance till more generalized class is made
-    void setWaveFunction(double (*wf)(double ** rPos)) { waveFunction = wf; }
-    void setEnergyFunc(double (*en)(double ** rPos)) { localEnergy= en;}
+    void setRNGSeed(double newSeed) { seed = newSeed; }
 };
 
 #endif // VMC_H

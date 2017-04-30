@@ -4,11 +4,13 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    metropolis.cpp \
-    wavefunctions.cpp \
-    vmc.cpp
+    vmc.cpp \
+    wavefunctions/wavefunctions.cpp \
+    wavefunctions/twoelectronplain.cpp \
+    wavefunctions/twoelectronjastrov.cpp
 
 HEADERS += \
-    metropolis.h \
-    wavefunctions.h \
-    vmc.h
+    vmc.h \
+    wavefunctions/wavefunctions.h \
+    wavefunctions/twoelectronplain.h \
+    wavefunctions/twoelectronjastrov.h

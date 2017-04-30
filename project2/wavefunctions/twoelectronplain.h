@@ -1,0 +1,20 @@
+#ifndef TWOELECTRONPLAIN_H
+#define TWOELECTRONPLAIN_H
+
+#include "wavefunctions.h"
+
+class twoElectronPlain : public WaveFunctions
+{
+private:
+    double omega;
+    double alpha;
+    double C;
+public:
+//    twoElectronPlain() { }
+    twoElectronPlain(int new_nParticles, int new_nDimensions, double omega_, double alpha_, double C_);
+
+    double calculate(double ** positions);
+    double localEnergy(double ** positions);
+};
+
+#endif // TWOELECTRONPLAIN_H
