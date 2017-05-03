@@ -26,7 +26,7 @@ private:
                      std::mt19937_64 generator,
                      std::uniform_real_distribution<double> uniform_distribution);
     void sampleSystem(double **rPositionsOld);
-    double R();
+    double R(); // IMPLEMENT THIS!! Important when doing importance sampling. Perhaps make to a class?
 
     WaveFunctions *WF = nullptr;
 public:

@@ -47,6 +47,7 @@ void VMC::update(double ** rPositionsOld,
             }
         }
         // Sample energy
+        sampleSystem(rPositionsOld);
 //        E = WF->localEnergy(rPositionsOld);
 //        ESum += E;
 //        ESumSquared += E*E;
@@ -56,12 +57,9 @@ void VMC::update(double ** rPositionsOld,
 void VMC::sampleSystem(double ** rPositionsOld)
 {
     // Should sample stats into an array for each run
-    for (int i = 0; i < nParticles; i++)
-    {
-        E = WF->localEnergy(rPositionsOld);
-        ESum += E;
-        ESumSquared += E*E;
-    }
+    E = WF->localEnergy(rPositionsOld);
+    ESum += E;
+    ESumSquared += E*E;
 }
 
 double VMC::R()
@@ -116,36 +114,39 @@ void VMC::runVMC(unsigned int MCCycles)
     oldWaveFunction = WF->calculate(rPositionsOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
-//        update(rPositionsOld, rPositionsNew, oldWaveFunction, newWaveFunction, generator, uniform_distribution);
-//        sampleSystem(rPositionsOld);
-        for (int i = 0; i < nParticles; i++)
-        {
-            for (int j = 0; j < nDimensions; j++)
-            {
-                rPositionsNew[i][j] = rPositionsOld[i][j] + stepLength * uniform_distribution(generator) - 0.5;
-            }
-            newWaveFunction = WF->calculate(rPositionsNew); // Find the position with updated wavefunctions
-            if (uniform_distribution(generator) <= (newWaveFunction*newWaveFunction)/(oldWaveFunction*oldWaveFunction))
-            {
-                for (int j = 0; j < nDimensions; j++)
-                {
-                    rPositionsOld[i][j] = rPositionsNew[i][j];
-                    oldWaveFunction = newWaveFunction;
-                }
-                acceptanceCounter++;
-            }
-            else
-            {
-                for (int j = 0; j < nDimensions; j++)
-                {
-                    rPositionsNew[i][j] = rPositionsOld[i][j];
-                }
-            }
+        update(rPositionsOld, rPositionsNew, oldWaveFunction, newWaveFunction, generator, uniform_distribution);
+        sampleSystem(rPositionsOld);
+
+//        for (int i = 0; i < nParticles; i++)
+//        {
+//            for (int j = 0; j < nDimensions; j++)
+//            {
+//                rPositionsNew[i][j] = rPositionsOld[i][j] + stepLength * uniform_distribution(generator) - 0.5;
+//            }
+//            newWaveFunction = WF->calculate(rPositionsNew); // Find the position with updated wavefunctions
+//            if (uniform_distribution(generator) <= (newWaveFunction*newWaveFunction)/(oldWaveFunction*oldWaveFunction))
+//            {
+//                for (int j = 0; j < nDimensions; j++)
+//                {
+//                    rPositionsOld[i][j] = rPositionsNew[i][j];
+//                    oldWaveFunction = newWaveFunction;
+//                }
+//                acceptanceCounter++;
+//            }
+//            else
+//            {
+//                for (int j = 0; j < nDimensions; j++)
+//                {
+//                    rPositionsNew[i][j] = rPositionsOld[i][j];
+//                }
+//            }
+
             // Sample energy
-            E = WF->localEnergy(rPositionsOld);
-            ESum += E;
-            ESumSquared += E*E;
-        }
+//            sampleSystem(rPositionsOld);
+//            E = WF->localEnergy(rPositionsOld);
+//            ESum += E;
+//            ESumSquared += E*E;
+//        }
     }
     ESum /= double(nParticles*MCCycles);        // Getting energy per particle
     ESumSquared /= double(nParticles*MCCycles);
