@@ -12,9 +12,10 @@ private:
     double beta;
     double C;
 public:
-    twoElectronJastrov(double omega_, double a_, double alpha_, double beta_, double C_);
+    twoElectronJastrov(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_C, double new_a, double new_beta);
 
     double calculate(double ** positions);
+    double localEnergy(double **positions);
 };
 
 #endif // TWOELECTRONJASTROV_H

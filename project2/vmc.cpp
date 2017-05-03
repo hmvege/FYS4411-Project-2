@@ -87,9 +87,7 @@ void VMC::runVMC(unsigned int MCCycles)
     std::mt19937_64 generator(seed); // Starting up the Mersenne-Twister19937 function
     std::uniform_real_distribution<double> uniform_distribution(0,1);
 
-    double stepLength = 1.0; // Should generalize this
-
-    // ADD ACCEPT-REJECT COUNTING
+    double stepLength = 1.31; // Should generalize this, 1.31 gives 50% acceptance rate
 
     double oldWaveFunction = 0;
     double newWaveFunction = 0;
@@ -114,39 +112,39 @@ void VMC::runVMC(unsigned int MCCycles)
     oldWaveFunction = WF->calculate(rPositionsOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
-        update(rPositionsOld, rPositionsNew, oldWaveFunction, newWaveFunction, generator, uniform_distribution);
-        sampleSystem(rPositionsOld);
+//        update(rPositionsOld, rPositionsNew, oldWaveFunction, newWaveFunction, generator, uniform_distribution);
+//        sampleSystem(rPositionsOld);
 
-//        for (int i = 0; i < nParticles; i++)
-//        {
-//            for (int j = 0; j < nDimensions; j++)
-//            {
-//                rPositionsNew[i][j] = rPositionsOld[i][j] + stepLength * uniform_distribution(generator) - 0.5;
-//            }
-//            newWaveFunction = WF->calculate(rPositionsNew); // Find the position with updated wavefunctions
-//            if (uniform_distribution(generator) <= (newWaveFunction*newWaveFunction)/(oldWaveFunction*oldWaveFunction))
-//            {
-//                for (int j = 0; j < nDimensions; j++)
-//                {
-//                    rPositionsOld[i][j] = rPositionsNew[i][j];
-//                    oldWaveFunction = newWaveFunction;
-//                }
-//                acceptanceCounter++;
-//            }
-//            else
-//            {
-//                for (int j = 0; j < nDimensions; j++)
-//                {
-//                    rPositionsNew[i][j] = rPositionsOld[i][j];
-//                }
-//            }
+        for (int i = 0; i < nParticles; i++)
+        {
+            for (int j = 0; j < nDimensions; j++)
+            {
+                rPositionsNew[i][j] = rPositionsOld[i][j] + stepLength * uniform_distribution(generator) - 0.5;
+            }
+            newWaveFunction = WF->calculate(rPositionsNew); // Find the position with updated wavefunctions
+            if (uniform_distribution(generator) <= (newWaveFunction*newWaveFunction)/(oldWaveFunction*oldWaveFunction))
+            {
+                for (int j = 0; j < nDimensions; j++)
+                {
+                    rPositionsOld[i][j] = rPositionsNew[i][j];
+                    oldWaveFunction = newWaveFunction;
+                }
+                acceptanceCounter++;
+            }
+            else
+            {
+                for (int j = 0; j < nDimensions; j++)
+                {
+                    rPositionsNew[i][j] = rPositionsOld[i][j];
+                }
+            }
 
-            // Sample energy
-//            sampleSystem(rPositionsOld);
+//            // Sample energy
+            sampleSystem(rPositionsOld);
 //            E = WF->localEnergy(rPositionsOld);
 //            ESum += E;
 //            ESumSquared += E*E;
-//        }
+        }
     }
     ESum /= double(nParticles*MCCycles);        // Getting energy per particle
     ESumSquared /= double(nParticles*MCCycles);

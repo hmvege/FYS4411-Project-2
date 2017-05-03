@@ -1,16 +1,16 @@
 #include "twoelectronplain.h"
 #include <cmath>
 
-twoElectronPlain::twoElectronPlain(int new_nParticles, int new_nDimensions, double omega_, double alpha_, double C_)
+twoElectronPlain::twoElectronPlain(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_C)
 {
     /*
      * Class for a two-electron system. Energy should be equal to 2, and variance should be 0.
      */
     nParticles  = new_nParticles;
     nDimensions = new_nDimensions;
-    omega       = omega_;
-    alpha       = alpha_;
-    C           = C_;
+    omega       = new_omega;
+    alpha       = new_alpha;
+    C           = new_C;
 }
 
 double twoElectronPlain::calculate(double ** positions)
