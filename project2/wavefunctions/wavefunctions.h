@@ -13,7 +13,8 @@ public:
     virtual ~WaveFunctions() {}
 
     virtual double calculate(double **positions);
-    virtual double localEnergy(double ** positions);
+    virtual double localEnergy(double **positions);
+    virtual double **quantumForce(double **positions);
 };
 
 #endif // WAVEFUNCTIONS_H

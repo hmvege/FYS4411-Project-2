@@ -49,6 +49,49 @@ double twoElectronJastrov::localEnergy(double ** rPos)
     double r12Beta = 1 + beta*r12;
     double r12BetaSquared = r12Beta*r12Beta;
 
-    // With Jastrov factor
-    return - 0.5*( (alpha*alpha - 1)*omega*omega*(r1*r1 + r2*r2) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta ) );
+//    double coulombInteraction = 1/sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+    // General method for getting the coulomb interaction value
+    double coulombInteraction = 0.0;
+    double r12abs = 0.0;
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            r12abs = 0.0;
+            for (int k = 0; k < nDimensions; k++)
+            {
+                r12abs += sqrt( (rPos[i][k] - rPos[j][k])*(rPos[i][k] - rPos[j][k]) );
+            }
+            coulombInteraction += 1/r12abs;
+        }
+    }
+
+    // With Jastrov factor and Coulomb interaction
+    return - 0.5*( (alpha*alpha - 1)*omega*omega*(r1*r1 + r2*r2) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta )) + coulombInteraction;
 }
+
+double **twoElectronJastrov::quantumForce(double **positions)
+{
+    double ** F = new double * [nParticles];
+    for (int i = 0; i < nParticles; i++) // General method that can be used for later
+    {
+        F[i] = new double [nDimensions];
+        for (int j = 0; j < nDimensions; j++)
+        {
+            F[i][j] = 0;
+        }
+    }
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            for (int k = 0; k < nParticles; k++)
+            {
+                F[i][j] += positions[i][k];
+            }
+            F[i][j] *= -2*omega*alpha;
+        }
+    }
+    return F; // FIX THIS!!
+}
+

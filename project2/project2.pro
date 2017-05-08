@@ -7,10 +7,14 @@ SOURCES += main.cpp \
     vmc.cpp \
     wavefunctions/wavefunctions.cpp \
     wavefunctions/twoelectronplain.cpp \
-    wavefunctions/twoelectronjastrov.cpp
+    wavefunctions/twoelectronjastrov.cpp \
+    ratios/metropolisratio.cpp \
+    ratios/importancesampler.cpp
 
 HEADERS += \
     vmc.h \
     wavefunctions/wavefunctions.h \
     wavefunctions/twoelectronplain.h \
-    wavefunctions/twoelectronjastrov.h
+    wavefunctions/twoelectronjastrov.h \
+    ratios/metropolisratio.h \
+    ratios/importancesampler.h

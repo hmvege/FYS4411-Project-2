@@ -1,4 +1,5 @@
 #include "wavefunctions.h"
+#include <iostream>
 
 WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions)
 {
@@ -15,4 +16,10 @@ double WaveFunctions::calculate(double ** positions)
 double WaveFunctions::localEnergy(double ** positions)
 {
     return 1.0; // Add more stuff here as well?
+}
+
+double **WaveFunctions::quantumForce(double **positions)
+{
+    std::cout << "If you're seeing this, you are doing it wrong" << std::endl;
+    return positions; // Really does nothing by default
 }
