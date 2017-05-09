@@ -1,6 +1,10 @@
 #include "twoelectronplain.h"
 #include <cmath>
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 twoElectronPlain::twoElectronPlain(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_C)
 {
     /*
@@ -40,7 +44,8 @@ double twoElectronPlain::localEnergy(double ** positions)
     return -0.5*omega*(omega*(r12Squared) - 4) + 0.5 * omega*omega*r12Squared; // No Jastrov-factor, no Coulomb interaction
 }
 
-double **twoElectronPlain::quantumForce(double **positions)
+double *twoElectronPlain::quantumForce(double **positions)
 {
-    return positions; // Really does nothing by default
+    cout << "twoelectronplain.cpp: quantumForce not implemented" << endl;
+    return nullptr; // Really does nothing by default
 }

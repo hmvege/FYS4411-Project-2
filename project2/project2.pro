@@ -8,13 +8,15 @@ SOURCES += main.cpp \
     wavefunctions/wavefunctions.cpp \
     wavefunctions/twoelectronplain.cpp \
     wavefunctions/twoelectronjastrov.cpp \
-    ratios/metropolisratio.cpp \
-    ratios/importancesampler.cpp
+    samplers/metropolissampler.cpp \
+    samplers/importancesampler.cpp \
+    samplers/uniformsampling.cpp
 
 HEADERS += \
     vmc.h \
     wavefunctions/wavefunctions.h \
     wavefunctions/twoelectronplain.h \
     wavefunctions/twoelectronjastrov.h \
-    ratios/metropolisratio.h \
-    ratios/importancesampler.h
+    samplers/metropolissampler.h \
+    samplers/importancesampler.h \
+    samplers/uniformsampling.h
