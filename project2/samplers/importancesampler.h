@@ -7,7 +7,6 @@
 class ImportanceSampler : public MetropolisSampler
 {
 private:
-    // SHOULD THIS CLASS BE MERGED IWTH THE WAVEFUNCTIONS-INSTANCE??
     int nParticles;
     int nDimensions;
     double D;
@@ -16,8 +15,9 @@ private:
     double deltatD;
     double exp_denom_factor;
     double denom_factor;
+    // ADD OLD QM FORCE
+    // ADD NEW QM FORCE
     std::normal_distribution<double> gaussian_dist;
-//    std::uniform_real_distribution<double> uniform_dist;
     WaveFunctions *WF = nullptr; // Will this create a double instance of the wavefunction, as we have one stored in the vmc?
     double Ratio(double **rPosNew, double **rPosOld, int i, double newWF, double oldWF);
 public:

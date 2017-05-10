@@ -12,12 +12,12 @@ double UniformSampling::Ratio(double ** rPosNew, double ** rPosOld, int i, doubl
 
 bool UniformSampling::move(double ** rPosNew, double ** rPosOld, int i, double newWF, double oldWF)
 {
-    return distribution(generator) <= Ratio(rPosNew, rPosOld, i, newWF, oldWF);
+    return acceptance_dist(generator) <= Ratio(rPosNew, rPosOld, i, newWF, oldWF);
 }
 
 double UniformSampling::nextStep(double ** rPosOld, int i, int j)
 {
-    return stepLength * distribution(generator) - 0.5;
+    return stepLength * uniform_distribution(generator);
 }
 
 void UniformSampling::initialize(double newStepLength, double newSeed)
@@ -25,12 +25,14 @@ void UniformSampling::initialize(double newStepLength, double newSeed)
     setSeed(newSeed);
     setStepLength(newStepLength);
     std::mt19937_64 gen(seed); // Starting up the Mersenne-Twister19937 function
-    std::uniform_real_distribution<double> uni_dist(0,1);
+    std::uniform_real_distribution<double> uni_dist(-1,1);
+    std::uniform_real_distribution<double> accept_dist(0,1);
     generator = gen;
-    uniform_dist = uni_dist;
+    uniform_distribution = uni_dist;
+    acceptance_dist = accept_dist;
 }
 
 double UniformSampling::initializePosition()
 {
-    return stepLength * distribution(generator) - 0.5;
+    return uniform_distribution(generator);
 }

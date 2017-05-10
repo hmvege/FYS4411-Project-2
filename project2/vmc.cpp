@@ -35,18 +35,24 @@ void VMC::sampleSystem(double ** rPositionsOld, double ** rPositionsNew, double 
 
 void VMC::getStatistics()
 {
+    /*
+     * Gets basic statistics of the calculations
+     */
     ESum /= double(nParticles*MCCycles);        // Getting energy per particle
     ESumSquared /= double(nParticles*MCCycles);
     cout << "Energy = " << ESum << endl;
-    cout << "Variance = " << (ESumSquared - ESum*ESum) << endl;
+    cout << "Variance = " << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
     cout << "Acceptance rate = " << double(acceptanceCounter) / double(nParticles * MCCycles)<< endl;
 }
 
 void VMC::runVMC(unsigned int newMCCycles)
 {
-    // Setting MC cycles
+    /*
+     * Function for running the Variational Monte Carlo calculation.
+     */
+    // Setting MC cycles ==========================================================================
     MCCycles = newMCCycles;
-    // Initializing variables and configurations
+    // Initializing variables and configurations ==================================================
     double oldWaveFunction = 0;
     double newWaveFunction = 0;
     double ** rPositionsOld = new double * [nParticles];
@@ -57,21 +63,11 @@ void VMC::runVMC(unsigned int newMCCycles)
         rPositionsNew[i] = new double[nDimensions];
         for (int j = 0; j < nDimensions; j ++)
         {
-//            rPositionsOld[i][j] = stepLength * uniform_distribution(generator) - 0.5; // OLD METHOD - WHY CENTERING AROUND 0?
-            rPositionsOld[i][j] = 0.0;
-//            rPositionsOld[i][j] = R->nextStep(rPositionsOld,i, j);
-//            rPositionsNew[i][j] = rPositionsOld[i][j];
-        }
-    }
-    for (int i = 0; i < nParticles; i++)
-    {
-        for (int j = 0; j < nDimensions; j ++)
-        {
-            rPositionsOld[i][j] = R->initializePosition();
+            rPositionsOld[i][j] = R->initializePosition(); // STORE OLD QM FORCE
             rPositionsNew[i][j] = rPositionsOld[i][j];
         }
     }
-    // Main part of Metropolis
+    // Main part of Metropolis ====================================================================
     oldWaveFunction = WF->calculate(rPositionsOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
@@ -79,14 +75,10 @@ void VMC::runVMC(unsigned int newMCCycles)
         {
             for (int j = 0; j < nDimensions; j++)
             {
-//                rPositionsNew[i][j] = rPositionsOld[i][j] + stepLength * uniform_distribution(generator) - 0.5; // OLD; ADD SPECIFIC SAMPLING METHOD CHOICE
-//                rPositionsNew[i][j] = rPositionsOld[i][j] + stepLength * uniform_distribution(generator); // ADD SPECIFIC SAMPLING METHOD CHOICE
-                rPositionsNew[i][j] = rPositionsOld[i][j] + R->nextStep(rPositionsOld,i,j);
+                rPositionsNew[i][j] = rPositionsOld[i][j] + R->nextStep(rPositionsOld,i,j); // STORE NEW QM FORCE; FNew
             }
-            newWaveFunction = WF->calculate(rPositionsNew); // Find the position with updated wavefunctions
-//            if (uniform_distribution(generator) <= (newWaveFunction*newWaveFunction)/(oldWaveFunction*oldWaveFunction)) // OLDOLD
-//            if (uniform_distribution(generator) <= R->Ratio(rPositionsOld, rPositionsNew, newWaveFunction, oldWaveFunction)) //OLD
-            if (R->move(rPositionsNew, rPositionsOld, i, newWaveFunction, oldWaveFunction))
+            newWaveFunction = WF->calculate(rPositionsNew);
+            if (R->move(rPositionsNew, rPositionsOld, i, newWaveFunction, oldWaveFunction)) // COMPARE QM FORCE, STORE NEW QM FORCE AS OLD; FOld = FNew
             {
                 for (int j = 0; j < nDimensions; j++)
                 {
@@ -106,7 +98,7 @@ void VMC::runVMC(unsigned int newMCCycles)
             sampleSystem(rPositionsOld, rPositionsNew, oldWaveFunction, newWaveFunction);
         }
     }
-    // De-allocating memory
+    // De-allocating memory =======================================================================
     for (int i = 0; i < nDimensions; i++)
     {
         delete [] rPositionsNew[i];

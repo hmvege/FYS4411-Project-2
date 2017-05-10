@@ -7,7 +7,7 @@ class UniformSampling : public MetropolisSampler
 {
 private:
     double stepLength;
-    std::uniform_real_distribution<double> distribution;
+    std::uniform_real_distribution<double> uniform_distribution;
     double Ratio(double **rPosNew, double **rPosOld, int i, double newWF, double oldWF);
 public:
     UniformSampling();

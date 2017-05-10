@@ -8,7 +8,7 @@ class MetropolisSampler
 protected:
     double seed;
     std::mt19937_64 generator;
-    std::uniform_real_distribution<double> uniform_dist;
+    std::uniform_real_distribution<double> acceptance_dist; // For choosing to accept a new Metropolis move or not
 public:
     MetropolisSampler();
     virtual ~MetropolisSampler();

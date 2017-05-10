@@ -11,10 +11,11 @@ private:
     double alpha;
     double beta;
     double C;
+    double coulomb(double ** r);
 public:
     twoElectronJastrov(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_C, double new_a, double new_beta);
 
-    double calculate(double **positions);
+    double calculate(double **r);
     double localEnergy(double **positions);
     double *quantumForce(double **positions, int k);
 };
