@@ -44,8 +44,8 @@ double twoElectronPlain::localEnergy(double ** positions)
     return -0.5*omega*(omega*(r12Squared) - 4) + 0.5 * omega*omega*r12Squared; // No Jastrov-factor, no Coulomb interaction
 }
 
-double *twoElectronPlain::quantumForce(double **positions)
-{
-    cout << "twoelectronplain.cpp: quantumForce not implemented" << endl;
-    return nullptr; // Really does nothing by default
-}
+//double *twoElectronPlain::quantumForce(double **positions)
+//{
+//    cout << "twoelectronplain.cpp: quantumForce not implemented" << endl;
+//    return nullptr; // Really does nothing by default
+//}

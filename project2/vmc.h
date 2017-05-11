@@ -30,7 +30,11 @@ public:
     ~VMC();
     void runVMC(unsigned int newMCCycles);
     void getStatistics();
-    //RENAME METROPOLISRATIO TO METROPOLISSAMPLER
+
+    // TEMP
+    void diagnostics(double **rOld, double **rNew, double WFOld, double WFNew);
+
+
     // Setters
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }
     void setNParticles(int new_nParticles) { nParticles = new_nParticles; }

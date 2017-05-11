@@ -7,29 +7,30 @@
 class ImportanceSampler : public MetropolisSampler
 {
 private:
-    int nParticles;
-    int nDimensions;
     double D;
     double deltat;
     double sqrtDeltat;
     double deltatD;
     double exp_denom_factor;
-    double denom_factor;
-    // ADD OLD QM FORCE
-    // ADD NEW QM FORCE
+    double **FOld; // Old quantum force
+    double **FNew; // New quantum force
     std::normal_distribution<double> gaussian_dist;
     WaveFunctions *WF = nullptr; // Will this create a double instance of the wavefunction, as we have one stored in the vmc?
-    double Ratio(double **rPosNew, double **rPosOld, int i, double newWF, double oldWF);
+    double Ratio(double **rOld, double **rNew, int i, double newWF, double oldWF);
 public:
-    ImportanceSampler();
+    ImportanceSampler(int new_nParticles, int new_nDimensions);
     ~ImportanceSampler();
-    bool move(double **rPosNew, double **rPosOld, int i, double newWF, double oldWF);
-    double initializePosition();
-    double nextStep(double **rPosOld, int i, int j);
-    void initializeSampling(double newStepLength, double newSeed, double newD, int newNPart, int newNDim);
+    bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
+    void initializePositions(double **rOld, double **rNew);
+    void updatePositions(double ** rOld, double ** rNew, int k);
+    double nextStep(double **rOld, int i, int j);
+    void initializeSampling(double newStepLength, double newSeed, double newD);
     double q(double **y, double **x, int k);
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }
     void setStepLength(double newStepLength) { deltat = newStepLength; }
+
+    // TEMP
+    void printQMForces();
 };
 
 #endif // IMPORTANCESAMPLER_H

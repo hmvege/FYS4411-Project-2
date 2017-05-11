@@ -6,18 +6,24 @@
 class MetropolisSampler
 {
 protected:
+    int nParticles;
+    int nDimensions;
     double seed;
     std::mt19937_64 generator;
     std::uniform_real_distribution<double> acceptance_dist; // For choosing to accept a new Metropolis move or not
 public:
-    MetropolisSampler();
+    MetropolisSampler(int new_nParticles, int new_nDimensions);
     virtual ~MetropolisSampler();
-    virtual bool move(double **rPosNew, double **rPosOld, int i, double newWF, double oldWF);
-    virtual double Ratio(double ** rPosNew, double ** rPosOld, int i, double newWF, double oldWF);
-    virtual double nextStep(double **rPosOld, int i, int j);
-    virtual double initializePosition();
+    virtual bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
+    virtual double Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF);
+    virtual double nextStep(double **rOld, int i, int j);
+    virtual void updatePositions(double ** rOld, double ** rNew, int k);
+    virtual void initializePositions(double **rOld, double **rNew);
     // Public setters
     void setSeed(double newSeed) { seed = newSeed; }
+
+    // TEMP
+    virtual void printQMForces();
 };
 
 #endif // MetropolisSampler_H

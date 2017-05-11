@@ -57,27 +57,32 @@ void VMC::runVMC(unsigned int newMCCycles)
     double newWaveFunction = 0;
     double ** rPositionsOld = new double * [nParticles];
     double ** rPositionsNew = new double * [nParticles];
-    for (int i = 0; i < nParticles; i++)
-    {
-        rPositionsOld[i] = new double[nDimensions];
-        rPositionsNew[i] = new double[nDimensions];
-        for (int j = 0; j < nDimensions; j ++)
-        {
-            rPositionsOld[i][j] = R->initializePosition(); // STORE OLD QM FORCE
-            rPositionsNew[i][j] = rPositionsOld[i][j];
-        }
-    }
+    R->initializePositions(rPositionsOld, rPositionsNew);
+//    cout << "Program crashes at R->initializePositions(rPositionsOld, rPositionsNew);" << endl;
+//    for (int i = 0; i < nParticles; i++)
+//    {
+//        rPositionsOld[i] = new double[nDimensions];
+//        rPositionsNew[i] = new double[nDimensions];
+//        for (int j = 0; j < nDimensions; j ++)
+//        {
+//            rPositionsOld[i][j] = R->initializePositions(); // STORE OLD QM FORCE
+//            rPositionsNew[i][j] = rPositionsOld[i][j];
+//        }
+//    }
     // Main part of Metropolis ====================================================================
     oldWaveFunction = WF->calculate(rPositionsOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
         for (int i = 0; i < nParticles; i++)
         {
-            for (int j = 0; j < nDimensions; j++)
-            {
-                rPositionsNew[i][j] = rPositionsOld[i][j] + R->nextStep(rPositionsOld,i,j); // STORE NEW QM FORCE; FNew
-            }
+//            for (int j = 0; j < nDimensions; j++)
+//            {
+//                rPositionsNew[i][j] = rPositionsOld[i][j] + R->nextStep(rPositionsOld,i,j); // STORE NEW QM FORCE; FNew
+//            }
+            R->updatePositions(rPositionsOld,rPositionsNew,i);
             newWaveFunction = WF->calculate(rPositionsNew);
+//            diagnostics(rPositionsOld, rPositionsNew, oldWaveFunction, newWaveFunction);
+//            exit(1);
             if (R->move(rPositionsNew, rPositionsOld, i, newWaveFunction, oldWaveFunction)) // COMPARE QM FORCE, STORE NEW QM FORCE AS OLD; FOld = FNew
             {
                 for (int j = 0; j < nDimensions; j++)
@@ -106,4 +111,28 @@ void VMC::runVMC(unsigned int newMCCycles)
     }
     delete [] rPositionsNew;
     delete [] rPositionsOld;
+}
+
+void VMC::diagnostics(double **rOld, double **rNew, double WFOld, double WFNew) {
+    cout << "WFOld = " << WFOld << endl;
+    cout << "Printing rOld:" << endl;
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            cout << rOld[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << "WFNew = " << WFNew << endl;
+    cout << "Printing rNew:" << endl;
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            cout << rNew[i][j] << " ";
+        }
+        cout << endl;
+    }
+    R->printQMForces();
 }

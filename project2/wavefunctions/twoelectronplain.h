@@ -15,7 +15,7 @@ public:
 
     double calculate(double **positions);
     double localEnergy(double **positions);
-    double *quantumForce(double **positions);
+//    double *quantumForce(double **positions);
 };
 
 #endif // TWOELECTRONPLAIN_H

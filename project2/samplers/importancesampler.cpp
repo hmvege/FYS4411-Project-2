@@ -5,9 +5,11 @@
 using std::cout;
 using std::endl;
 
-ImportanceSampler::ImportanceSampler()
+ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions) : MetropolisSampler(new_nParticles, new_nDimensions)
 {
-
+    // Allocating memory to the force matrices.
+    FOld = new double * [nParticles];
+    FNew = new double * [nParticles];
 }
 
 ImportanceSampler::~ImportanceSampler()
@@ -15,43 +17,89 @@ ImportanceSampler::~ImportanceSampler()
 
 }
 
-double ImportanceSampler::Ratio(double ** rPosNew, double ** rPosOld, int i, double newWF, double oldWF)
+double ImportanceSampler::Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
-    return q(rPosNew, rPosOld, i)*newWF*newWF/(oldWF*oldWF); // Put the G's together!
+    return q(rNew, rOld, i)*newWF*newWF/(oldWF*oldWF); // Put the G's together!
 }
 
-bool ImportanceSampler::move(double **rPosNew, double **rPosOld, int i, double newWF, double oldWF)
+bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, double oldWF)
 {
     /*
-     * Comparing if move should be accepted against an uniform distribution
+     * Comparing if move should be accepted against an uniform distribution. If accepted, stores the new quantum force as the old.
      */
-    return acceptance_dist(generator) <= Ratio(rPosNew, rPosOld, i, newWF, oldWF); // CORRECT COMPARISON
+    if (acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF))
+    {
+        FOld = FNew;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+//    return acceptance_dist(generator) <= Ratio(rPosNew, rPosOld, i, newWF, oldWF); // CORRECT COMPARISON
 }
 
-double ImportanceSampler::nextStep(double **rPosOld, int i, int j)
+double ImportanceSampler::nextStep(double **rOld, int i, int j)
 {
     /*
-     * rPosOld : Old positions of the electron
+     * rPosOld : Old positions of the electrons
      * i       : Particle number
      * j       : x or y coordinate of particle
      */
-    double *F = WF->quantumForce(rPosOld,i); // IS THIS GENERATE MEMORY LEAKAGE?
+    double *F = WF->quantumForce(rOld,i); // IS THIS GENERATE MEMORY LEAKAGE?
     return deltatD*F[j] + sqrtDeltat*gaussian_dist(generator);
+//    return deltatD*FOld[i][j] + sqrtDeltat*gaussian_dist(generator);
 }
 
-double ImportanceSampler::initializePosition()
+void ImportanceSampler::updatePositions(double ** rOld, double ** rNew, int k)
 {
-//    return sqrtDeltat*gaussian_dist(generator);
-    return acceptance_dist(generator)*2.0 - 1.0; // Ensures we are working on a uniform interaval from -1 to 1
+    /*
+     * Class instance for updating the position of a single electron.
+     *
+     * rOld    : Old positions of the electrons
+     * rNew    : New positions of the electrons to be determined
+     * k       : Particle to be updated
+     */
+    for (int i = 0; i < nDimensions; i++)
+    {
+        rNew[k][i] = rOld[k][i] + deltatD*FOld[k][i] + sqrtDeltat*gaussian_dist(generator);
+    }
 }
 
-void ImportanceSampler::initializeSampling(double newStepLength, double newSeed, double newD, int newNPart, int newNDim)
+void ImportanceSampler::initializePositions(double **rOld, double **rNew)
+{
+    /*
+     * Class instance for initializing the electron positions.
+     *
+     * rOld    : Old positions of the electrons
+     * rNew    : New positions of the electrons
+     */
+    for (int i = 0; i < nParticles; i++)
+    {
+        rOld[i] = new double [nDimensions];
+        rNew[i] = new double [nDimensions];
+        FOld[i] = new double [nDimensions];
+        FNew[i] = new double [nDimensions];
+        for (int j = 0; j < nDimensions; j ++)
+        {
+            rOld[i][j] = acceptance_dist(generator)*2.0 - 1.0; // STORE OLD QM FORCE
+            rNew[i][j] = rOld[i][j];
+        }
+    }
+    cout << "Doing stuff inside updatePositions" << endl;
+    for (int i = 0; i < nParticles; i++)
+    {
+        FOld[i] = WF->quantumForce(rOld,i);
+        FNew[i] = FOld[i];
+    }
+//    return acceptance_dist(generator)*2.0 - 1.0; // Ensures we are working on a uniform interaval from -1 to 1
+}
+
+void ImportanceSampler::initializeSampling(double newStepLength, double newSeed, double newD)
 {
     // Initializing parameters and often used constants
     setStepLength(newStepLength);
     setSeed(newSeed);
-    nParticles          = newNPart;
-    nDimensions         = newNDim;
     D                   = newD;
     deltatD             = D*deltat;
     sqrtDeltat          = sqrt(deltat);
@@ -75,7 +123,34 @@ double ImportanceSampler::q(double **y, double **x, int k)
      * x : old positions
      * k : particle number
      */
-    double *FOld = WF->quantumForce(x,k); // FNew[0] = Fx(y), FNew[1] = Fy[y]
-    double *FNew = WF->quantumForce(y,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
-    return exp(0.5*((x[k][0]-y[k][0])*(FOld[0]+FNew[0]) + (x[k][1]-y[k][1])*(FOld[1]+FNew[1])) + deltatD*0.25*(-FNew[0]*FNew[0] + FOld[0]*FOld[0] - FNew[1]*FNew[1] + FOld[1]*FOld[1]));
+//    double *FOld = WF->quantumForce(x,k); // FNew[0] = Fx(y), FNew[1] = Fy[y]
+//    double *FNew = WF->quantumForce(y,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
+//    return exp(0.5*((x[k][0]-y[k][0])*(FOld[0]+FNew[0]) + (x[k][1]-y[k][1])*(FOld[1]+FNew[1])) + deltatD*0.25*(-FNew[0]*FNew[0] + FOld[0]*FOld[0] - FNew[1]*FNew[1] + FOld[1]*FOld[1]));
+
+//    double *FOld = WF->quantumForce(x,k); // FNew[0] = Fx(y), FNew[1] = Fy[y]
+    FNew[k] = WF->quantumForce(y,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
+    return exp(0.5*((x[k][0]-y[k][0])*(FOld[k][0]+FNew[k][0]) + (x[k][1]-y[k][1])*(FOld[k][1]+FNew[k][1])) + deltatD*0.25*(FOld[k][0]*FOld[k][0] + FOld[k][1]*FOld[k][1] - FNew[k][1]*FNew[k][1] - FNew[k][0]*FNew[k][0]));
+}
+
+
+void ImportanceSampler::printQMForces()
+{
+    cout << "Old QMF" << endl;
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            cout << FOld[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << "New QMF" << endl;
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            cout << FNew[i][j] << " ";
+        }
+        cout << endl;
+    }
 }

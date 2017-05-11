@@ -6,9 +6,10 @@
 using std::cout;
 using std::endl;
 
-MetropolisSampler::MetropolisSampler()
+MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions)
 {
-
+    nParticles = new_nParticles;
+    nDimensions = new_nDimensions;
 }
 
 MetropolisSampler::~MetropolisSampler()
@@ -16,29 +17,43 @@ MetropolisSampler::~MetropolisSampler()
 
 }
 
-double MetropolisSampler::Ratio(double ** rPosNew, double ** rPosOld, int i, double newWF, double oldWF)
+double MetropolisSampler::Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
-    cout << "Overhead class default not implemented. Exiting..." << endl;
+    cout << "Overhead class default of Ratio not implemented in metropolissampler.cpp. Exiting..." << endl;
     exit(1);
     return 0.0;
 }
 
-bool MetropolisSampler::move(double ** rPosNew, double ** rPosOld, int i, double newWF, double oldWF)
+bool MetropolisSampler::move(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
-    cout << "Overhead class default not implemented. Exiting..." << endl;
+    cout << "Overhead class default of Next not implemented in metropolissampler.cpp. Exiting..." << endl;
     exit(1);
     return false;
 }
 
-double MetropolisSampler::nextStep(double ** rPosOld, int i, int j)
+double MetropolisSampler::nextStep(double ** rOld, int i, int j)
 {
-    cout << "Overhead class default not implemented. Exiting..." << endl;
+    cout << "Overhead class default of nextStep not implemented in metropolissampler.cpp. Exiting..." << endl;
     exit(1);
     return 0.0;
 }
 
-double MetropolisSampler::initializePosition()
+void MetropolisSampler::updatePositions(double ** rOld, double ** rNew, int k)
 {
-    cout << "Overhead class default not implemented. Exiting..." << endl;
-    return 0.0;
+    cout << "Overhead class default of updatePositions not implemented in metropolissampler.cpp. Exiting..." << endl;
+    exit(1);
+}
+
+void MetropolisSampler::initializePositions(double **rOld, double **rNew)
+{
+    cout << "Overhead class default of initializePositsions not implemented in metropolissampler.cpp. Exiting..." << endl;
+    exit(1);
+}
+
+
+// TMEP
+void MetropolisSampler::printQMForces()
+{
+    cout << "Wrong!!" << endl;
+    exit(1);
 }

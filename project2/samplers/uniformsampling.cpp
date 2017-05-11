@@ -1,23 +1,31 @@
 #include "uniformsampling.h"
 
-UniformSampling::UniformSampling()
+UniformSampling::UniformSampling(int new_nParticles, int new_nDimensions) : MetropolisSampler(new_nParticles, new_nDimensions)
 {
 
 }
 
-double UniformSampling::Ratio(double ** rPosNew, double ** rPosOld, int i, double newWF, double oldWF)
+double UniformSampling::Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
     return (newWF*newWF)/(oldWF*oldWF);
 }
 
-bool UniformSampling::move(double ** rPosNew, double ** rPosOld, int i, double newWF, double oldWF)
+bool UniformSampling::move(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
-    return acceptance_dist(generator) <= Ratio(rPosNew, rPosOld, i, newWF, oldWF);
+    return acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF);
 }
 
-double UniformSampling::nextStep(double ** rPosOld, int i, int j)
+double UniformSampling::nextStep(double ** rOld, int i, int j)
 {
-    return stepLength * uniform_distribution(generator);
+    return  stepLength * uniform_distribution(generator);
+}
+
+void UniformSampling::updatePositions(double **rOld, double **rNew, int k)
+{
+    for (int i = 0; i < nDimensions; i++)
+    {
+        rNew[k][i] = rOld[k][i] + stepLength*uniform_distribution(generator);
+    }
 }
 
 void UniformSampling::initialize(double newStepLength, double newSeed)
@@ -32,7 +40,17 @@ void UniformSampling::initialize(double newStepLength, double newSeed)
     acceptance_dist = accept_dist;
 }
 
-double UniformSampling::initializePosition()
+void UniformSampling::initializePositions(double **rOld, double **rNew)
 {
-    return uniform_distribution(generator);
+    for (int i = 0; i < nParticles; i++)
+    {
+        rOld[i] = new double[nDimensions];
+        rNew[i] = new double[nDimensions];
+        for (int j = 0; j < nDimensions; j ++)
+        {
+            rOld[i][j] = acceptance_dist(generator)*2.0 - 1.0; // STORE OLD QM FORCE
+            rNew[i][j] = rOld[i][j];
+        }
+    }
+//    return uniform_distribution(generator);
 }
