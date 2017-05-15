@@ -11,7 +11,6 @@ private:
     double deltat;
     double sqrtDeltat;
     double deltatD;
-    double exp_denom_factor;
     double **FOld; // Old quantum force
     double **FNew; // New quantum force
     std::normal_distribution<double> gaussian_dist;
@@ -23,7 +22,6 @@ public:
     bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
     void initializePositions(double **rOld, double **rNew);
     void updatePositions(double ** rOld, double ** rNew, int k);
-    double nextStep(double **rOld, int i, int j);
     void initializeSampling(double newStepLength, double newSeed, double newD);
     double q(double **y, double **x, int k);
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }

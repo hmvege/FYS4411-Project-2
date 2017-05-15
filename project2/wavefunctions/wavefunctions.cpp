@@ -1,6 +1,8 @@
 #include "wavefunctions.h"
-
 #include <iostream>
+
+using std::cout;
+using std::endl;
 
 WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions)
 {
@@ -9,18 +11,18 @@ WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions)
 }
 
 double WaveFunctions::calculate(double ** positions)
-
 {
+    cout << "If you're seeing this, you are doing it wrong in WaveFunctions::calculate" << endl;
     return 1.0; // Add stuff here?
 }
 
 double WaveFunctions::localEnergy(double ** positions)
 {
+    cout << "If you're seeing this, you are doing it wrong in WaveFunctions::localEnergy" << endl;
     return 1.0; // Add more stuff here as well?
 }
 
-double *WaveFunctions::quantumForce(double **positions, int k)
+void WaveFunctions::quantumForce(double **positions, double **F, int k)
 {
-    std::cout << "If you're seeing this, you are doing it wrong" << std::endl;
-    return nullptr; // Really does nothing by default
+    cout << "If you're seeing this, you are doing it wrong in WaveFunctions::quantumForce" << endl;
 }

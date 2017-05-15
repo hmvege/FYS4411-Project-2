@@ -31,9 +31,9 @@ public:
     void runVMC(unsigned int newMCCycles);
     void getStatistics();
 
+
     // TEMP
     void diagnostics(double **rOld, double **rNew, double WFOld, double WFNew);
-
 
     // Setters
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }

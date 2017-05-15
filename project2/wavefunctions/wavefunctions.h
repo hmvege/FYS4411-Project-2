@@ -14,7 +14,7 @@ public:
 
     virtual double calculate(double **positions);
     virtual double localEnergy(double **positions);
-    virtual double *quantumForce(double **positions, int k);
+    virtual void quantumForce(double **positions, double **F, int k);
 };
 
 #endif // WAVEFUNCTIONS_H

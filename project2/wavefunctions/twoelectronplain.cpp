@@ -28,8 +28,8 @@ double twoElectronPlain::calculate(double ** positions)
     double y2 = positions[1][1];
     double r1 = x1*x1 + y1*y1;
     double r2 = x2*x2 + y2*y2;
-    double r12Squared = r1*r1 + r2*r2;
-    return C*exp( - 0.5*omega*alpha*(r12Squared)); // No Jastrov-factor
+//    double r12Squared = r1 + r2*r2;
+    return C*exp( - 0.5*omega*alpha*(r1 + r2)); // No Jastrov-factor
 }
 
 double twoElectronPlain::localEnergy(double ** positions)
@@ -40,8 +40,8 @@ double twoElectronPlain::localEnergy(double ** positions)
     double y2 = positions[1][1];
     double r1 = x1*x1 + y1*y1;
     double r2 = x2*x2 + y2*y2;
-    double r12Squared = r1*r1 + r2*r2;
-    return -0.5*omega*(omega*(r12Squared) - 4) + 0.5 * omega*omega*r12Squared; // No Jastrov-factor, no Coulomb interaction
+//    double r12Squared = r1*r1 + r2*r2;
+    return -0.5*omega*(omega*(r1 + r2) - 4) + 0.5 * omega*omega*(r1+r2); // No Jastrov-factor, no Coulomb interaction
 }
 
 //double *twoElectronPlain::quantumForce(double **positions)

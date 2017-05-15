@@ -11,7 +11,7 @@
 using namespace std;
 
 void run2Electron(int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double C, double stepLength, double seed);
-void run2eImpSampling(int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double C, double a, double beta, double D, double deltat, double seed);
+void run2eImpSampling(int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double C, double a, double beta, double D, double deltat, double seed, bool runImpSampling);
 
 int main()
 {
@@ -28,15 +28,17 @@ int main()
     double alpha    = 1.0; // 0.97
     double C        = 1.0;
     double a        = 1.0;
-    double beta     = 1.0; // 0.4
-    double D = 0.5; // equals 0.5 in atomic units
-    double deltat = 0.001; // should be either 0.01-0.001
-    double seed = std::time(nullptr);
+    double beta     = 0.4; // 0.4
+    double D        = 0.5; // equals 0.5 in atomic units
+    double deltat   = 0.001; // should be either 0.01-0.001
+    double seed     = std::time(nullptr);
 
-    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, C, 1.05, seed);
-    run2eImpSampling(MCCycles, nParticles, nDimensions, omega, alpha, C, a, beta, D, deltat, seed);
+    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, C, 1.31, seed);
+    run2eImpSampling(MCCycles, nParticles, nDimensions, omega, alpha, C, a, beta, D, deltat, seed, true);
+        run2eImpSampling(MCCycles, nParticles, nDimensions, omega, alpha, C, a, beta, D, deltat, seed, false);
 
     programEnd = clock();
+    for (int i = 0; i < 97; i++) { cout << "="; } cout << endl; // Printing a line
     cout << "Program complete. Time used: " << ((programEnd - programStart)/((double)CLOCKS_PER_SEC)) << endl;
     return 0;
 }
@@ -58,25 +60,31 @@ void run2Electron(int MCCycles, int nParticles, int nDimensions, double omega, d
     VMC_2Electron.getStatistics();
 }
 
-void run2eImpSampling(int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double C, double a, double beta, double D, double deltat, double seed)
+void run2eImpSampling(int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double C, double a, double beta, double D, double deltat, double seed, bool runImpSampling)
 {
     /*
      * Function for running the two electron case with Jastrov factor and importance sampling.
      */
-    cout << "============ Running for 2 electron case with Jastrov factor and importancesampling =============" << endl;
     twoElectronJastrov WF_2Jastrov(nParticles, nDimensions, omega, alpha, C, a, beta);
 
-    ImportanceSampler importanceSampling(nParticles, nDimensions);
-    importanceSampling.initializeSampling(deltat, seed, D);
-    importanceSampling.setWaveFunction(&WF_2Jastrov);
-
-//    UniformSampling uniformSampling;
-//    uniformSampling.initialize(1.14, seed); // CHECK STEP!
-
     VMC VMC_2Electron(nParticles, nDimensions);
+
+    if (runImpSampling) {
+        cout << "============ Running for 2 electron case with Jastrov factor and importancesampling =============" << endl;
+        ImportanceSampler importanceSampling(nParticles, nDimensions);
+        importanceSampling.initializeSampling(deltat, seed, D);
+        importanceSampling.setWaveFunction(&WF_2Jastrov);
+        VMC_2Electron.setMetropolisSampler(&importanceSampling);
+    }
+    else
+    {
+        cout << "============= Running for 2 electron case with Jastrov factor and uniform sampling ==============" << endl;
+        UniformSampling uniformSampling(nParticles, nDimensions);
+        uniformSampling.initialize(1.14, seed); // CHECK STEP!
+        VMC_2Electron.setMetropolisSampler(&uniformSampling);
+    }
+
     VMC_2Electron.setWaveFunction(&WF_2Jastrov);
-    VMC_2Electron.setMetropolisSampler(&importanceSampling);
-//    VMC_2Electron.setMetropolisSampler(&uniformSampling);
     VMC_2Electron.runVMC(MCCycles);
     VMC_2Electron.getStatistics();
 

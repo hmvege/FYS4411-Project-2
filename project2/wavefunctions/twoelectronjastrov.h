@@ -17,7 +17,7 @@ public:
 
     double calculate(double **r);
     double localEnergy(double **positions);
-    double *quantumForce(double **positions, int k);
+    void quantumForce(double **positions, double **F, int k);
 };
 
 #endif // TWOELECTRONJASTROV_H
