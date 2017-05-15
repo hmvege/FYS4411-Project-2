@@ -11,14 +11,16 @@ private:
     int nParticles;
     int nDimensions;
     int acceptanceCounter = 0;
-    int MCCycles;
+    unsigned int MCCycles;
 
     // Possibly temporary, will put into arrays?
     double E = 0;
     double ESum = 0;
     double ESumSquared = 0;
 
-//    void update(double **rPositionsOld, double **rPositionsNew, double &oldWaveFunction, double &newWaveFunction);
+    // USE THIS
+    void runMetropolisStep(double **rOld, double **rNew, double &oldWF, double &newWF);
+
     void sampleSystem(double **rPositionsOld, double **rPositionsNew, double newWF, double oldWF);
 
     WaveFunctions *WF = nullptr;
@@ -28,7 +30,7 @@ public:
     VMC();
     VMC(int new_nParticles, int new_nDimensions);
     ~VMC();
-    void runVMC(unsigned int newMCCycles);
+    void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles);
     void getStatistics();
 
 

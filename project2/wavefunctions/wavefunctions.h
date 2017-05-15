@@ -7,6 +7,7 @@ class WaveFunctions
 protected:
     int nParticles;
     int nDimensions;
+    double coulomb(double **r);
 public:
     WaveFunctions() { }
     WaveFunctions(int new_nParticles, int new_nDimensions);

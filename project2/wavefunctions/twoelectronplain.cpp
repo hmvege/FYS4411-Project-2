@@ -5,7 +5,7 @@
 using std::cout;
 using std::endl;
 
-twoElectronPlain::twoElectronPlain(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_C)
+twoElectronPlain::twoElectronPlain(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha)
 {
     /*
      * Class for a two-electron system. Energy should be equal to 2, and variance should be 0.
@@ -14,7 +14,6 @@ twoElectronPlain::twoElectronPlain(int new_nParticles, int new_nDimensions, doub
     nDimensions = new_nDimensions;
     omega       = new_omega;
     alpha       = new_alpha;
-    C           = new_C;
 }
 
 double twoElectronPlain::calculate(double ** positions)
@@ -29,7 +28,7 @@ double twoElectronPlain::calculate(double ** positions)
     double r1 = x1*x1 + y1*y1;
     double r2 = x2*x2 + y2*y2;
 //    double r12Squared = r1 + r2*r2;
-    return C*exp( - 0.5*omega*alpha*(r1 + r2)); // No Jastrov-factor
+    return exp( - 0.5*omega*alpha*(r1 + r2)); // No Jastrov-factor
 }
 
 double twoElectronPlain::localEnergy(double ** positions)

@@ -111,10 +111,7 @@ double ImportanceSampler::q(double **y, double **x, int k)
             deltatD*0.25*(FOld[k][0]*FOld[k][0] + FOld[k][1]*FOld[k][1] - FNew[k][1]*FNew[k][1] - FNew[k][0]*FNew[k][0]));
 }
 
-
-
-
-
+// REMOVE ONCE DONE
 void ImportanceSampler::printQMForces()
 {
     cout << "Old QMF" << endl;
