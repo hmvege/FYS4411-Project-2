@@ -5,13 +5,19 @@
 using std::cout;
 using std::endl;
 
-twoElectronJastrov::twoElectronJastrov(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_a, double new_beta)
+twoElectronJastrov::twoElectronJastrov(int new_nParticles,
+                                       int new_nDimensions,
+                                       int new_nVarParams,
+                                       double new_omega,
+                                       double new_alpha,
+                                       double new_a,
+                                       double new_beta) : WaveFunctions(new_nParticles, new_nDimensions, new_nVarParams)
 {
     /*
      * Class for a two-electron system. Energy should be equal to 2, and variance should be 0.
      */
-    nParticles  = new_nParticles;
-    nDimensions = new_nDimensions;
+//    nParticles  = new_nParticles;
+//    nDimensions = new_nDimensions;
     omega       = new_omega;
     a           = new_a;
     alpha       = new_alpha;
@@ -71,3 +77,22 @@ void twoElectronJastrov::quantumForce(double **r, double **F, int k)
     }
 }
 
+void twoElectronJastrov::steepestDescent(double **r)
+{
+    /*
+     * Should update the variational parameters of the wavefunctio.
+     */
+    double epsilon = 0.001; // CHANGE LATER!!
+    double rr = r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]; // r_1^2 + r_2^2
+    double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
+    double r12beta = (1 + beta*r12);
+    double alphaDerivative = 2*omega - alpha*omega*omega*rr + omega*a*r12/(r12beta*r12beta);
+    double betaDerivative = a/(r12beta*r12beta*r12beta)*( 4*r12*a/(r12beta*r12beta) - 2*omega*alpha*r12*r12 + 4 - 6*beta*r12/r12beta );
+    alpha -= epsilon*alphaDerivative;
+    beta -= epsilon*betaDerivative;
+}
+
+void twoElectronJastrov::printVariationalParameters()
+{
+    cout << "Alpha = " << alpha << " Beta = " << beta << endl;
+}

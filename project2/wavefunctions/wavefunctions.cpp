@@ -5,27 +5,31 @@
 using std::cout;
 using std::endl;
 
-WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions)
+WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nVarParams)
 {
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
+    nVarParams = new_nVarParams;
 }
 
 double WaveFunctions::calculate(double ** positions)
 {
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::calculate" << endl;
+    exit(1);
     return 1.0; // Add stuff here?
 }
 
 double WaveFunctions::localEnergy(double ** positions)
 {
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::localEnergy" << endl;
+    exit(1);
     return 1.0; // Add more stuff here as well?
 }
 
 void WaveFunctions::quantumForce(double **positions, double **F, int k)
 {
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::quantumForce" << endl;
+    exit(1);
 }
 
 double WaveFunctions::coulomb(double ** r)
@@ -46,4 +50,16 @@ double WaveFunctions::coulomb(double ** r)
         }
     }
     return coulombInteraction;
+}
+
+void WaveFunctions::steepestDescent(double **rOld)
+{
+    cout << "Steepest descent not implemented for general WaveFunction module." << endl;
+    exit(1);
+}
+
+void WaveFunctions::printVariationalParameters()
+{
+    cout << "Bare wavefunctions class do not contain any variational parameters." << endl;
+    exit(1);
 }

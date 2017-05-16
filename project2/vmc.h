@@ -12,16 +12,26 @@ private:
     int nDimensions;
     int acceptanceCounter = 0;
     unsigned int MCCycles;
+    int maxSDIterations = 0;
 
-    // Possibly temporary, will put into arrays?
+    // Possibly temporary, will put into arrays OR WRITE TO FILE AS BINARY?
     double E = 0;
     double ESum = 0;
     double ESumSquared = 0;
 
+    // TEMPORARY FOR STEEPEST DESCENT
+    double dPsiAlpha = 0;
+    double dPsiBeta = 0;
+    double dPsiBetaSum = 0;
+    double dPsiAlphaSum = 0;
+    double dPsiEAlphaSum = 0;
+    double dPsiEBetaSum = 0;
+
+    void updateParticle(double **rOld, double **rNew, double &oldWF, double &newWF, int i);
+
     // USE THIS
     void runMetropolisStep(double **rOld, double **rNew, double &oldWF, double &newWF);
-
-    void sampleSystem(double **rPositionsOld, double **rPositionsNew, double newWF, double oldWF);
+    void sampleSystem(double **r, double newWF, double oldWF);
 
     WaveFunctions *WF = nullptr;
     MetropolisSampler *R = nullptr;
