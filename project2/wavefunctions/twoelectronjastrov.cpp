@@ -16,8 +16,6 @@ twoElectronJastrov::twoElectronJastrov(int new_nParticles,
     /*
      * Class for a two-electron system. Energy should be equal to 2, and variance should be 0.
      */
-//    nParticles  = new_nParticles;
-//    nDimensions = new_nDimensions;
     omega       = new_omega;
     a           = new_a;
     alpha       = new_alpha;
@@ -37,6 +35,9 @@ double twoElectronJastrov::calculate(double ** r)
 
 double twoElectronJastrov::localEnergy(double ** r)
 {
+    /*
+     * Function for calculating the two electron local energy
+     */
     double r1 = r[0][0]*r[0][0] + r[0][1]*r[0][1]; // x1^2 + y1^2
     double r2 = r[1][0]*r[1][0] + r[1][1]*r[1][1]; // x2^2 + y2^2
     double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
@@ -48,24 +49,11 @@ double twoElectronJastrov::localEnergy(double ** r)
 
 void twoElectronJastrov::quantumForce(double **r, double **F, int k)
 {
+    /*
+     * Function for calculating the two electron quantum force
+     */
     double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
     double r12r12Beta = r12*(1 + beta*r12);
-//    for (int i = 0; i < nDimensions; i++)
-//    {
-//        F[i] = 0;
-//    }
-//    for (int i = 0; i < nDimensions; i++)
-//    {
-//        F[i] = - 2*omega*alpha*r[k][i];
-//        if ((i + 1) % 2 == 0) // If index == 1, that is we get an extra minus sign
-//        {
-//            F[i] -= a*(r[k][0] - r[k][1])/r12r12Beta;
-//        }
-//        else // If index == 1
-//        {
-//            F[i] += a*(r[k][0] - r[k][1])/r12r12Beta;
-//        }
-//    }
     if (k==0) {
         F[k][0] = (- omega*alpha*r[k][0] + a*(r[k][0] - r[k][1])/r12r12Beta)*2.0; // Hardcoded to 2 electron case
         F[k][1] = (- omega*alpha*r[k][1] + a*(r[k][0] - r[k][1])/r12r12Beta)*2.0;
@@ -77,22 +65,52 @@ void twoElectronJastrov::quantumForce(double **r, double **F, int k)
     }
 }
 
-void twoElectronJastrov::steepestDescent(double **r)
+void twoElectronJastrov::steepestDescent(double **r, double E, double ESum, int NCycles)
 {
     /*
      * Should update the variational parameters of the wavefunctio.
      */
     double epsilon = 0.001; // CHANGE LATER!!
-    double rr = r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]; // r_1^2 + r_2^2
-    double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
-    double r12beta = (1 + beta*r12);
-    double alphaDerivative = 2*omega - alpha*omega*omega*rr + omega*a*r12/(r12beta*r12beta);
-    double betaDerivative = a/(r12beta*r12beta*r12beta)*( 4*r12*a/(r12beta*r12beta) - 2*omega*alpha*r12*r12 + 4 - 6*beta*r12/r12beta );
+    SDStatistics(r, NCycles);
+    ESum /= double(nParticles*NCycles);
+    double alphaDerivative = 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
+    double betaDerivative = 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
     alpha -= epsilon*alphaDerivative;
     beta -= epsilon*betaDerivative;
 }
 
+void twoElectronJastrov::sampleSD(double **r, double E)
+{
+    /*
+     * Sampling used by the steepest descent algorithm
+     */
+    double rr       = r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]; // r_1^2 + r_2^2
+    double r12      = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
+    dPsiAlpha       = - 0.5*omega*(rr);
+    dPsiAlphaSum    += dPsiAlpha;
+    dPsiEAlphaSum   += dPsiAlpha*E;
+    dPsiBeta        = - a/( (beta + 1/r12)*(beta + 1/r12) );
+    dPsiBetaSum     += dPsiBeta;
+    dPsiEBetaSum    += dPsiBeta*E;
+}
+
+void twoElectronJastrov::SDStatistics(double **r, int NCycles)
+{
+    /*
+     * Function for retrieving Steepest Descent statistics. Arguments:
+     * r        : positions
+     * NCycles  : Monte Carlo cycles
+     */
+    dPsiBetaSum     /= double(nParticles*NCycles);
+    dPsiAlphaSum    /= double(nParticles*NCycles);
+    dPsiEAlphaSum   /= double(nParticles*NCycles);
+    dPsiEBetaSum    /= double(nParticles*NCycles);
+}
+
 void twoElectronJastrov::printVariationalParameters()
 {
+    /*
+     * Temporary function for printing the variational parameters used.
+     */
     cout << "Alpha = " << alpha << " Beta = " << beta << endl;
 }

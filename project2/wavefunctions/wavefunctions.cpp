@@ -12,21 +12,21 @@ WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nV
     nVarParams = new_nVarParams;
 }
 
-double WaveFunctions::calculate(double ** positions)
+double WaveFunctions::calculate(double ** r)
 {
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::calculate" << endl;
     exit(1);
     return 1.0; // Add stuff here?
 }
 
-double WaveFunctions::localEnergy(double ** positions)
+double WaveFunctions::localEnergy(double ** r)
 {
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::localEnergy" << endl;
     exit(1);
     return 1.0; // Add more stuff here as well?
 }
 
-void WaveFunctions::quantumForce(double **positions, double **F, int k)
+void WaveFunctions::quantumForce(double **r, double **F, int k)
 {
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::quantumForce" << endl;
     exit(1);
@@ -52,7 +52,13 @@ double WaveFunctions::coulomb(double ** r)
     return coulombInteraction;
 }
 
-void WaveFunctions::steepestDescent(double **rOld)
+void WaveFunctions::steepestDescent(double **r, double E, double ESum, int NCycles)
+{
+    cout << "Steepest descent not implemented for general WaveFunction module." << endl;
+    exit(1);
+}
+
+void WaveFunctions::sampleSD(double **r, double E)
 {
     cout << "Steepest descent not implemented for general WaveFunction module." << endl;
     exit(1);

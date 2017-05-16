@@ -17,7 +17,7 @@ int main()
 {
     // Constants
     unsigned int MCCycles   = 1e6;
-    unsigned int optCycles  = 0;
+    unsigned int optCycles  = 1e5;
     int nParticles          = 2;
     int nDimensions         = 2;
 
@@ -26,15 +26,15 @@ int main()
 
     // TASK C-F CONSTANTS
     double omega            = 1.0;
-    double alpha            = 1.0; // 0.97
+    double alpha            = 1.5; // 0.97
     double a                = 1.0;
-    double beta             = 0.4; // 0.4
+    double beta             = 0.3; // 0.4
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double seed             = std::time(nullptr);
 
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed);
-    run2eImpSampling(MCCycles, optCycles, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, false);
+//    run2eImpSampling(MCCycles, optCycles, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, false);
     run2eImpSampling(MCCycles, optCycles, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, true);
 
     programEnd = clock();
