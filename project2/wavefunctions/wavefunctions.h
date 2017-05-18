@@ -9,6 +9,7 @@ protected:
     int nDimensions;
     int nVarParams;
     double coulomb(double **r);
+    double SDStepLength = 0.01;
 public:
     WaveFunctions() { }
     WaveFunctions(int new_nParticles, int new_nDimensions, int new_nVarParams);
@@ -23,6 +24,8 @@ public:
     virtual bool SDConvergenceCriteria();
     // Printers
     virtual void printVariationalParameters();
+    // Setters
+    void setSDStepLength(double newSDStepLength) { SDStepLength = newSDStepLength; }
 };
 
 #endif // WAVEFUNCTIONS_H

@@ -23,7 +23,7 @@ public:
     void initializePositions(double **rOld, double **rNew);
     void updatePositions(double ** rOld, double ** rNew, int k);
     void initializeSampling(double newStepLength, double newSeed, double newD);
-    double q(double **y, double **x, int k);
+    double GreensRatio(double **y, double **x, int k);
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }
     void setStepLength(double newStepLength) { deltat = newStepLength; }
 

@@ -70,14 +70,11 @@ void twoElectronJastrov::steepestDescent(double &ESum, int NCycles)
     /*
      * Should update the variational parameters of the wavefunctio.
      */
-    double epsilon = 0.001; // Change to global input
     SDStatistics(NCycles);
-//    ESum /= double(nParticles*NCycles);
     double alphaDerivative = 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
     double betaDerivative = 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
-    // Updating alpha and beta
-    alpha -= epsilon*alphaDerivative;
-    beta -= epsilon*betaDerivative;
+    alpha -= SDStepLength*alphaDerivative; // Updating alpha and beta
+    beta -= SDStepLength*betaDerivative;
 }
 
 void twoElectronJastrov::sampleSD(double **r, double &E)

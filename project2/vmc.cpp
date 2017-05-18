@@ -80,27 +80,27 @@ void VMC::runSDStep()
      */
     for (int i = 0; i < nParticles; i++)
     {
-//        updateParticle(i);
-        // TEMP ==========================================================================================
-        SDR->updatePositions(rOld, rNew, i);
-        newWF = WF->calculate(rNew);
-        if (SDR->move(rNew, rOld, i, newWF, oldWF))
-        {
-            for (int j = 0; j < nDimensions; j++)
-            {
-                rOld[i][j] = rNew[i][j];
-                oldWF = newWF;
-            }
-            acceptanceCounter++;
-        }
-        else
-        {
-            for (int j = 0; j < nDimensions; j++)
-            {
-                rNew[i][j] = rOld[i][j];
-            }
-        }
-        // ===============================================================================================
+        updateParticle(i);
+//        // TEMP ==========================================================================================
+//        SDR->updatePositions(rOld, rNew, i);
+//        newWF = WF->calculate(rNew);
+//        if (SDR->move(rNew, rOld, i, newWF, oldWF))
+//        {
+//            for (int j = 0; j < nDimensions; j++)
+//            {
+//                rOld[i][j] = rNew[i][j];
+//                oldWF = newWF;
+//            }
+//            acceptanceCounter++;
+//        }
+//        else
+//        {
+//            for (int j = 0; j < nDimensions; j++)
+//            {
+//                rNew[i][j] = rOld[i][j];
+//            }
+//        }
+//        // ===============================================================================================
 
         sampleSystemSD();
     }
@@ -122,8 +122,8 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     while (SDCounter < maxSteepestDescentIterations) // add SD convergence criteria
     {
         resetVariables();
-//        R->initializePositions(rOld, rNew);
-        SDR->initializePositions(rOld, rNew); // TEMP!
+        R->initializePositions(rOld, rNew);
+//        SDR->initializePositions(rOld, rNew); // TEMP!
         oldWF = WF->calculate(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
@@ -140,13 +140,16 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         EOld = ESum;
     }
 
-    if (SDCounter==maxSteepestDescentIterations)
+    if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
     {
-        cout << "Warning! No convergence found after " << SDCounter << " iterations" << endl;
-    }
-    else
-    {
-        cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
+        if (SDCounter==maxSteepestDescentIterations)
+        {
+            cout << "Warning! No convergence found after " << SDCounter << " iterations" << endl;
+        }
+        else
+        {
+            cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
+        }
     }
 
     // Main part of Metropolis ====================================================================
