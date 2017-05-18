@@ -52,7 +52,7 @@ double WaveFunctions::coulomb(double ** r)
     return coulombInteraction;
 }
 
-void WaveFunctions::steepestDescent(double **r, double E, double ESum, int NCycles)
+void WaveFunctions::steepestDescent(double E, int NCycles)
 {
     cout << "Steepest descent not implemented for general WaveFunction module." << endl;
     exit(1);

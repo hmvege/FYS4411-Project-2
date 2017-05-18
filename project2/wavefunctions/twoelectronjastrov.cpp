@@ -65,16 +65,19 @@ void twoElectronJastrov::quantumForce(double **r, double **F, int k)
     }
 }
 
-void twoElectronJastrov::steepestDescent(double **r, double E, double ESum, int NCycles)
+void twoElectronJastrov::steepestDescent(double ESum, int NCycles)
 {
     /*
      * Should update the variational parameters of the wavefunctio.
      */
     double epsilon = 0.001; // CHANGE LATER!!
-    SDStatistics(r, NCycles);
+    // Statistics
+    SDStatistics(NCycles);
     ESum /= double(nParticles*NCycles);
+    // Getting derivatives
     double alphaDerivative = 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
     double betaDerivative = 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
+    // Updating alpha and beta
     alpha -= epsilon*alphaDerivative;
     beta -= epsilon*betaDerivative;
 }
@@ -86,15 +89,16 @@ void twoElectronJastrov::sampleSD(double **r, double E)
      */
     double rr       = r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]; // r_1^2 + r_2^2
     double r12      = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
-    dPsiAlpha       = - 0.5*omega*(rr);
+    double r12beta  = 1 + beta*r12;
+    dPsiAlpha       = - 0.5*omega*rr;
     dPsiAlphaSum    += dPsiAlpha;
     dPsiEAlphaSum   += dPsiAlpha*E;
-    dPsiBeta        = - a/( (beta + 1/r12)*(beta + 1/r12) );
+    dPsiBeta        = - a*r12*r12/(r12beta*r12beta);
     dPsiBetaSum     += dPsiBeta;
     dPsiEBetaSum    += dPsiBeta*E;
 }
 
-void twoElectronJastrov::SDStatistics(double **r, int NCycles)
+void twoElectronJastrov::SDStatistics(int NCycles)
 {
     /*
      * Function for retrieving Steepest Descent statistics. Arguments:

@@ -52,11 +52,10 @@ void twoElectronPlain::printVariationalParameters()
     cout << "Alpha = " << alpha << endl;
 }
 
-void twoElectronPlain::steepestDescent(double **r)
+void twoElectronPlain::steepestDescent(double E, int NCycles)
 {
-    double epsilon = 0.001; // CHANGE LATER!!
-    double alphaDerivative = omega*(2-omega*alpha*(r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]));
-    alpha -= epsilon*alphaDerivative;
+    cout << "Steepest descent not implemented for 2 electron case." << endl;
+    exit(1);
 }
 
 //double *twoElectronPlain::quantumForce(double **positions)

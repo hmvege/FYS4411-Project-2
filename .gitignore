@@ -3,3 +3,12 @@ bin/*
 
 #OS junk
 *.DS_Store
+
+# Latex junk
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.gz
+*.toc

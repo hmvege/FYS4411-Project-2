@@ -9,6 +9,11 @@ using std::endl;
 
 VMC::VMC(int new_nParticles, int new_nDimensions)
 {
+    /*
+     * Constructor for the Variational Metropolis class. Arguments:
+     * new_nParticles   : number of particles
+     * new_nDimensions  : number of dimensions
+     */
     setNParticles(new_nParticles);
     setNDimensions(new_nDimensions);
 }
@@ -20,6 +25,9 @@ VMC::~VMC()
 
 void VMC::updateParticle(double **rOld, double **rNew, double &oldWF, double &newWF, int i)
 {
+    /*
+     * Function that performs a Metropolis update on a single particle
+     */
     R->updatePositions(rOld, rNew, i);
     newWF = WF->calculate(rNew);
     if (R->move(rNew, rOld, i, newWF, oldWF))
@@ -42,23 +50,29 @@ void VMC::updateParticle(double **rOld, double **rNew, double &oldWF, double &ne
 
 void VMC::runMetropolisStep(double **rOld, double **rNew, double &oldWF, double &newWF)
 {
+    /*
+     * Metropolis update
+     */
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(rOld, rNew, oldWF, newWF, i);
-        sampleSystem(rOld, oldWF, newWF);
+        sampleSystem(rOld);
     }
 }
 
 void VMC::runSDStep(double **rOld, double **rNew, double &oldWF, double &newWF)
 {
+    /*
+     * Metropolis update with steepest descent
+     */
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(rOld, rNew, oldWF, newWF, i);
-        sampleSystemSD(rOld, oldWF, newWF);
+        sampleSystemSD(rOld);
     }
 }
 
-void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles)
+void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations)
 {
     /*
      * Function for running the Variational Monte Carlo calculation.
@@ -72,21 +86,21 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles)
     double ** rPositionsNew = new double * [nParticles];
     // Finding the optimal values for alpha and beta ==============================================
     WF->printVariationalParameters();
-    while (SDCounter < maxSDIterations)
+    while (SDCounter < maxSteepestDescentIterations)
     {
-        resetVariables();
+        resetVariables(); // Resets E and ESum
         R->initializePositions(rPositionsOld, rPositionsNew);
         oldWaveFunction = WF->calculate(rPositionsOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
             runSDStep(rPositionsOld,rPositionsNew,oldWaveFunction,newWaveFunction);
         }
-        WF->steepestDescent(rPositionsOld, E, ESum, optimizationCycles);
+        WF->steepestDescent(ESum, optimizationCycles);
+        WF->printVariationalParameters();
         SDCounter++;
     }
-    WF->printVariationalParameters();
     // Main part of Metropolis ====================================================================
-    acceptanceCounter = 0; // Resetting
+    acceptanceCounter = 0;
     R->initializePositions(rPositionsOld, rPositionsNew);
     oldWaveFunction = WF->calculate(rPositionsOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
@@ -103,7 +117,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles)
     delete [] rPositionsOld;
 }
 
-void VMC::sampleSystem(double ** r, double newWF, double oldWF)
+void VMC::sampleSystem(double ** r)
 {
     /*
      * Base statistics that should be sampled for each run. CHANGE TO STORE IN ARRAY?
@@ -113,12 +127,12 @@ void VMC::sampleSystem(double ** r, double newWF, double oldWF)
     ESumSquared += E*E;
 }
 
-void VMC::sampleSystemSD(double ** r, double newWF, double oldWF)
+void VMC::sampleSystemSD(double ** r)
 {
     /*
      * Steepest descent system sampler
      */
-    sampleSystem(r, oldWF, newWF);
+    sampleSystem(r);
     WF->sampleSD(r, E);
 }
 

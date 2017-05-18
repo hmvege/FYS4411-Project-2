@@ -18,7 +18,7 @@ public:
     virtual double calculate(double **r);
     virtual double localEnergy(double **r);
     virtual void quantumForce(double **r, double **F, int k);
-    virtual void steepestDescent(double **r, double E, double ESum, int NCycles);
+    virtual void steepestDescent(double E, int NCycles);
     virtual void sampleSD(double **r, double E);
     // Printers
     virtual void printVariationalParameters();

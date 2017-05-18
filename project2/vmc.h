@@ -12,7 +12,6 @@ private:
     int nDimensions;
     int acceptanceCounter = 0;
     unsigned int MCCycles;
-    int maxSDIterations = 100;
 
     // Variables used globally by progra
 //    double **rOld; // Old positions
@@ -30,8 +29,8 @@ private:
     void updateParticle(double **rOld, double **rNew, double &oldWF, double &newWF, int i);
     void runMetropolisStep(double **rOld, double **rNew, double &oldWF, double &newWF);
     void runSDStep(double **rOld, double **rNew, double &oldWF, double &newWF);
-    void sampleSystem(double **r, double newWF, double oldWF);
-    void sampleSystemSD(double ** r, double newWF, double oldWF);
+    void sampleSystem(double **r);
+    void sampleSystemSD(double ** r);
 
     WaveFunctions *WF = nullptr;
     MetropolisSampler *R = nullptr;
@@ -39,7 +38,7 @@ private:
 public:
     VMC(int new_nParticles, int new_nDimensions);
     ~VMC();
-    void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles);
+    void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations);
     void getStatistics();
 
     // TEMP
