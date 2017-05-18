@@ -116,18 +116,17 @@ double ImportanceSampler::GreensRatio(double **y, double **x, int k)
      * x : old positions
      * k : particle number
      */
-//    double GreensFunction = 0;
-//    for (int j = 0; j < nDimensions; j++)
-//    {
-//        GreensFunction += 0.5*(FOld[k][j] + FNew[k][j])*
-//        (deltatD*0.5*(FOld[k][j] - FNew[k][j]) - y[k][j] + x[k][j]);
-//    }
-//    GreensFunction = exp(GreensFunction);
-//    return GreensFunction;
     WF->quantumForce(y,FNew,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
-    return exp(0.5*((x[k][0] - y[k][0])*(FOld[k][0] + FNew[k][0])  +
-                    (x[k][1] - y[k][1])*(FOld[k][1] + FNew[k][1])) +
-            deltatD*0.25*(FOld[k][0]*FOld[k][0] + FOld[k][1]*FOld[k][1] - FNew[k][1]*FNew[k][1] - FNew[k][0]*FNew[k][0]));
+    double GreensFunction = 0;
+    for (int j = 0; j < nDimensions; j++)
+    {
+        GreensFunction += 0.5*(FOld[k][j] + FNew[k][j])*(deltatD*0.5*(FOld[k][j] - FNew[k][j]) - y[k][j] + x[k][j]);
+    }
+    GreensFunction = exp(GreensFunction);
+    return GreensFunction;
+//    return exp(0.5*((x[k][0] - y[k][0])*(FOld[k][0] + FNew[k][0])  +
+//                    (x[k][1] - y[k][1])*(FOld[k][1] + FNew[k][1])) +
+//            deltatD*0.25*(FOld[k][0]*FOld[k][0] + FOld[k][1]*FOld[k][1] - FNew[k][1]*FNew[k][1] - FNew[k][0]*FNew[k][0]));
 }
 
 // REMOVE ONCE DONE

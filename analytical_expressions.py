@@ -109,6 +109,11 @@ def double_derivate_exponent(der):
 	dd_expr.add_subs(substitutions_list)
 	dd_expr(der)
 
+def dpsi_beta(der):
+	expr = DerFinder(expression)
+	expr.add_subs(substitutions_list)
+	dPsiBeta = expr([der],simplify=True,print_expr=True)
+
 def full_derivative():
 	# Differentiated expressions
 	dpsi = [sy.diff(expression,x) for x in diff_list]
@@ -123,12 +128,6 @@ def full_derivative():
 	ddpsi_subs3		= ddpsi_subs2.subs(x2**2 + y2**2, r2_squared)
 	return dpsi_subs3
 
-def dpsi_beta(der):
-	expr = DerFinder(expression)
-	expr.add_subs(substitutions_list)
-	dPsiBeta = expr([der],simplify=True,print_expr=True)
-
-
 def print_expressions(before,after,x):
 	# Full expression:
 	derivative 		= 'd^2'
@@ -138,15 +137,15 @@ def print_expressions(before,after,x):
 	# print '\n\n\nRaw final: '
 	# print after
 
-vars_to_derivate = [x2]
+vars_to_derivate = [x1]
 
 def main():
 	# derivate_1_over_r12()
-	# derivate_exponent(vars_to_derivate)
+	derivate_exponent(vars_to_derivate)
 	# derivate_beta_frac(vars_to_derivate)
 	# derivate_frac(vars_to_derivate)
 	# double_derivate_exponent(vars_to_derivate)
-	dpsi_beta(alpha)
+	# dpsi_beta(alpha)
 
 if __name__ == '__main__':
 	main()

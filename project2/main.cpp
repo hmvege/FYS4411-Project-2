@@ -28,12 +28,12 @@ int main()
 
     // TASK C-F CONSTANTS
     double omega            = 1.0;
-    double alpha            = 0.988559; // 0.988559
+    double alpha            = 0.988559;
     double a                = 1.0;
-    double beta             = .398665; // .398665
+    double beta             = 0.398665;
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
-    double SDStepLength     = 0.01;
+    double SDStepLength     = 0.01; // Steepest descent step length
     double seed             = std::time(nullptr);
 
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed);

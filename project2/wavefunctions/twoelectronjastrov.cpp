@@ -52,16 +52,16 @@ void twoElectronJastrov::quantumForce(double **r, double **F, int k)
      * Function for calculating the two electron quantum force
      */
     double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
-    double r12r12Beta = r12*(1 + beta*r12);
+    double r12Overr12r12Beta = a/(r12*(1 + r12*beta)*(1 + r12*beta));
     if (k==0)
     {
-        F[k][0] = (- omega*alpha*r[k][0] + a*(r[k][0] - r[k][1])/r12r12Beta)*2.0; // Hardcoded to 2 electron case
-        F[k][1] = (- omega*alpha*r[k][1] + a*(r[k][0] - r[k][1])/r12r12Beta)*2.0;
+        F[k][0] = (- omega*alpha*r[k][0] + (r[k][0] - r[k][1])*r12Overr12r12Beta)*2.0; // Hardcoded to 2 electron case
+        F[k][1] = (- omega*alpha*r[k][1] + (r[k][0] - r[k][1])*r12Overr12r12Beta)*2.0;
     }
     else
     {
-        F[k][0] = (- omega*alpha*r[k][0] - a*(r[k][0] - r[k][1])/r12r12Beta)*2.0; // Hardcoded to 2 electron case
-        F[k][1] = (- omega*alpha*r[k][1] - a*(r[k][0] - r[k][1])/r12r12Beta)*2.0;
+        F[k][0] = (- omega*alpha*r[k][0] - (r[k][0] - r[k][1])*r12Overr12r12Beta)*2.0; // Hardcoded to 2 electron case
+        F[k][1] = (- omega*alpha*r[k][1] - (r[k][0] - r[k][1])*r12Overr12r12Beta)*2.0;
     }
 }
 

@@ -81,6 +81,7 @@ void VMC::runSDStep()
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(i);
+        cout << "Oops: remember to change to SD step instead" << endl;
 //        // TEMP ==========================================================================================
 //        SDR->updatePositions(rOld, rNew, i);
 //        newWF = WF->calculate(rNew);
