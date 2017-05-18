@@ -10,9 +10,9 @@ private:
     double alpha;
 public:
     twoElectronPlain(int new_nParticles, int new_nDimensions, int new_nVarParams, double new_omega, double new_alpha);
-    double calculate(double **positions);
-    double localEnergy(double **positions);
-    void steepestDescent(double E, int NCycles);
+    double calculate(double **r);
+    double localEnergy(double **r);
+//    void steepestDescent(double E, int NCycles);
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }
     void setAlpha(double newAlpha) { alpha = newAlpha; }

@@ -14,7 +14,13 @@ ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions) : 
 
 ImportanceSampler::~ImportanceSampler()
 {
-
+//    for (int i = 0; i < nParticles; i++)
+//    {
+//        delete [] FOld[i];
+//        delete [] FNew[i];
+//    }
+//    delete [] FOld;
+//    delete [] FNew;
 }
 
 double ImportanceSampler::Ratio(double **rOld, double **rNew, int i, double newWF, double oldWF)
@@ -36,7 +42,6 @@ bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, 
     {
         return false;
     }
-//    return acceptance_dist(generator) <= Ratio(rPosNew, rPosOld, i, newWF, oldWF); // CORRECT COMPARISON
 }
 
 void ImportanceSampler::updatePositions(double **rOld, double **rNew, int k)
@@ -77,11 +82,16 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
         WF->quantumForce(rOld,FOld,i);
         FNew[i] = FOld[i];
     }
-//    return acceptance_dist(generator)*2.0 - 1.0; // Ensures we are working on a uniform interaval from -1 to 1
 }
 
 void ImportanceSampler::initializeSampling(double newStepLength, double newSeed, double newD)
 {
+    /*
+     * Initialization of the importance sampler,
+     * newStepLength    : The step length of the Metropolis update
+     * newSeed          : The seed to be used by the Mersenne twister RNG
+     * newD             : 0.5 in atomic units
+     */
     // Initializing parameters and often used constants
     setStepLength(newStepLength);
     setSeed(newSeed);
@@ -91,7 +101,7 @@ void ImportanceSampler::initializeSampling(double newStepLength, double newSeed,
     // Initializing random generators and distributions
     std::mt19937_64 gen(seed); // Mersenne-Twister19937
     std::uniform_real_distribution <double> uni_dist(0.0,1.0);
-    std::normal_distribution <double> gauss_dist(0.0,1.0); // Mean should be around 0 and the std should be 1?
+    std::normal_distribution <double> gauss_dist(0.0,1.0);
     generator           = gen;
     gaussian_dist       = gauss_dist;
     acceptance_dist     = uni_dist;

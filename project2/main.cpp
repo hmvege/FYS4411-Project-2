@@ -16,12 +16,13 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
 int main()
 {
     // Constants
-    unsigned int MCCycles   = 1e7;
-    unsigned int optCycles  = 1e3;
-    int maxSDIterations     = 100;
+    unsigned int MCCycles   = 1e6;
+    unsigned int optCycles  = 1e4;
+    int maxSDIterations     = 0;
     int nParticles          = 2;
     int nDimensions         = 2;
 
+    for (int i = 0; i < 1e2; i++) { cout << "="; } cout << endl; // Printing a line
     clock_t programStart, programEnd;
     programStart = clock();
 
@@ -58,7 +59,7 @@ void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double
     VMC_2Electron.setWaveFunction(&WF_2Electron);
     VMC_2Electron.setMetropolisSampler(&uniformSampling);
     VMC_2Electron.runVMC(MCCycles, 0, 0);
-    VMC_2Electron.getStatistics();
+    VMC_2Electron.printResults();
 }
 
 void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions, double omega, double alpha, double a, double beta, double D, double deltat, double seed, bool runImpSampling)
@@ -69,6 +70,12 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
     twoElectronJastrov WF_2Jastrov(nParticles, nDimensions, 2, omega, alpha, a, beta);
 
     VMC VMC_2Electron(nParticles, nDimensions);
+
+    // Temporary fix for the sampling of steepest descent metropolis part ========================
+    UniformSampling SDR(nParticles, nDimensions);
+    SDR.initialize(1.14, seed-1);
+    VMC_2Electron.SDR = &SDR;
+    // ===========================================================================================
 
     if (runImpSampling) {
         cout << "============== Running for 2 electron case with Jastrov factor and importancesampling ==============" << endl;
@@ -87,6 +94,6 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
 
     VMC_2Electron.setWaveFunction(&WF_2Jastrov);
     VMC_2Electron.runVMC(MCCycles, optCycles, maxNSD);
-    VMC_2Electron.getStatistics();
+    VMC_2Electron.printResults();
 
 }

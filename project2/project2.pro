@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     wavefunctions/twoelectronjastrov.cpp \
     samplers/metropolissampler.cpp \
     samplers/importancesampler.cpp \
-    samplers/uniformsampling.cpp
+    samplers/uniformsampling.cpp \
+    wavefunctions/harmonicoscillator.cpp
 
 HEADERS += \
     vmc.h \
@@ -19,4 +20,5 @@ HEADERS += \
     wavefunctions/twoelectronjastrov.h \
     samplers/metropolissampler.h \
     samplers/importancesampler.h \
-    samplers/uniformsampling.h
+    samplers/uniformsampling.h \
+    wavefunctions/harmonicoscillator.h

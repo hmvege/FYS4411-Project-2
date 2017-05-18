@@ -13,42 +13,41 @@ private:
     int acceptanceCounter = 0;
     unsigned int MCCycles;
 
-    // Variables used globally by progra
-//    double **rOld; // Old positions
-//    double **rNew; // New positions
-//    double WFOld; // Old wavefunction
-//    double WFNew; // New wavefunction
-
-    // Possibly temporary, will put into arrays OR WRITE TO FILE AS BINARY?
-    double E = 0;
-    double ESum = 0;
-    double ESumSquared = 0;
+    // Variables used globally by program
+    double oldWF;           // Old wavefunction
+    double newWF;           // New wavefunction
+    double **rOld;          // Old positions
+    double **rNew;          // New positions
+    double E = 0;           // Energy
+    double ESum = 0;        // Energy sum
+    double ESumSquared = 0; // Energy squared sum
 
     void resetVariables();
+    void updateParticle(int i);
+    void runMetropolisStep();
+    void runSDStep();
+    void sampleSystem();
+    void sampleSystemSD();
+    void statistics(int cycles);
 
-    void updateParticle(double **rOld, double **rNew, double &oldWF, double &newWF, int i);
-    void runMetropolisStep(double **rOld, double **rNew, double &oldWF, double &newWF);
-    void runSDStep(double **rOld, double **rNew, double &oldWF, double &newWF);
-    void sampleSystem(double **r);
-    void sampleSystemSD(double ** r);
 
     WaveFunctions *WF = nullptr;
     MetropolisSampler *R = nullptr;
-    void checkRatio(MetropolisSampler *newRatio);
 public:
     VMC(int new_nParticles, int new_nDimensions);
     ~VMC();
     void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations);
-    void getStatistics();
+    void printResults();
 
-    // TEMP
-    void diagnostics(double **rOld, double **rNew, double WFOld, double WFNew);
+    // TEMP ==========================================================================================
+    void diagnostics();
+    MetropolisSampler *SDR = nullptr;
+    // ===============================================================================================
 
     // Setters
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }
     void setNParticles(int new_nParticles) { nParticles = new_nParticles; }
     void setNDimensions(int new_nDimensions) { nDimensions= new_nDimensions; }
-//    void setRNGSeed(double newSeed) { seed = newSeed; }
     void setMetropolisSampler(MetropolisSampler *newRatio) { R = newRatio; }
 };
 

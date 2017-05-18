@@ -14,6 +14,10 @@ WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nV
 
 double WaveFunctions::calculate(double ** r)
 {
+    /*
+     * Returns the wavefunction at a given coordinate.
+     * r : position
+     */
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::calculate" << endl;
     exit(1);
     return 1.0; // Add stuff here?
@@ -21,6 +25,10 @@ double WaveFunctions::calculate(double ** r)
 
 double WaveFunctions::localEnergy(double ** r)
 {
+    /*
+     * Returns the energy of the wavefunction at a given coordinate.
+     * r : position
+     */
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::localEnergy" << endl;
     exit(1);
     return 1.0; // Add more stuff here as well?
@@ -52,13 +60,13 @@ double WaveFunctions::coulomb(double ** r)
     return coulombInteraction;
 }
 
-void WaveFunctions::steepestDescent(double E, int NCycles)
+void WaveFunctions::steepestDescent(double &E, int NCycles)
 {
     cout << "Steepest descent not implemented for general WaveFunction module." << endl;
     exit(1);
 }
 
-void WaveFunctions::sampleSD(double **r, double E)
+void WaveFunctions::sampleSD(double **r, double &E)
 {
     cout << "Steepest descent not implemented for general WaveFunction module." << endl;
     exit(1);
@@ -67,5 +75,11 @@ void WaveFunctions::sampleSD(double **r, double E)
 void WaveFunctions::printVariationalParameters()
 {
     cout << "Bare wavefunctions class do not contain any variational parameters." << endl;
+    exit(1);
+}
+
+bool WaveFunctions::SDConvergenceCriteria()
+{
+    cout << "Bare wavefunctions class do not Steepest Descent convergence criteria test." << endl;
     exit(1);
 }

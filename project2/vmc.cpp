@@ -1,5 +1,7 @@
 #include <random>
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <ctime>
 #include "vmc.h"
 #include "samplers/metropolissampler.h"
@@ -16,14 +18,25 @@ VMC::VMC(int new_nParticles, int new_nDimensions)
      */
     setNParticles(new_nParticles);
     setNDimensions(new_nDimensions);
+    oldWF = 0;
+    newWF = 0;
+    rOld = new double * [nParticles];
+    rNew = new double * [nParticles];
+
 }
 
 VMC::~VMC()
 {
-
+    for (int i = 0; i < nDimensions; i++)
+    {
+        delete [] rNew[i];
+        delete [] rOld[i];
+    }
+    delete [] rNew;
+    delete [] rOld;
 }
 
-void VMC::updateParticle(double **rOld, double **rNew, double &oldWF, double &newWF, int i)
+void VMC::updateParticle(int i)
 {
     /*
      * Function that performs a Metropolis update on a single particle
@@ -48,27 +61,48 @@ void VMC::updateParticle(double **rOld, double **rNew, double &oldWF, double &ne
     }
 }
 
-void VMC::runMetropolisStep(double **rOld, double **rNew, double &oldWF, double &newWF)
+void VMC::runMetropolisStep()
 {
     /*
      * Metropolis update
      */
     for (int i = 0; i < nParticles; i++)
     {
-        updateParticle(rOld, rNew, oldWF, newWF, i);
-        sampleSystem(rOld);
+        updateParticle(i);
+        sampleSystem();
     }
 }
 
-void VMC::runSDStep(double **rOld, double **rNew, double &oldWF, double &newWF)
+void VMC::runSDStep()
 {
     /*
      * Metropolis update with steepest descent
      */
     for (int i = 0; i < nParticles; i++)
     {
-        updateParticle(rOld, rNew, oldWF, newWF, i);
-        sampleSystemSD(rOld);
+//        updateParticle(i);
+        // TEMP ==========================================================================================
+        SDR->updatePositions(rOld, rNew, i);
+        newWF = WF->calculate(rNew);
+        if (SDR->move(rNew, rOld, i, newWF, oldWF))
+        {
+            for (int j = 0; j < nDimensions; j++)
+            {
+                rOld[i][j] = rNew[i][j];
+                oldWF = newWF;
+            }
+            acceptanceCounter++;
+        }
+        else
+        {
+            for (int j = 0; j < nDimensions; j++)
+            {
+                rNew[i][j] = rOld[i][j];
+            }
+        }
+        // ===============================================================================================
+
+        sampleSystemSD();
     }
 }
 
@@ -80,69 +114,85 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     // Initializing variables and configurations ==================================================
     MCCycles = newMCCycles;
     int SDCounter = 0; // Counter for the Steepest Descent algorithm
-    double oldWaveFunction = 0;
-    double newWaveFunction = 0;
-    double ** rPositionsOld = new double * [nParticles];
-    double ** rPositionsNew = new double * [nParticles];
     // Finding the optimal values for alpha and beta ==============================================
     WF->printVariationalParameters();
-    while (SDCounter < maxSteepestDescentIterations)
+
+    double EOld = 0; // For checking convergence
+
+    while (SDCounter < maxSteepestDescentIterations) // add SD convergence criteria
     {
-        resetVariables(); // Resets E and ESum
-        R->initializePositions(rPositionsOld, rPositionsNew);
-        oldWaveFunction = WF->calculate(rPositionsOld);
+        resetVariables();
+//        R->initializePositions(rOld, rNew);
+        SDR->initializePositions(rOld, rNew); // TEMP!
+        oldWF = WF->calculate(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
-            runSDStep(rPositionsOld,rPositionsNew,oldWaveFunction,newWaveFunction);
+            runSDStep();
         }
+        statistics(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
+
         WF->printVariationalParameters();
+//        cout << "ESum " << std::setw(15) << ESum << "  EOld " << std::setw(15) << EOld << " Diff: " << std::setw(15) << std::fabs(EOld - ESum) << endl;
+
         SDCounter++;
+        if (std::fabs(EOld - ESum) < 1e-14){ break; } // Correct convergence criteria?
+        EOld = ESum;
     }
+
+    if (SDCounter==maxSteepestDescentIterations)
+    {
+        cout << "Warning! No convergence found after " << SDCounter << " iterations" << endl;
+    }
+    else
+    {
+        cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
+    }
+
     // Main part of Metropolis ====================================================================
-    acceptanceCounter = 0;
-    R->initializePositions(rPositionsOld, rPositionsNew);
-    oldWaveFunction = WF->calculate(rPositionsOld);
+    resetVariables();
+    R->initializePositions(rOld, rNew);
+    oldWF = WF->calculate(rOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
-        runMetropolisStep(rPositionsOld,rPositionsNew,oldWaveFunction,newWaveFunction);
+        runMetropolisStep();
     }
-    // De-allocating memory =======================================================================
-    for (int i = 0; i < nDimensions; i++)
-    {
-        delete [] rPositionsNew[i];
-        delete [] rPositionsOld[i];
-    }
-    delete [] rPositionsNew;
-    delete [] rPositionsOld;
+    statistics(MCCycles);
 }
 
-void VMC::sampleSystem(double ** r)
+void VMC::sampleSystem()
 {
     /*
      * Base statistics that should be sampled for each run. CHANGE TO STORE IN ARRAY?
      */
-    E = WF->localEnergy(r);
+    E = WF->localEnergy(rOld);
     ESum += E;
     ESumSquared += E*E;
 }
 
-void VMC::sampleSystemSD(double ** r)
+void VMC::sampleSystemSD()
 {
     /*
      * Steepest descent system sampler
      */
-    sampleSystem(r);
-    WF->sampleSD(r, E);
+    sampleSystem();
+    WF->sampleSD(rOld, E);
 }
 
-void VMC::getStatistics()
+void VMC::statistics(int cycles)
 {
     /*
      * Gets basic statistics of the calculations
      */
-    ESum /= double(nParticles*MCCycles);
-    ESumSquared /= double(nParticles*MCCycles);
+    ESum /= double(nParticles*cycles);
+    ESumSquared /= double(nParticles*cycles);
+}
+
+void VMC::printResults()
+{
+    /*
+     * Printing results of the VMC run.
+     */
     cout << "Energy = " << ESum << endl;
     cout << "Variance = " << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
     cout << "Acceptance rate = " << double(acceptanceCounter) / double(nParticles * MCCycles)<< endl;
@@ -150,12 +200,18 @@ void VMC::getStatistics()
 
 void VMC::resetVariables()
 {
+    /*
+     * Resets variables used between the steepest desent part and the VMC main run.
+     */
     E = 0;
     ESum = 0;
+    acceptanceCounter = 0;
 }
 
-void VMC::diagnostics(double **rOld, double **rNew, double WFOld, double WFNew) { // REMOVE WHEN COMPLETE OR CLEAN UP!!
-    cout << "WFOld = " << WFOld << endl;
+void VMC::diagnostics()
+{
+    // TEMP FUNCITON
+    cout << "WFOld = " << oldWF << endl;
     cout << "Printing rOld:" << endl;
     for (int i = 0; i < nParticles; i++)
     {
@@ -165,7 +221,7 @@ void VMC::diagnostics(double **rOld, double **rNew, double WFOld, double WFNew) 
         }
         cout << endl;
     }
-    cout << "WFNew = " << WFNew << endl;
+    cout << "WFNew = " << newWF << endl;
     cout << "Printing rNew:" << endl;
     for (int i = 0; i < nParticles; i++)
     {

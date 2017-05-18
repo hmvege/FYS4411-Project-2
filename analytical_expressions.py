@@ -57,6 +57,7 @@ x2				= sy.Symbol('x_2')
 y2				= sy.Symbol('y_2')
 r12_abs			= sy.Symbol(r'|\mathbf{r}_1 - \mathbf{r}_2|')
 r12_shorthand 	= sy.Symbol(r'r_{12}')
+r12r12		 	= sy.Symbol(r'r_{12}^2')
 r1_squared 		= sy.Symbol(r'r_1^2')
 r2_squared 		= sy.Symbol(r'r_2^2')
 factor_of_half 	= sy.Symbol(r'\frac{1}{2}')
@@ -64,7 +65,8 @@ factor_of_half 	= sy.Symbol(r'\frac{1}{2}')
 # Substitution lists
 substitutions_list = [	[sy.sqrt((x1-x2)**2 + (y1-y2)**2), r12_shorthand],
 						[x1**2 + y1**2, r1_squared],
-						[x2**2 + y2**2, r2_squared]]
+						[x2**2 + y2**2, r2_squared],
+						[(x1-x2)**2 + (y1-y2)**2, r12r12]]
 
 # Factors-to-be-differentiated list
 diff_list = [x1,y1,x2,y2]
@@ -121,6 +123,12 @@ def full_derivative():
 	ddpsi_subs3		= ddpsi_subs2.subs(x2**2 + y2**2, r2_squared)
 	return dpsi_subs3
 
+def dpsi_beta(der):
+	expr = DerFinder(expression)
+	expr.add_subs(substitutions_list)
+	dPsiBeta = expr([der],simplify=True,print_expr=True)
+
+
 def print_expressions(before,after,x):
 	# Full expression:
 	derivative 		= 'd^2'
@@ -136,8 +144,9 @@ def main():
 	# derivate_1_over_r12()
 	# derivate_exponent(vars_to_derivate)
 	# derivate_beta_frac(vars_to_derivate)
-	derivate_frac(vars_to_derivate)
+	# derivate_frac(vars_to_derivate)
 	# double_derivate_exponent(vars_to_derivate)
+	dpsi_beta(alpha)
 
 if __name__ == '__main__':
 	main()
