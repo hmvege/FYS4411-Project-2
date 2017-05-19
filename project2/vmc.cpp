@@ -43,7 +43,7 @@ void VMC::updateParticle(int i)
      */
     R->updatePositions(rOld, rNew, i);
     newWF = WF->calculate(rNew);
-    if (R->move(rNew, rOld, i, newWF, oldWF))
+    if (R->move(rOld, rNew, i, newWF, oldWF))
     {
         for (int j = 0; j < nDimensions; j++)
         {
@@ -81,11 +81,12 @@ void VMC::runSDStep()
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(i);
-        cout << "Oops: remember to change to SD step instead" << endl; exit(1);
+//        cout << "Oops: remember to change to SD step instead" << endl; exit(1);
+
 //        // TEMP ==========================================================================================
 //        SDR->updatePositions(rOld, rNew, i);
 //        newWF = WF->calculate(rNew);
-//        if (SDR->move(rNew, rOld, i, newWF, oldWF))
+//        if (SDR->move(rOld, rNew, i, newWF, oldWF))
 //        {
 //            for (int j = 0; j < nDimensions; j++)
 //            {

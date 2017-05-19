@@ -18,7 +18,7 @@ int main()
     // Constants
     unsigned int MCCycles   = 1e6;
     unsigned int optCycles  = 1e5;
-    int maxSDIterations     = 0;
+    int maxSDIterations     = 1000;
     int nParticles          = 2;
     int nDimensions         = 2;
 
@@ -27,18 +27,18 @@ int main()
 
     // TASK C-F CONSTANTS
     double omega            = 1.0;
-    double alpha            = 0.988559;
+    double alpha            = 1.0;//0.988559;
     double a                = 1.0;
-    double beta             = 0.398665;
+    double beta             = 0.4;//0.398665;
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.01; // Steepest descent step length
     double seed             = std::time(nullptr);
     bool importanceSampling = true;
-    bool coulombInteraction = false;
+    bool coulombInteraction = true;
 
-    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction);
-//    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction);
+//    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction);
+    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction);
 
     programEnd = clock();
     for (int i = 0; i < 1e2; i++) { cout << "="; } cout << endl; // Printing a line

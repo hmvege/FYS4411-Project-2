@@ -60,6 +60,7 @@ void twoElectronJastrov::quantumForce(double **r, double **F, int k)
      */
     double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
     double r12Overr12r12Beta = a/(r12*(1 + r12*beta)*(1 + r12*beta));
+//    double r12Overr12r12Beta = a/(r12*(beta + r12)*(beta + r12));
     if (k==0)
     {
         F[k][0] = (- omega*alpha*r[k][0] + (r[k][0] - r[k][1])*r12Overr12r12Beta)*2.0; // Hardcoded to 2 electron case
