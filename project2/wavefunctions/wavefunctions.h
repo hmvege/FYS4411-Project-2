@@ -8,6 +8,7 @@ protected:
     int nParticles;
     int nDimensions;
     int nVarParams;
+    bool coulombInteraction = true;
     double coulomb(double **r);
     double SDStepLength = 0.01;
 public:
@@ -26,6 +27,7 @@ public:
     virtual void printVariationalParameters();
     // Setters
     void setSDStepLength(double newSDStepLength) { SDStepLength = newSDStepLength; }
+    void setCoulombInteraction(bool C) { coulombInteraction = C; } // TEMP?
 };
 
 #endif // WAVEFUNCTIONS_H

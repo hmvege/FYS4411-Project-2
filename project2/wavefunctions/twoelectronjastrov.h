@@ -35,6 +35,11 @@ public:
     void set_a(double new_a) { a = new_a; }
     // Printers
     void printVariationalParameters();
+
+
+//    // TEMP
+//    void jastrov(bool t);
+//    void coloumb(bool t);
 };
 
 #endif // TWOELECTRONJASTROV_H

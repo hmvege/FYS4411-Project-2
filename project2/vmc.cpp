@@ -81,7 +81,7 @@ void VMC::runSDStep()
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(i);
-        cout << "Oops: remember to change to SD step instead" << endl;
+        cout << "Oops: remember to change to SD step instead" << endl; exit(1);
 //        // TEMP ==========================================================================================
 //        SDR->updatePositions(rOld, rNew, i);
 //        newWF = WF->calculate(rNew);
@@ -116,7 +116,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     MCCycles = newMCCycles;
     int SDCounter = 0; // Counter for the Steepest Descent algorithm
     // Finding the optimal values for alpha and beta ==============================================
-    WF->printVariationalParameters();
+//    WF->printVariationalParameters();
 
     double EOld = 0; // For checking convergence
 
@@ -197,9 +197,9 @@ void VMC::printResults()
     /*
      * Printing results of the VMC run.
      */
-    cout << "Energy = " << ESum << endl;
-    cout << "Variance = " << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
-    cout << "Acceptance rate = " << double(acceptanceCounter) / double(nParticles * MCCycles)<< endl;
+    cout << "Energy:                    " << ESum << endl;
+    cout << "Variance:                  " << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
+    cout << "Acceptance rate:           " << double(acceptanceCounter) / double(nParticles * MCCycles) * 100 << " %" << endl;
 }
 
 void VMC::resetVariables()

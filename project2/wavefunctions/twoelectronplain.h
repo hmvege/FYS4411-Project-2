@@ -12,6 +12,7 @@ public:
     twoElectronPlain(int new_nParticles, int new_nDimensions, int new_nVarParams, double new_omega, double new_alpha);
     double calculate(double **r);
     double localEnergy(double **r);
+    void quantumForce(double **r, double **F, int k);
 //    void steepestDescent(double E, int NCycles);
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }

@@ -43,7 +43,14 @@ double twoElectronJastrov::localEnergy(double ** r)
     double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)
     double r12Beta = 1 + beta*r12;
     double r12BetaSquared = r12Beta*r12Beta;
-    return - 0.5*( (alpha*alpha - 1)*omega*omega*(rr) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta )) + coulomb(r);
+    if (coulombInteraction)
+    {
+        return - 0.5*( (alpha*alpha - 1)*omega*omega*(rr) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta )) + coulomb(r);
+    }
+    else
+    {
+        return - 0.5*( (alpha*alpha - 1)*omega*omega*(rr) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta ));
+    }
 }
 
 void twoElectronJastrov::quantumForce(double **r, double **F, int k)
