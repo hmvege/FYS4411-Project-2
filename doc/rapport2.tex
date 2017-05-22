@@ -40,17 +40,129 @@
 NAN
 \end{abstract}
 
-% \tableofcontents
+\tableofcontents
 
 \section{Introduction}
-For this project our goal was to 
+The goal of this project is to study closed shell systems of electrons confined in a harmonic oscillator potential - a quantum dot. Within this scope we are investigating the ground state energies, \husk{exception values kinetic and potential energies, single particle densities and one-body densities}. The system we are interested in is a two dimensional system of $N$ electrons, and since we have closed shell systems we will look at $N=2,6$ and $12$ electrons.
+
+
 
 \section{Theory}
+As tradition demands we begin by looking at the Hamiltonian of the system we are to solve,
+\begin{align}
+	\hat{H} = \sum^N_{i=1} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2r^2_i \right) + \sum^N_{i<j} \frac{1}{r_{ij}}
+	\label{eq:hamiltonian}
+\end{align}
+In order to accommodate a modern notational benefits and simplifications, we use natural units($\hbar = c = e = m_e = 1$). We can also observe that $N$ is the number of particles we are using, and the $\omega$ is the oscillator frequency for the harmonic oscillator part. The first part, we recognize as the unperturbed part of the Hamiltonian,
+\begin{align}
+	\hat{H}_0 = \sum^N_{i=1} \left( -\frac{1}{2}\nabla^2_i + \frac{1}{2}\omega^2r^2_i \right),
+	\label{eq:hamiltonian_unperturbed}
+\end{align}
+and the last part is the perturbation to our system,
+\begin{align}
+	\hat{H}_1 = \sum^N_{i<j} \frac{1}{r_{ij}}
+	\label{eq:hamiltonian_perturbed}
+\end{align}
+such that $\hat{H} = \hat{H}_0 + \hat{H}_1$. The distance between two electrons is defined as following,
+\begin{align}
+	r_{ij} = |\mathbf{r}_i - \mathbf{r}_j| = \sqrt{(x_i - x_j)^2 + (y_i - y_j)^2}
+	\label{eq:electron_distance}
+\end{align}
+
+
+
+\subsection{Variational Monte Carlo}
+
+In order to make any progress with variational Monte Carlo, we need to get ourselves a wave function.
+
+
+
+\subsection{Electron wave function}
+Our wave function will consist of two parts: one that comes from the harmonic oscillator potential and is built up based on the fermionic nature of the system, and one that proved a correlation between two particles - the so-called Jastrow factor. The wave function we construct, will be called our \textit{trial wave function}.
+\begin{align}
+	\psi_T(\mathbf{r}) = \psi_C(\mathbf{r})\psi_{OB}(\mathbf{r})
+	\label{eq:WF_trial}
+\end{align}
+
+\subsubsection{Slater determinants}
+The wave function for an electron in a two dimensional harmonic oscillator potential can be written as a Hermite polynomial,
+\begin{align}
+	\phi_{n_x,n_y}(x,y) = AH_{n_x} (\sqrt{\omega\alpha}x) H_{n_y} (\sqrt{\omega\alpha} y) \exp{\left(-\frac{\omega\alpha}{2}\left( x^2 + y^2 \right)\right)}
+\end{align}
+The details surrounding the mysterious variational parameter $\alpha$ will be explained further on. For now, we will place these $\phi$'s into a Slater determinant. The Slater determinant is a creature that describes the wave function of a fermionic system, while also enforcing anti-symmetrization and thus the Pauli principle. Our Slater determinant will take the following form, when we describe the specific state of a system by $n_x, n_y$ and a specific particle $\mathbf{r}_i = x_i\mathbf{i} + y_i\mathbf{j}$,
+\begin{align}
+	Det(\Phi(\mathbf{r})) \equiv \frac{1}{\sqrt{N!}}
+	\begin{vmatrix}
+		\phi_1(\mathbf{r}_1)	& \phi_2(\mathbf{r}_1) 	& \hdots 	& \phi_N(\mathbf{r}_1) 	\\
+		\phi_1(\mathbf{r}_2) 	& \phi_2(\mathbf{r}_2) 	& \hdots 	& \phi_N(\mathbf{r}_2) 	\\
+		\vdots 					& \vdots				& \ddots 	& \vdots 				\\
+		\phi_1(\mathbf{r}_N) 	& \phi_2(\mathbf{r}_N) 	& \hdots 	& \phi_N(\mathbf{r}_N) 	\\
+	\end{vmatrix}
+	\label{eq:slater_determinant}
+\end{align}
+Note that we have defined $\mathbf{r} \equiv (\mathbf{r_1},\mathbf{r_2},\dots,\mathbf{r_N})$. To pull this definition back to our trial wave function \eqref{eq:WF_trial}, we get
+\begin{align}
+	\psi_{OB}(\mathbf{r}) = Det(\Phi(\mathbf{r}))
+	\label{eq:WF_onebody}
+\end{align}
+Where the $OB$ stands for one body, as in one body wave function. We now need to look into the part that accounts for many body effects, the Jastrow factor.
+
+\subsubsection{The Jastrow factor}
+The correlation term is called a \textit{Jastrow factor} is as mentioned here to take into account many-body effects of our system. The general shape of it is
+\begin{align}
+	\psi_C(\mathbf{r}) = \prod_{i<j}^N \exp{\left(\frac{ar_{ij}}{1 + \beta r_{ij}}\right)}
+	\label{eq:WF_jastrow}
+\end{align}
+where the $C$ stands for correlation. The $a$ is a parameter that is $1$ for parallel spin, and $1/3$ for anti-parallel spin. The $\beta$ is another variational parameter and the $r_{ij}$ is defined by the equation \eqref{eq:electron_distance} as the distance between two electrons. For now, we shall begin by looking closer at the two-electron case.
+
+
+
+
+\subsection{Two electron case}
+For the two electron case the Hamiltonian takes on familiar form,
+\begin{align}
+	\hat{H} = -\frac{1}{2}\left(\frac{\partial^2}{\partial x^2_1} + \frac{\partial^2}{\partial y^2_1} + \frac{\partial^2}{\partial x^2_2} + \frac{\partial^2}{\partial y^2_2}\right) + \frac{1}{2}\omega^2(x^2_1 + y^2_1 + x^2_2 + y^2_2) + \frac{1}{r_{12}}
+	\label{eq:hamiltonian_two_electron}
+\end{align}
+
+\subsubsection{Unperturbed local energy}
+
+\subsubsection{Local energy}
+
+\subsubsection{Quantum force}
+
+
+
+\subsection{\texorpdfstring{$N$}{N} electron case}
+
+\subsubsection{Unperturbed local energy}
+
+\subsubsection{Local energy}
+
+\subsubsection{Quantum force}
+
+
+
+
+\subsection{The Metropolis Algorithm}
+
+\subsubsection{Steepest descent}
+
+\subsubsection{Importance sampling}
+
+
 
 \section{Implementation}
 
+
+
 \section{Results}
 
+
+
 \section{Discussion and conclusion}
+
+
+\husk{REFERANSER!!}
 
 \end{document}

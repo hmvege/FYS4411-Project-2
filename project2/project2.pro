@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     samplers/metropolissampler.cpp \
     samplers/importancesampler.cpp \
     samplers/uniformsampling.cpp \
-    wavefunctions/harmonicoscillator.cpp
+    wavefunctions/harmonicoscillator.cpp \
+    wavefunctions/nelectron.cpp
 
 HEADERS += \
     vmc.h \
@@ -21,4 +22,5 @@ HEADERS += \
     samplers/metropolissampler.h \
     samplers/importancesampler.h \
     samplers/uniformsampling.h \
-    wavefunctions/harmonicoscillator.h
+    wavefunctions/harmonicoscillator.h \
+    wavefunctions/nelectron.h

@@ -7,6 +7,7 @@ using std::endl;
 
 WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nVarParams)
 {
+    cout << "TODO: make a general relative distance function" << endl;
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
     nVarParams = new_nVarParams;
