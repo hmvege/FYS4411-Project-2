@@ -44,7 +44,7 @@ void WaveFunctions::quantumForce(double **r, double **F, int k)
 double WaveFunctions::coulomb(double ** r)
 {
     // General method for getting the coulomb interaction value
-    double coulombInteraction = 0.0; // PUT THIS INTO CLASS
+    double coulombInteraction = 0.0; // PUT THIS INTO CLASS AS A UPPER HALF MATRIX?
     double r12abs;
     for (int i = 0; i < nParticles; i++)
     {

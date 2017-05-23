@@ -4,6 +4,7 @@
 #include "vmc.h"
 #include "wavefunctions/twoelectronplain.h"
 #include "wavefunctions/twoelectronjastrov.h"
+#include "wavefunctions/nelectron.h"
 #include "samplers/metropolissampler.h"
 #include "samplers/uniformsampling.h"
 #include "samplers/importancesampler.h"
