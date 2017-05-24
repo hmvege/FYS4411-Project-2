@@ -2,7 +2,7 @@
 
 UniformSampling::UniformSampling(int new_nParticles, int new_nDimensions) : MetropolisSampler(new_nParticles, new_nDimensions)
 {
-
+//    cout << "Remember to comment on uniform sampling" << edl;
 }
 
 double UniformSampling::Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF)

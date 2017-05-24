@@ -13,6 +13,13 @@ WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nV
     nVarParams = new_nVarParams;
 }
 
+void WaveFunctions::initialize(double ** r)
+{
+    /*
+     * By default, does nothing. Only used in the N-electron sampling case.
+     */
+}
+
 double WaveFunctions::calculate(double ** r)
 {
     /*
@@ -43,7 +50,9 @@ void WaveFunctions::quantumForce(double **r, double **F, int k)
 
 double WaveFunctions::coulomb(double ** r)
 {
-    // General method for getting the coulomb interaction value
+    /*
+     * General method for getting the coulomb interaction value
+     */
     double coulombInteraction = 0.0; // PUT THIS INTO CLASS AS A UPPER HALF MATRIX?
     double r12abs;
     for (int i = 0; i < nParticles; i++)
@@ -59,6 +68,14 @@ double WaveFunctions::coulomb(double ** r)
         }
     }
     return coulombInteraction;
+}
+
+double WaveFunctions::r_ij(double *r1, double *r2)
+{
+    /*
+     * Method for finding distance between two electrons
+     */
+    return sqrt((r2[0]-r1[0])*(r2[0]-r1[0]) + (r2[1]-r1[1])*(r2[1]-r1[1]));
 }
 
 void WaveFunctions::steepestDescent(double &E, int NCycles)

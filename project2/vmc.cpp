@@ -22,12 +22,12 @@ VMC::VMC(int new_nParticles, int new_nDimensions)
     newWF = 0;
     rOld = new double * [nParticles];
     rNew = new double * [nParticles];
-
 }
 
 VMC::~VMC()
 {
-    for (int i = 0; i < nDimensions; i++)
+    cout << "WHy not deallocate for n particles??" << endl;
+    for (int i = 0; i < nDimensions; i++) // WHY NOT PARTICLES?
     {
         delete [] rNew[i];
         delete [] rOld[i];
@@ -81,29 +81,6 @@ void VMC::runSDStep()
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(i);
-//        cout << "Oops: remember to change to SD step instead" << endl; exit(1);
-
-//        // TEMP ==========================================================================================
-//        SDR->updatePositions(rOld, rNew, i);
-//        newWF = WF->calculate(rNew);
-//        if (SDR->move(rOld, rNew, i, newWF, oldWF))
-//        {
-//            for (int j = 0; j < nDimensions; j++)
-//            {
-//                rOld[i][j] = rNew[i][j];
-//                oldWF = newWF;
-//            }
-//            acceptanceCounter++;
-//        }
-//        else
-//        {
-//            for (int j = 0; j < nDimensions; j++)
-//            {
-//                rNew[i][j] = rOld[i][j];
-//            }
-//        }
-//        // ===============================================================================================
-
         sampleSystemSD();
     }
 }
@@ -117,15 +94,11 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     MCCycles = newMCCycles;
     int SDCounter = 0; // Counter for the Steepest Descent algorithm
     // Finding the optimal values for alpha and beta ==============================================
-//    WF->printVariationalParameters();
-
     double EOld = 0; // For checking convergence
-
     while (SDCounter < maxSteepestDescentIterations) // add SD convergence criteria
     {
         resetVariables();
         R->initializePositions(rOld, rNew);
-//        SDR->initializePositions(rOld, rNew); // TEMP!
         oldWF = WF->calculate(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
@@ -133,15 +106,11 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         }
         statistics(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-
-        WF->printVariationalParameters();
-//        cout << "ESum " << std::setw(15) << ESum << "  EOld " << std::setw(15) << EOld << " Diff: " << std::setw(15) << std::fabs(EOld - ESum) << endl;
-
+        WF->printVariationalParameters(); // If I need to see progress in finding local minima in alpha and beta
         SDCounter++;
         if (std::fabs(EOld - ESum) < 1e-14){ break; } // Correct convergence criteria?
         EOld = ESum;
     }
-
     if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
     {
         if (SDCounter==maxSteepestDescentIterations)
@@ -153,10 +122,10 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
             cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
         }
     }
-
     // Main part of Metropolis ====================================================================
     resetVariables();
     R->initializePositions(rOld, rNew);
+    WF->initialize(rOld);
     oldWF = WF->calculate(rOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {

@@ -14,10 +14,10 @@ twoElectronPlain::twoElectronPlain(int new_nParticles,
     /*
      * Class for a two-electron system. Energy should be equal to 2, and variance should be 0.
      */
+    setOmega(new_omega);
+    setAlpha(new_alpha);
     nParticles          = new_nParticles;
     nDimensions         = new_nDimensions;
-    omega               = new_omega;
-    alpha               = new_alpha;
     coulombInteraction  = false; // By default, false
 }
 

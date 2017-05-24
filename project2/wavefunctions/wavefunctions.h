@@ -10,6 +10,7 @@ protected:
     int nVarParams;
     bool coulombInteraction = true;
     double coulomb(double **r);
+    double r_ij(double *r1, double *r2);
     double SDStepLength = 0.01;
 public:
     WaveFunctions() { }
@@ -17,6 +18,7 @@ public:
     virtual ~WaveFunctions() {}
 
     // Virtuals used by all other classes
+    virtual void initialize(double **r);
     virtual double calculate(double **r);
     virtual double localEnergy(double **r);
     virtual void quantumForce(double **r, double **F, int k);

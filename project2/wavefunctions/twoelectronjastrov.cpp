@@ -17,10 +17,10 @@ twoElectronJastrov::twoElectronJastrov(int new_nParticles,
     /*
      * Class for a two-electron system. Energy should be equal to 2, and variance should be 0.
      */
-    omega       = new_omega;
-    a           = new_a;
-    alpha       = new_alpha;
-    beta        = new_beta;
+    setOmega(new_omega);
+    set_a(new_a);
+    setAlpha(new_alpha);
+    setBeta(new_beta);
 }
 
 double twoElectronJastrov::calculate(double ** r)
