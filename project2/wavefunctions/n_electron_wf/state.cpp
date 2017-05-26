@@ -86,3 +86,16 @@ double State::wfLaplacian(double *r_i, double alpha, double omega)
 //    wfLap = (- 2*omegaAlpha + omegaAlpha*omegaAlpha*(r_i[0]*r_i[0] + r_i[1]*r_i[1]))*expFactor; // FOR ONLY 2 ELECTRONS -- now working!!
     return wfLap;
 }
+
+double State::wfAlpha(double *r_i, double alpha, double omega)
+{
+    double wfA = 0;
+    double sqrtOmegaAlpha = sqrt(alpha*omega);
+    double HermX = hermite->get(n_x, sqrtOmegaAlpha*r_i[0]);
+    double HermY = hermite->get(n_y, sqrtOmegaAlpha*r_i[1]);
+    double expFactor = exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
+    wfA = ( sqrt(omega/alpha) * (  r_i[0]*HermY*hermite->derivative(n_x, sqrtOmegaAlpha*r_i[0])
+                                       + r_i[1]*HermX*hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]))
+                  - omega*(r_i[0]*r_i[0] + r_i[1]*r_i[1])*HermX*HermY)*0.5*expFactor;
+    return wfA;
+}

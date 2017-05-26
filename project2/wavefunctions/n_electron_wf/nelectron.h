@@ -50,6 +50,8 @@ private:
     // For steepest descent
     void SDStatistics(int NCycles);
     void printVariationalParameters();
+    double alphaDerivative(double **r);
+    double betaDerivative(double **r);
     double dPsiAlpha = 0;
     double dPsiBeta = 0;
     double dPsiBetaSum = 0;
