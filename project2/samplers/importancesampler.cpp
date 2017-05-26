@@ -66,6 +66,7 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
             rNew[i][j] = rOld[i][j];
         }
     }
+    WF->initialize(rOld);
     for (int i = 0; i < nParticles; i++)
     {
         WF->quantumForce(rOld,FOld,i);

@@ -22,7 +22,7 @@ private:
     double psiSlater(double **r);
     void gradientJastrow(double *grad, double **r, int k);
     void gradientSlater(double *grad, double **r, int k);
-    double laplacianJastrow(double **r, int k);
+    double laplacianJastrow(double **r, int k, double *gradJastrow);
     double laplacianSlater(double **r, int k);
     double laplacian(double **r, int k);
     double a(int i, int j); // Returns value of a
@@ -48,6 +48,8 @@ private:
     // Array for storing quantum states and their wave functions
     State ** states;
     // For steepest descent
+    void SDStatistics(int NCycles);
+    void printVariationalParameters();
     double dPsiAlpha = 0;
     double dPsiBeta = 0;
     double dPsiBetaSum = 0;
@@ -65,7 +67,7 @@ public:
     double calculate(double **r);
     double localEnergy(double **r);
     void quantumForce(double **r, double **F, int k);
-    void steepestDescent(double &E, int NCycles);
+    void steepestDescent(double &ESum, int NCycles);
     void sampleSD(double **r, double &E);
     bool SDConvergenceCriteria();
     void revert(double **r);

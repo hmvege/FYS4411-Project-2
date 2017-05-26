@@ -50,7 +50,6 @@ void MetropolisSampler::initializePositions(double **rOld, double **rNew)
     exit(1);
 }
 
-
 // TMEP
 void MetropolisSampler::printQMForces()
 {

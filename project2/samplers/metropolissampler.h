@@ -2,6 +2,7 @@
 #define MetropolisSampler_H
 
 #include <random>
+#include "wavefunctions/wavefunctions.h"
 
 class MetropolisSampler
 {
@@ -11,6 +12,7 @@ protected:
     double seed;
     std::mt19937_64 generator;
     std::uniform_real_distribution<double> acceptance_dist; // For choosing to accept a new Metropolis move or not
+//    WaveFunctions *WF = nullptr; // Will this create a double instance of the wavefunction, as we have one stored in the vmc?
 public:
     MetropolisSampler(int new_nParticles, int new_nDimensions);
     virtual ~MetropolisSampler();

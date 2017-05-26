@@ -293,19 +293,12 @@ void printMatrix(double **A, int dim)
     }
 }
 
-void initializeMatrix(double **A, int dim, double defaultValue)
+int spinUpIndex(int i)
 {
-    /*
-     * For initializing matrices. Default initialization to zero.
-     */
-    cout << defaultValue << endl;
-    A = new double*[dim];
-    for (int i = 0; i < dim; i++)
-    {
-        A[i] = new double[dim];
-        for (int j = 0; j < dim; j++)
-        {
-            A[i][j] = defaultValue;
-        }
-    }
+    return 1;
+}
+
+int spinDownIndex(int i)
+{
+    return 1;
 }

@@ -41,8 +41,8 @@ double State::wf(double *r_i, double alpha, double omega)
      * omega    : oscillator frequency
      */
     double sqrtOmegaAlpha = sqrt(omega*alpha);
-//    return hermite->get(n_x, sqrtOmegaAlpha*r_i[0])*hermite->get(n_y, sqrtOmegaAlpha*r_i[1])*exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
-    return exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1])); // plain and simple omega
+    return hermite->get(n_x, sqrtOmegaAlpha*r_i[0])*hermite->get(n_y, sqrtOmegaAlpha*r_i[1])*exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
+//    return exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1])); // plain and simple omega
 }
 
 void *State::wfGradient(double * wfGrad, double *r_i, double alpha, double omega)

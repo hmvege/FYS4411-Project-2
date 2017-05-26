@@ -35,7 +35,7 @@ int main()
     // Constants
     unsigned int MCCycles   = 1e5;
     unsigned int optCycles  = 1e5;
-    int maxSDIterations     = 0;
+    int maxSDIterations     = 10;
     int nParticles          = 2;
     int nDimensions         = 2;
 
@@ -51,9 +51,9 @@ int main()
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.01; // Steepest descent step length
     double seed             = -1;//std::time(nullptr);
-    bool importanceSampling = false;
-    bool coulombInteraction = false;
-    bool jastrowFactor      = false;
+    bool importanceSampling = true;
+    bool coulombInteraction = true;
+    bool jastrowFactor      = true;
 
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction);
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction);
@@ -84,7 +84,6 @@ void printRunInfo(int MCCycles, int maxSDIterations, int nParticles, int importa
     cout << "RESULTS:" << endl;
 }
 
-
 void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double stepLength, double seed, bool impSampling, bool coulomb)
 {
     /*
@@ -97,7 +96,6 @@ void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double
 
     if (impSampling)
     {
-//        cout << "============= Running for 2 electron case with no Jastrov factor and importance sampling ===========" << endl;
         ImportanceSampler importanceSampling(nParticles, nDimensions);
         importanceSampling.initializeSampling(0.001, seed, 0.5);
         importanceSampling.setWaveFunction(&WF_2Electron);
@@ -105,7 +103,6 @@ void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double
     }
     else
     {
-//        cout << "============== Running for 2 electron case with no Jastrov factor and uniform sampling =============" << endl;
         UniformSampling uniformSampling(nParticles, nDimensions);
         uniformSampling.initialize(stepLength, seed);
         VMC_2Electron.setMetropolisSampler(&uniformSampling);
@@ -136,7 +133,6 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
     // ===========================================================================================
 
     if (impSampling) {
-//        cout << "============== Running for 2 electron case with Jastrov factor and importancesampling ==============" << endl;
         ImportanceSampler importanceSampling(nParticles, nDimensions);
         importanceSampling.initializeSampling(deltat, seed, D);
         importanceSampling.setWaveFunction(&WF_2Jastrov);
@@ -144,7 +140,6 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
     }
     else
     {
-//        cout << "=============== Running for 2 electron case with Jastrov factor and uniform sampling ===============" << endl;
         UniformSampling uniformSampling(nParticles, nDimensions);
         uniformSampling.initialize(1.14, seed); // CHECK STEP!
         VMC_2Electron.setMetropolisSampler(&uniformSampling);

@@ -26,8 +26,7 @@ VMC::VMC(int new_nParticles, int new_nDimensions)
 
 VMC::~VMC()
 {
-    cout << "WHy not deallocate for n particles??" << endl;
-    for (int i = 0; i < nDimensions; i++) // WHY NOT PARTICLES?
+    for (int i = 0; i < nParticles; i++)
     {
         delete [] rNew[i];
         delete [] rOld[i];
@@ -100,6 +99,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     {
         resetVariables();
         R->initializePositions(rOld, rNew);
+        WF->initialize(rOld);
         oldWF = WF->calculate(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
@@ -107,9 +107,9 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         }
         statistics(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-        WF->printVariationalParameters(); // If I need to see progress in finding local minima in alpha and beta
+        WF->printVariationalParameters();
         SDCounter++;
-        if (std::fabs(EOld - ESum) < 1e-14){ break; } // Correct convergence criteria?
+        if (std::fabs(EOld - ESum) < 1e-14){ break; } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
         EOld = ESum;
     }
     if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
@@ -131,7 +131,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
         runMetropolisStep();
-//        if (cycle == 1e2)
+//        if (cycle == 50)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n"); exit(1);
 //        }

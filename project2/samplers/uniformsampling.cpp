@@ -52,5 +52,6 @@ void UniformSampling::initializePositions(double **rOld, double **rNew)
             rNew[i][j] = rOld[i][j];
         }
     }
+//    WF->initialize(rOld);
 //    return uniform_distribution(generator);
 }

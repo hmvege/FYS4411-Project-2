@@ -15,7 +15,7 @@ protected:
 public:
     WaveFunctions() { }
     WaveFunctions(int new_nParticles, int new_nDimensions, int new_nVarParams);
-    virtual ~WaveFunctions() {}
+    virtual ~WaveFunctions() { }
 
     // Virtuals used by all other classes
     virtual void initialize(double **r);
