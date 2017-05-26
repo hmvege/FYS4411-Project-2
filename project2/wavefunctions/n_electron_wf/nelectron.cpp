@@ -5,7 +5,7 @@
 #include "state.h"
 #include "functions.h"
 
-#include <armadillo>
+//#include <armadillo>
 
 // TEMP
 #include <iomanip>
@@ -204,12 +204,10 @@ void NElectron::steepestDescent(double &ESum, int NCycles)
      *  NCyclces    : Number of MC cycles used
      */
     SDStatistics(NCycles);
-    double dAlpha= 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
-    alpha -= SDStepLength*dAlpha; // Updating alpha and beta
+    alpha -= SDStepLength * 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);; // Updating alpha and beta
     if (runJastrow)
     {
-        double dBeta = 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
-        beta -= SDStepLength*dBeta;
+        beta -= SDStepLength * 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
     }
 }
 

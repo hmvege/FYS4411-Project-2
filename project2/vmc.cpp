@@ -99,7 +99,6 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     {
         resetVariables();
         R->initializePositions(rOld, rNew);
-        WF->initialize(rOld);
         oldWF = WF->calculate(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
@@ -126,7 +125,6 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     // Main part of Metropolis ====================================================================
     resetVariables();
     R->initializePositions(rOld, rNew);
-    WF->initialize(rOld);
     oldWF = WF->calculate(rOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {

@@ -56,8 +56,8 @@ int main()
     bool jastrowFactor      = true;
 
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction);
-//    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction);
-    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor);
+    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction);
+//    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor);
 
     programEnd = clock();
     for (int i = 0; i < 1e2; i++) { cout << "="; } cout << endl; // Printing a line
@@ -158,14 +158,11 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
     NElectron WF_NElectron(nParticles, nDimensions, 2, omega, alpha, beta);
     WF_NElectron.setSDStepLength(SDStepLength);
     VMC VMC_NElectron(nParticles, nDimensions);
-
     WF_NElectron.setCoulombInteraction(coulomb);
-
-    if (!jastrow) WF_NElectron.setJastrow(jastrow); // Turns of Jastrow if false
-
+    WF_NElectron.setJastrow(jastrow);
     if (impSampling) {
         ImportanceSampler importanceSampling(nParticles, nDimensions);
-        importanceSampling.initializeSampling(deltat, seed, D);
+        importanceSampling.initializeSampling(deltat, seed, D);        
         importanceSampling.setWaveFunction(&WF_NElectron);
         VMC_NElectron.setMetropolisSampler(&importanceSampling);
     }
@@ -176,6 +173,6 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
         VMC_NElectron.setMetropolisSampler(&uniformSampling);
     }
     VMC_NElectron.setWaveFunction(&WF_NElectron);
-    VMC_NElectron.runVMC(MCCycles, optCycles, maxNSD);
+    VMC_NElectron.runVMC(MCCycles,optCycles,maxNSD);
     VMC_NElectron.printResults();
 }

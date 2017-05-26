@@ -86,7 +86,7 @@ void twoElectronJastrov::steepestDescent(double &ESum, int NCycles)
     double alphaDerivative = 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
     double betaDerivative = 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
     alpha -= SDStepLength*alphaDerivative; // Updating alpha and beta
-    beta -= SDStepLength*betaDerivative;
+    beta  -= SDStepLength*betaDerivative;
 }
 
 void twoElectronJastrov::sampleSD(double **r, double &E)
