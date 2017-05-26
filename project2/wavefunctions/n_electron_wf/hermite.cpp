@@ -44,14 +44,13 @@ double Hermite::get(int n, double x)
     /*
      * Returns Hermite polynomial of degree n.
      */
-    if (n < 11)
+    if (n < 11 && n >= 0) // Ensuring we do have an hermite polynomlal of degree 0<=n<=10.
     {
         return polynomials[n](x);
     }
     else
     {
-        cout << "No hermitian polynomial for n=" << n << endl;
-        return 0;
+        return 0.0;
     }
 }
 
@@ -61,14 +60,14 @@ double Hermite::derivative(int n, double x)
      * Returns the derivative of the Hermite polynomial, as given by the recursion relation:
      *  d/dx H_n(x) = 2*n*H_(n-1)(x)
      */
-    if (n<1)
-    {
-        return 0.0;
-    }
-    else
-    {
-        return 2*n*get(n-1, x);
-    }
+    return 2*n*get(n-1, x);
+//    if (n<1)
+//    {
+//        return 0.0;
+//    }
+//    else
+//    {
+//    }
 }
 
 double Hermite::doubleDerivative(int n, double x)
@@ -77,5 +76,5 @@ double Hermite::doubleDerivative(int n, double x)
      * Returns the second derivative of the Hermite polynomial, as given by the recursion relation:
      *  d^2/dx^2 H_n(x) = 4*n^2*H_(n-2)(x)
      */
-    return 2*n*derivative(n,x);
+    return 2*n*derivative(n-1,x);
 }

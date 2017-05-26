@@ -54,6 +54,7 @@ void VMC::updateParticle(int i)
     }
     else
     {
+        WF->revert(rOld);
         for (int j = 0; j < nDimensions; j++)
         {
             rNew[i][j] = rOld[i][j];
@@ -130,6 +131,10 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
         runMetropolisStep();
+//        if (cycle == 1e2)
+//        {
+//            printf("Planned number of cycles reached in vmc.cpp... exiting\n"); exit(1);
+//        }
     }
     statistics(MCCycles);
 }

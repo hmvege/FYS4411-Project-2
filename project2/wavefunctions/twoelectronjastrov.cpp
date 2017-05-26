@@ -31,7 +31,8 @@ double twoElectronJastrov::calculate(double ** r)
     double r1 = r[0][0]*r[0][0] + r[0][1]*r[0][1]; // x1^2 + y1^2
     double r2 = r[1][0]*r[1][0] + r[1][1]*r[1][1]; // x2^2 + y2^2
     double r12 = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((r1x-r2x)^2 + (r1y-r2y)^2)
-    return exp( - 0.5*omega*alpha*(r1+r2) + a*r12/(1.0 + beta*r12) );
+//    return exp( - 0.5*omega*alpha*(r1+r2) + a*r12/(1.0 + beta*r12) );
+    return exp( - 0.5*omega*alpha*(r1+r2) + a/(1.0/r12 + beta) );
 }
 
 double twoElectronJastrov::localEnergy(double ** r)
@@ -76,7 +77,10 @@ void twoElectronJastrov::quantumForce(double **r, double **F, int k)
 void twoElectronJastrov::steepestDescent(double &ESum, int NCycles)
 {
     /*
-     * Should update the variational parameters of the wavefunctio.
+     * Using steepest descent to update the variational parameters of the wavefunction.
+     * Arguments:
+     *  ESum        : Local energy sum from running N MC cycles
+     *  NCyclces    : Number of MC cycles used
      */
     SDStatistics(NCycles);
     double alphaDerivative = 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
@@ -88,7 +92,10 @@ void twoElectronJastrov::steepestDescent(double &ESum, int NCycles)
 void twoElectronJastrov::sampleSD(double **r, double &E)
 {
     /*
-     * Sampling used by the steepest descent algorithm
+     * Sampling used by the steepest descent algorithm.
+     * Arguments:
+     *  r   : particle positions
+     *  E   : local energy of current positions
      */
     double rr       = r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]; // x1^2 + y1^2 + x2^2 + y2^2
     double r12      = sqrt((r[0][0]-r[1][0])*(r[0][0]-r[1][0]) + (r[0][1]-r[1][1])*(r[0][1]-r[1][1])); // sqrt((x1-x2)^2 + (y1-y2)^2)

@@ -30,7 +30,6 @@ private:
     void sampleSystemSD();
     void statistics(int cycles);
 
-
     WaveFunctions *WF = nullptr;
     MetropolisSampler *R = nullptr;
 public:

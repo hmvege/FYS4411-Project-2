@@ -12,6 +12,7 @@ private:
     int spin;
 public:
     State();
+    ~State();
     double wf(double *r_i, double alpha, double omega);
     void *wfGradient(double *wfGrad, double *r_i, double alpha, double omega);
     double wfLaplacian(double *r_i, double alpha, double omega);

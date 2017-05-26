@@ -7,11 +7,11 @@
 
 #include <armadillo>
 
+// TEMP
+#include <iomanip>
+
 using std::cout;
 using std::endl;
-
-// PUT INTO FUNCTION-CONTAINER?
-//int factorial(int n) { return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n; }
 
 NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams, double new_omega, double new_alpha, double new_beta) : WaveFunctions(new_nParticles, new_nDimensions, new_nVarParams)
 {
@@ -23,9 +23,12 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams
      * [x] implement a usable settup/mapping for the different electron states.
      * [x] implement wavefunctions
      * [x] initialize the set up of the slater determinants
-     * [ ] implement matrix inverse
+     * [x] implement matrix inverse
      * [ ] implement inverse update
-     * [ ] implement wf functions
+     * [x] implement wf functions
+     * [ ] implement quantum force
+     * [ ] implement steepest descent
+     * [ ] get correct results for 2 electrons->identify and remove bugs!
      * -------------------------------------------------------------------------
      */
     setOmega(new_omega);
@@ -43,7 +46,11 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams
     }
     // Initializing states mappin
     int j_states;
-    states = new State[nParticles];
+    states = new State*[nParticles];
+    for (int i = 0; i < nParticles; i++)
+    {
+        states[i] = new State;
+    }
     j_states = 0; // for quantum states
     for (int shellInt = 0; shellInt < maxShell; shellInt++) // Ensuring we are adding the right shell
     {
@@ -57,13 +64,13 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams
                     {
                         if (spin==-1)
                         {
-                            states[j_states].set(n_x,n_y,spin);
-                            states[j_states].setHermite(&hermite);
+                            states[j_states]->set(n_x,n_y,spin);
+                            states[j_states]->setHermite(&hermite);
                         }
                         else
                         {
-                            states[j_states].set(n_x,n_y,spin);
-                            states[j_states].setHermite(&hermite);
+                            states[j_states]->set(n_x,n_y,spin);
+                            states[j_states]->setHermite(&hermite);
                         }
                         j_states++;
                     }
@@ -71,12 +78,11 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams
             }
         }
     }
-
 //    // Testing
 //    for (int i = 0; i < nParticles; i++)
 //    {
 //        cout << "i=" << i << ", State: ";
-//        states[i].print();
+//        states[i]->print();
 //    }
 }
 
@@ -102,7 +108,19 @@ double NElectron::calculate(double **r)
      * Arguments:
      *  r   : particle positions
      */
-    return psiJastrow(r)*psiSlater(r);
+    updateSlater(r); // UPDATE SLATER HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // TEMPORARY
+    double slaterWF = psiSlater(r);
+    if (runJastrow)
+    {
+        double jastrowWF = psiJastrow(r);
+        return jastrowWF*slaterWF;
+    }
+    else
+    {
+        return slaterWF;
+    }
+//    return psiJastrow(r)*psiSlater(r);
 }
 
 
@@ -113,10 +131,11 @@ double NElectron::localEnergy(double **r)
      * Arguments:
      *  r   : particle positions
      */
+    updateSlater(r);
     double energy = 0;
     for (int i = 0; i < nParticles; i++)
     {
-        energy += -0.5*laplacian(r,i) + 0.5*omega*omega*(r[i][0] + r[i][1])*(r[i][0] + r[i][1]);
+        energy += -0.5*laplacian(r,i) + 0.5*omega*omega*(r[i][0]*r[i][0] + r[i][1]*r[i][1]);
     }
     if (coulombInteraction)
     {
@@ -135,18 +154,26 @@ void NElectron::quantumForce(double **r, double **F, int k)
      * Arguments:
      *  r   : particle positions
      */
-    //Update slater determinants here?
-
 }
 
 void NElectron::steepestDescent(double &E, int NCycles)
 {
-
+    /*
+     * Using steepest descent to update the variational parameters of the wavefunction.
+     * Arguments:
+     *  ESum        : Local energy sum from running N MC cycles
+     *  NCyclces    : Number of MC cycles used
+     */
 }
 
 void NElectron::sampleSD(double **r, double &E)
 {
-
+    /*
+     * Sampling used by the steepest descent algorithm.
+     * Arguments:
+     *  r   : particle positions
+     *  E   : local energy of current positions
+     */
 }
 
 bool NElectron::SDConvergenceCriteria()
@@ -159,18 +186,42 @@ void NElectron::initializeSlater(double **r)
     /*
      * Sets the a spin up and spin down Slater matrix
      */
+//    DSpinDown = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
+//    DSpinUp = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
+//    DSpinDownInverse = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
+//    DSpinUpInverse = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
+
+    DSpinDown           = new double*[nParticles/2];
+    DSpinUp             = new double*[nParticles/2];
+    DSpinDownInverse    = new double*[nParticles/2];
+    DSpinUpInverse      = new double*[nParticles/2];
     for (int i = 0; i < nParticles/2; i++) // Particles
     {
+        DSpinDown[i]        = new double[nParticles/2];
+        DSpinUp[i]          = new double[nParticles/2];
+        DSpinDownInverse[i] = new double[nParticles/2];
+        DSpinUpInverse[i]   = new double[nParticles/2];
         for (int j = 0; j < nParticles/2; j++) // States
         {
-            DSpinDown[i][j] = states[j].wf(r[i], alpha, omega);
-            DSpinUp[i][j] = states[j*2].wf(r[i*2], alpha, omega);
+//            printf("Spin down: (%5d,%5d) Spin up: (%5d%5d)\n", 2*j, 2*i, 2*j+1, 2*i+1);
+
+            DSpinDown[i][j] = states[2*j]->wf(r[2*i], alpha, omega); // THIS CANT BE RIGHT COUNTING????????????????????????????????????????????
+            DSpinUp[i][j] = states[2*j+1]->wf(r[2*i+1], alpha, omega);
+            DSpinDownInverse[i][j] = DSpinDown[i][j];
+            DSpinUpInverse[i][j] = DSpinUp[i][j];
+//            DSpinDown(i,j) = states[2*j]->wf(r[2*i], alpha, omega); // THIS CANT BE RIGHT COUNTING????????????????????????????????????????????
+//            DSpinUp(i,j) = states[2*j+1]->wf(r[2*i+1], alpha, omega);
+//            DSpinDownInverse(i,j) = DSpinDown(i,j);
+//            DSpinUpInverse(i,j) = DSpinUp(i,j);
         }
     }
-
+//    DSpinDownInverse.i();
+//    DSpinUpInverse.i();
+    inverse(DSpinDownInverse, nParticles/2);
+    inverse(DSpinUpInverse, nParticles/2);
 }
 
-void NElectron::updateSlater(double **r, int k)
+void NElectron::updateSlater(double **r)
 {
     /*
      * Updates the inverse of the slater determinant as well as the slater determinant itself.
@@ -178,44 +229,156 @@ void NElectron::updateSlater(double **r, int k)
      *  r   : particle positions
      *  k   : particle being moved
      */
+    // Updating Slater matrix
+    for (int i = 0; i < nParticles/2; i++) // Particles
+    {
+        for (int j = 0; j < nParticles/2; j++) // States
+        {
+            DSpinDown[i][j] = states[2*j]->wf(r[2*i], alpha, omega); // THIS CANT BE RIGHT COUNTING????????????????????????????????????????????
+            DSpinUp[i][j] = states[2*j+1]->wf(r[2*i+1], alpha, omega);
+            DSpinDownInverse[i][j] = DSpinDown[i][j];
+            DSpinUpInverse[i][j] = DSpinUp[i][j];
+//            DSpinDown(i,j) = states[2*j]->wf(r[2*i], alpha, omega); // THIS CANT BE RIGHT COUNTING????????????????????????????????????????????
+//            DSpinUp(i,j) = states[2*j+1]->wf(r[2*i+1], alpha, omega);
+//            DSpinDownInverse(i,j) = DSpinDown(i,j);
+//            DSpinUpInverse(i,j) = DSpinUp(i,j);
+        }
+    }
+//    DSpinDownInverse.i();
+//    DSpinUpInverse.i();
+    inverse(DSpinDownInverse, nParticles/2);
+    inverse(DSpinUpInverse, nParticles/2);
+//    printf("D = %10f D_inverse = %10f D*D_inverse = %10f \n", DSpinDown[0][0], DSpinDownInverse[0][0], DSpinDown[0][0]*DSpinDownInverse[0][0]);
+//    if (k%2==0) // Spin down
+//    {
+//        for (int i = 0; i < nParticles/2; i++) // States
+//        {
+//            DSpinDown[k][i] = states[2*k].wf(r[2*i], alpha, omega);
+//        }
+//    }
+//    else // Spin up
+//    {
+//        for (int i = 0; i < nParticles/2; i++) // States
+//        {
+//            DSpinUp[k][i] = states[2*k+1].wf(r[2*i+1], alpha, omega);
+//        }
+//    }
+    // Updating the inverse of the Slater matrix
+//    double R = 0; // Slater determinant ratio
+//    for (int i = 0; i < nParticles/2; i++)
+//    for (int i = 0; i < nParticles/2; i++)
+//    {
+//        for (int j = 0; j < nParticles/2; j++)
+//        {
+//            if (j!=i)
+//            {
+//                DSpinDownInverse[i][j] -= d[i][k]/R
+//            }
+//            else
+//            {
+//                DSpinDownInverse[i][j] = d[i][k]/R *
+//            }
+//        }
+//    }
 }
 
-//double NElectron::determinant(double **A, int dim)
-//{
-//    /*
-//     * Function for calculating the determinant.
-//     * Taken from lecture.
-//     * Arguments:
-//     *  A   : square matrix
-//     *  dim : dimensionality of the matrix
-//     */
-//    if (dim == 2)
-//    {
-//        return A[0][0]*A[1][1] - A[0][1]*A[1][0];
-//    }
+double NElectron::updateInverseSlater(double **r, int k)
+{
 //    double sum = 0;
-//    for (int i = 0; i < dim; i++)
+//    for (int l = 0; l < nParticles; l++)
 //    {
-//        double ** sub = new double*[dim-1];
-//        for (int j = 0; j < i; j++)
+
+//    }
+    return 0.0;
+}
+
+double NElectron::psiSlater(double **r)
+{
+    /*
+     * Returns the Slater determninant for the electrons.
+     * Arguments:
+     *  r   : position
+     */
+//    printf("D_up = ");
+//    printMatrix(DSpinUp,nParticles/2);
+//    printf("D_down = ");
+//    printMatrix(DSpinDown,nParticles/2);
+//    return determinant(DSpinUp, nParticles/2)*determinant(DSpinDown, nParticles/2)/double(factorial(nParticles/2)); // SHOULD IT BE HALF HERE OR sqrt(N!)?
+    return determinant(DSpinUp, nParticles/2)*determinant(DSpinDown, nParticles/2); // Since we divide wavefunctions on each other, we do not need factorial
+//    return det(DSpinUp, nParticles/2)*det(DSpinDown, nParticles/2); // Since we divide wavefunctions on each other, we do not need factorial
+}
+
+void NElectron::gradientSlater(double * grad, double **r, int k)
+{
+    /*
+     * Finds the gradient of the Slater determinant.
+     * Arguments:
+     *  grad    : reference to gradient array of length 2
+     *  r       : positions of the particles
+     *  k       : particle we are getting the gradient for
+     */
+    double *wfGradUp = new double[2];
+    double *wfGradDown = new double[2];
+    wfGradUp[0] = 0;
+    wfGradUp[1] = 0;
+    wfGradDown[0] = 0;
+    wfGradDown[1] = 0;
+    cout << "INDEX ERROR IN GRADIENT SLATER" <<endl;
+    cout << "2*k=" << 2*k << " 2*k+1=" << 2*k+1 << endl; exit(1);
+    for (int i = 0; i < nParticles/2; i++)
+    {
+        states[2*i]->wfGradient(wfGradUp,r[2*k],alpha,omega);
+        states[2*i+1]->wfGradient(wfGradDown,r[2*k+1],alpha,omega); // CORRECT INDICES?
+
+        grad[0] += wfGradUp[0]*DSpinUpInverse[i][k] + wfGradDown[0]*DSpinDownInverse[i][k];
+        grad[1] += wfGradUp[1]*DSpinUpInverse[i][k] + wfGradDown[1]*DSpinDownInverse[i][k];
+//        grad[0] += wfGradUp[0]*DSpinUpInverse(i,k) + wfGradDown[0]*DSpinDownInverse(i,k);
+//        grad[1] += wfGradUp[1]*DSpinUpInverse(i,k) + wfGradDown[1]*DSpinDownInverse(i,k);
+    }
+    delete [] wfGradUp;
+    delete [] wfGradDown;
+}
+
+double NElectron::laplacianSlater(double **r, int k)
+{
+    double lap = 0;
+    for (int i = 0; i < nParticles/2; i++) // Spin down
+    {
+//        if (states[k]->getSpin() == -1)
+        if (k%2==0)
+        {
+//            if(states[k]->getSpin() != -1) exit(1);
+//            cout << "Spin = -1" << "   " << states[k]->getSpin() << endl;
+//            lap += states[2*i]->wfLaplacian(r[k], alpha, omega) * DSpinDownInverse(i,k/2);
+            lap += states[2*i]->wfLaplacian(r[k], alpha, omega) * DSpinDownInverse[i][k/2];
+        }
+        else
+        {
+//            cout << "Spin = 1" << "   " << states[k]->getSpin() << endl;;
+//            lap += states[2*i+1]->wfLaplacian(r[k], alpha, omega) * DSpinUpInverse(i,(k-1)/2);
+            lap += states[2*i+1]->wfLaplacian(r[k], alpha, omega) * DSpinUpInverse[i][(k-1)/2];
+        }
+    }
+
+//    for (int i = 0; i < nParticles; i++)
+//    {
+////        if (k%2==0) // Spin down
+//        if (states[k]->getSpin() == -1) // Spin down
 //        {
-//            sub[j] = &A[j][1];
-//        }
-//        for (int j = i + 1; j < dim; j++)
-//        {
-//            sub[j-1] = &A[j][1];
-//        }
-//        if (i % 2 == 0)
-//        {
-//            sum += A[i][0] * determinant(sub, dim-1);
+//            cout << "Spin = " << -1 << " ";
+//            states[i]->print();
+//            lap += states[i]->wfLaplacian(r[k], alpha, omega) * DSpinDownInverse[i/2][k/2];
+////            lap += states[i]->wfLaplacian(r[k], alpha, omega) * DSpinDownInverse(i/2,k/2);
 //        }
 //        else
 //        {
-//            sum -= A[i][0] * determinant(sub, dim-1);
+//            lap += states[i]->wfLaplacian(r[k], alpha, omega) * DSpinUpInverse[(i-1)/2][(k-1)/2];
+////            lap += states[i]->wfLaplacian(r[k], alpha, omega) * DSpinUpInverse((i-1)/2,(k-1)/2);
 //        }
 //    }
-//    return sum;
-//}
+
+    return lap;
+}
 
 double NElectron::psiJastrow(double **r)
 {
@@ -229,23 +392,10 @@ double NElectron::psiJastrow(double **r)
     {
         for (int j = 0; j < i; j++)
         {
-            if (states[i].getSpin() + states[j].getSpin() == 0) // a = 1.0
-            {
-                psiSum -= 1.0 / (1.0/r_ij(r[i],r[j]) + beta);
-            }
+            psiSum += a(i,j) / (1.0/r_ij(r[i],r[j]) + beta); // a returns either a=1 or a=1/3
         }
     }
     return exp(psiSum);
-}
-
-double NElectron::psiSlater(double **r)
-{
-    /*
-     * Returns the Slater determninant for the electrons.
-     * Arguments:
-     *  r   : position
-     */
-    return determinant(DSpinUp, nParticles)*determinant(DSpinDown, nParticles)/factorial(nParticles/2); // SHOULD IT BE HALF HERE OR sqrt(N!)?
 }
 
 void NElectron::gradientJastrow(double * grad, double **r, int k)
@@ -259,46 +409,50 @@ void NElectron::gradientJastrow(double * grad, double **r, int k)
      */
     grad[0] = 0;
     grad[1] = 0;
-    double a = 0;
     double commonFactor = 0;
     double r_dist = 0;
-    for (int i = 0; i < k; i++) // STOP AT k-1 OR k?
-    {
-        a = checkSpin(i,k);
-        r_dist = r_ij(r[i],r[k]);
-        commonFactor = a/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
-        grad[0] += (r[i][0]-r[k][0])*commonFactor; // Is the difference r_i and r_k correct?
-        grad[1] += (r[i][1]-r[k][1])*commonFactor;
-    }
-    for (int i = k+1; i < nParticles; i++)
-    {
-        a = checkSpin(k,i); //
-        r_dist = r_ij(r[k],r[i]);
-        commonFactor = a/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
-        grad[0] += (r[k][0]-r[i][0])*commonFactor; // Is the difference r_i and r_k correct?
-        grad[1] += (r[k][1]-r[i][1])*commonFactor;
-    }
-}
+//    double *gradSum1 = new double[2];
+//    double *gradSum2 = new double[2];
+//    gradSum1[0] = 0;
+//    gradSum1[1] = 0;
+//    gradSum2[0] = 0;
+//    gradSum2[1] = 0;
 
-void NElectron::gradientSD(double * grad, double **r, int k)
-{
-    /*
-     * Finds the gradient of the Slater determinant.
-     * Arguments:
-     *  grad    : reference to gradient array of length 2
-     *  r       : positions of the particles
-     *  k       : particle we are getting the gradient for
-     */
-    double *wfGrad = new double[2];
-    wfGrad[0] = 0;
-    wfGrad[1] = 0;
     for (int i = 0; i < nParticles; i++)
     {
-        states[i].wfGradient(wfGrad,r[k],alpha,omega);
-        grad[0] += wfGrad[0]*SpinUpInverse[i][k];
-        grad[1] += wfGrad[1]*SpinDownInverse[i][k]; // ??????????????????????????????????????????????????????????????????????????????
+        if (i==k) continue;
+        r_dist = r_ij(r[k],r[i]);
+        commonFactor = a(k,i)/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
+        grad[0] += (r[k][0] - r[i][0]) * commonFactor; // Pretty sure this is correct
+        grad[1] += (r[k][1] - r[i][1]) * commonFactor;
+//        gradSum2[0] += (r[i][0] - r[k][0]) * commonFactor;
+//        gradSum2[1] += (r[i][1] - r[k][1]) * commonFactor;
     }
-    delete [] wfGrad;
+
+//    for (int i = 0; i < k; i++) // STOP AT k-1 OR k?
+//    {
+//        r_dist = r_ij(r[i],r[k]);
+//        commonFactor = a(i,k)/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
+////        grad[0] += (r[i][0]-r[k][0])*commonFactor; // Is the difference r_i and r_k correct?
+////        grad[1] += (r[i][1]-r[k][1])*commonFactor;
+//        // TEMP
+//        gradSum1[0] += (r[i][0]-r[k][0])*commonFactor; // i-k makes methods equal??
+//        gradSum1[1] += (r[i][1]-r[k][1])*commonFactor;
+//    }
+//    for (int i = k+1; i < nParticles; i++)
+//    {
+//        r_dist = r_ij(r[k],r[i]);
+//        commonFactor = a(k,i)/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
+////        grad[0] += (r[k][0]-r[i][0])*commonFactor; // Is the difference r_i and r_k correct?
+////        grad[1] += (r[k][1]-r[i][1])*commonFactor;
+////        grad[0] += (r[i][0]-r[k][0])*commonFactor; // Is the difference r_i and r_k correct?
+////        grad[1] += (r[i][1]-r[k][1])*commonFactor;
+//        // TEMP
+//        gradSum1[0] += (r[i][0]-r[k][0])*commonFactor;
+//        gradSum1[1] += (r[i][1]-r[k][1])*commonFactor;
+//    }
+//    cout << "GradSum1 = ( " << std::setw(10) << gradSum1[0] << " , " << std::setw(10) << gradSum1[1] << " ) "
+//         << "GradSum2 = ( " << std::setw(10) << gradSum2[0] << " , " << std::setw(10) << gradSum2[1] << " ) " << endl;
 }
 
 double NElectron::laplacianJastrow(double **r, int k)
@@ -310,64 +464,95 @@ double NElectron::laplacianJastrow(double **r, int k)
      *  k   : index of particle being moved
      */
     double lap = 0;
-    double a = 0;
     double r_dist = 0;
-    // Method 1
-    double sum1x = 0;
-    double sum1y = 0;
-    double sum2x = 0;
-    double sum2y = 0;
     double commonFactor = 0;
     double r_ijBeta = 0;
-    for (int i = 0; i < k; i++)  // STOP AT k-1 OR k?
-    {
-        a = checkSpin(i,k);
-        r_dist = r_ij(r[i],r[k]);
-        r_ijBeta = (1+beta*r_dist);
-        commonFactor = a/(r_dist*r_ijBeta*r_ijBeta);
-        sum1x += (r[i][0]-r[k][0])*commonFactor; // Is the difference r_i and r_k correct?
-        sum1y += (r[i][1]-r[k][1])*commonFactor;
-    }
-    for (int i = k+1; i < nParticles; i++)
-    {
-        a = checkSpin(k,i);
-        r_dist = r_ij(r[k],r[i]);
-        r_ijBeta = (1+beta*r_dist);
-        commonFactor = a/(r_dist*r_ijBeta*r_ijBeta);
-        sum2x += (r[k][0]-r[i][0])*commonFactor; // Is the difference r_i and r_k correct?
-        sum2y += (r[k][1]-r[i][1])*commonFactor;
-    }
-    lap += (sum1x+sum2x)*(sum1x+sum2x) + (sum1y+sum2y)*(sum1y+sum2y);
-    for (int i = 0; i < k; i++)
-    {
-        a = checkSpin(i,k);
-        r_dist = r_ij(r[i],r[k]);
-        r_ijBeta = (1+beta*r_dist);
-        commonFactor = a/(r_ijBeta*r_ijBeta);
-        lap += 1.0/r_dist*commonFactor - 2*beta*commonFactor/r_ijBeta;
-    }
-    for (int i = k+1; i < nParticles; i++)  // STOP AT k-1 OR k?
-    {
-        a = checkSpin(k,i);
-        r_dist = r_ij(r[k],r[i]);
-        r_ijBeta = (1+beta*r_dist);
-        commonFactor = a/(r_ijBeta*r_ijBeta);
-        lap += 1.0/r_dist*commonFactor - 2*beta*commonFactor/r_ijBeta;
-    }
+    // Method 1
+//    double sum1x = 0;
+//    double sum1y = 0;
+//    double sum2x = 0;
+//    double sum2y = 0;
+//    double sum3 = 0;
+//    double sum4 = 0;
+//    for (int i = 0; i < k; i++)  // STOP AT k-1 OR k?
+//    {
+//        r_dist = r_ij(r[i],r[k]);
+//        r_ijBeta = (1+beta*r_dist);
+//        commonFactor = a(i,k)/(r_dist*r_ijBeta*r_ijBeta);
+//        sum1x += (r[i][0]-r[k][0])*commonFactor; // Is the difference r_i and r_k correct?
+//        sum1y += (r[i][1]-r[k][1])*commonFactor;
+//    }
+//    for (int i = k+1; i < nParticles; i++)
+//    {
+//        r_dist = r_ij(r[k],r[i]);
+//        r_ijBeta = (1+beta*r_dist);
+//        commonFactor = a(k,i)/(r_dist*r_ijBeta*r_ijBeta);
+//        sum2x += (r[k][0]-r[i][0])*commonFactor; // Is the difference r_i and r_k correct?
+//        sum2y += (r[k][1]-r[i][1])*commonFactor;
+//    }
+//    lap += (sum1x-sum2x)*(sum1x-sum2x) + (sum1y-sum2y)*(sum1y-sum2y);
+//    for (int i = 0; i < k; i++)
+//    {
+//        r_dist = r_ij(r[i],r[k]);
+//        r_ijBeta = (1+beta*r_dist);
+//        commonFactor = a(i,k)/(r_dist*r_ijBeta*r_ijBeta*r_ijBeta);
+//        lap += (1.0-beta*r_dist)*commonFactor;
+//        sum3 += (1.0-beta*r_dist)*commonFactor;
+//    }
+//    for (int i = k+1; i < nParticles; i++)  // STOP AT k-1 OR k?
+//    {
+//        r_dist = r_ij(r[k],r[i]);
+//        r_ijBeta = (1+beta*r_dist);
+//        commonFactor = a(k,i)/(r_dist*r_ijBeta*r_ijBeta*r_ijBeta);
+//        lap += (1.0-beta*r_dist)*commonFactor;
+//        sum4 += (1.0-beta*r_dist)*commonFactor;
+//    }
+
+////    printf("sum1 = ( %10f , %10f ) ", sum1x, sum1y);
+////    printf("sum2 = ( %10f , %10f ) ", sum2x, sum2y);
+////    printf("sum3 = %10f ", sum3);
+////    printf("sum4 = %10f ", sum4);
+//    printf("Lap1 = %10f ", lap);
+
     // Method 2
+    lap=0;
+    double sum_x = 0;
+    double sum_y = 0;
+    for (int i = 0; i < nParticles; i++)
+    {
+        if (i==k) continue;
+        r_dist = r_ij(r[i],r[k]);
+        r_ijBeta = (1+beta*r_dist);
+        commonFactor = a(i,k)/(r_dist*r_ijBeta*r_ijBeta);
+        sum_x += (r[k][0]-r[i][0])*commonFactor; // Is the difference r_i and r_k correct?
+        sum_y += (r[k][1]-r[i][1])*commonFactor;
+    }
+    lap += sum_x*sum_x + sum_y*sum_y;
+    for (int i = 0; i < nParticles; i++)
+    {
+        if (i==k) continue;
+        r_dist = r_ij(r[i],r[k]);
+        r_ijBeta = (1+beta*r_dist);
+        commonFactor = a(i,k)/(r_dist*r_ijBeta*r_ijBeta*r_ijBeta);
+        lap += (1.0-beta*r_dist)*commonFactor; // dim 2
+//        lap += 2*commonFactor; // dim 3
+    }
+//    printf("Lap2 = %10f ", lap);
+
+//    // Method 3
+//    lap=0;
 //    double commonFactor_i = 0;
 //    double commonFactor_j = 0;
 //    for (int i = 0; i < nParticles; i++)
 //    {
 //        if (i==k) continue;
-//        a = checkSpin(k,i);
 //        r_dist = r_ij(r[k],r[i]);
-//        commonFactor_i = a/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
+//        commonFactor_i = a(k,i)/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
 //        for (int j = 0; j < nParticles; j++)
 //        {
 //            if (j==k) continue;
 //            r_dist = r_ij(r[k],r[j]);
-//            commonFactor_j = checkSpin(k,j)/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
+//            commonFactor_j = a(k,j)/(r_dist*(1+beta*r_dist)*(1+beta*r_dist));
 //            lap += ((r[k][0] - r[i][0])*(r[k][0] - r[j][0]) + (r[k][1] - r[i][1])*(r[k][1] - r[j][1]))*commonFactor_i*commonFactor_j;
 //        }
 //    }
@@ -376,18 +561,10 @@ double NElectron::laplacianJastrow(double **r, int k)
 //        if (i==k) continue;
 //        r_dist = r_ij(r[k],r[i]);
 //        commonFactor_i = 1 + beta*r_dist;
-//        lap += 2*checkSpin(k,i)/(r_dist*commonFactor_i*commonFactor_i*commonFactor_i);
+//        lap += (1.0-beta*r_dist)*a(k,i)/(r_dist*commonFactor_i*commonFactor_i*commonFactor_i); // Dimension = 2
+////        lap += 2*a(k,i)/(r_dist*commonFactor_i*commonFactor_i*commonFactor_i); // If dimension is d=3
 //    }
-    return lap;
-}
-
-double NElectron::laplacianSD(double **r, int k)
-{
-    double lap = 0;
-    for (int i = 0; i < nParticles; i++)
-    {
-        lap += states[i].wfLaplacian(r[k], alpha, omega) * DInv[i][k];
-    }
+//    printf("Lap3 = %10f\n", lap);
     return lap;
 }
 
@@ -399,22 +576,32 @@ double NElectron::laplacian(double **r, int k)
      *  r   : particle positions
      *  k   : particle to find the laplacian for
      */
+    double lap = 0;
     double *gradSlater = new double[2];
     double *gradJastrow = new double[2];
     gradSlater[0] = 0;
     gradSlater[1] = 0;
     gradJastrow[0] = 0;
     gradJastrow[1] = 0;
-
-    // ??????????????????????????????????????????????????????????????????????????????
+    // Running with/without Jastrow
+    if (runJastrow)
+    {
+        gradientSlater(gradSlater,r,k);
+        gradientJastrow(gradJastrow,r,k);
+        lap = laplacianSlater(r,k) + laplacianJastrow(r, k) + 2*(gradJastrow[0]*gradSlater[0] + gradJastrow[1]*gradSlater[1]);
+    }
+    else
+    {
+        lap = laplacianSlater(r,k);
+    }
 
     delete [] gradSlater;
     delete [] gradJastrow;
 
-    return 0.0;
+    return lap;
 }
 
-double NElectron::checkSpin(int i, int j)
+double NElectron::a(int i, int j)
 {
     /*
      * Checks the spin of between two particles.
@@ -425,7 +612,8 @@ double NElectron::checkSpin(int i, int j)
      *  1.0 if spins are anti-parallel
      *  1/3 if spins are parallel
      */
-    if (states[i].getSpin() + states[j].getSpin() == 0) // Returns 1 if spins are anti-parallel
+//    cout << states[i]->getSpin() << " " << states[j]->getSpin() << endl;
+    if (states[i]->getSpin() + states[j]->getSpin() == 0) // Returns 1 if spins are anti-parallel
     {
         return 1.0;
     }
@@ -433,4 +621,9 @@ double NElectron::checkSpin(int i, int j)
     {
         return 0.333333333333333;
     }
+}
+
+void NElectron::revert(double **r)
+{
+
 }

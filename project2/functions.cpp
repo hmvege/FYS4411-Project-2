@@ -1,5 +1,9 @@
 #include "functions.h"
 
+using std::cout;
+using std::endl;
+using std::nothrow;
+
 int factorial(int n)
 {
     /*
@@ -17,6 +21,10 @@ double determinant(double **A, int dim)
      *  A   : square matrix
      *  dim : dimensionality of the matrix
      */
+    if (dim == 1) // Is this safe?
+    {
+        return A[0][0];
+    }
     if (dim == 2)
     {
         return A[0][0]*A[1][1] - A[0][1]*A[1][0];
@@ -119,13 +127,6 @@ void inverse(double **a, int n)
 
     ludcmp(a, n, indx, &d);   // LU decompose  a[][]
 
-    printf("\n\nLU form of matrix of a[][]:\n");
-    for(i = 0; i < n; i++) {
-        printf("\n");
-        for(j = 0; j < n; j++) {
-            printf(" a[%2d][%2d] = %12.4E",i, j, a[i][j]);
-        }
-    }
     // find inverse of a[][] by columns
 
     for(j = 0; j < n; j++) {
@@ -276,3 +277,35 @@ void lubksb(double **a, int n, int *indx, double *b)
         b[i] = sum/a[i][i];
     }
 } // End: function lubksb()
+
+void printMatrix(double **A, int dim)
+{
+    /*
+     * Simple matrix printer.
+     */
+    for (int i = 0; i < dim; i++)
+    {
+        for (int j = 0; j < dim; j++)
+        {
+            cout << A[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+void initializeMatrix(double **A, int dim, double defaultValue)
+{
+    /*
+     * For initializing matrices. Default initialization to zero.
+     */
+    cout << defaultValue << endl;
+    A = new double*[dim];
+    for (int i = 0; i < dim; i++)
+    {
+        A[i] = new double[dim];
+        for (int j = 0; j < dim; j++)
+        {
+            A[i][j] = defaultValue;
+        }
+    }
+}

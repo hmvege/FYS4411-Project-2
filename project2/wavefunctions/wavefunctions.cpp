@@ -7,7 +7,6 @@ using std::endl;
 
 WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nVarParams)
 {
-    cout << "TODO: make a general relative distance function" << endl;
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
     nVarParams = new_nVarParams;
@@ -100,4 +99,11 @@ bool WaveFunctions::SDConvergenceCriteria()
 {
     cout << "Bare wavefunctions class do not Steepest Descent convergence criteria test." << endl;
     exit(1);
+}
+
+void WaveFunctions::revert(double ** r)
+{
+   /*
+    * Function used when resetting certain class-contained variables. Needed by the n-electron case.
+    */
 }

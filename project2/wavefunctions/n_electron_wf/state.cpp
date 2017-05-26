@@ -8,6 +8,11 @@ State::State()
 
 }
 
+State::~State()
+{
+
+}
+
 void State::set(int new_n_x, int new_n_y, int new_spin)
 {
     /*
@@ -36,7 +41,8 @@ double State::wf(double *r_i, double alpha, double omega)
      * omega    : oscillator frequency
      */
     double sqrtOmegaAlpha = sqrt(omega*alpha);
-    return hermite->get(n_x, sqrtOmegaAlpha*r_i[0])*hermite->get(n_y, sqrtOmegaAlpha*r_i[1])*exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
+//    return hermite->get(n_x, sqrtOmegaAlpha*r_i[0])*hermite->get(n_y, sqrtOmegaAlpha*r_i[1])*exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
+    return exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1])); // plain and simple omega
 }
 
 void *State::wfGradient(double * wfGrad, double *r_i, double alpha, double omega)
@@ -74,8 +80,9 @@ double State::wfLaplacian(double *r_i, double alpha, double omega)
     double HermXDerivative = hermite->derivative(n_x, sqrtOmegaAlpha*r_i[0]);
     double HermYDerivative = hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]);
     double expFactor = exp(-omegaAlpha*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
-    wfLap = ( (HermY*2*n_x*HermXDerivative + HermX*2*n_y*HermYDerivative)
+    wfLap = ( (HermY*hermite->doubleDerivative(n_x,r_i[0])+ HermX*hermite->doubleDerivative(n_y,r_i[1]))
             - 2*omegaAlpha*(r_i[0]*HermY*HermXDerivative + r_i[1]*HermX*HermYDerivative)
             - 2*omegaAlpha*HermX*HermY + omegaAlpha*omegaAlpha*(r_i[0]*r_i[0] + r_i[1]*r_i[1])*HermX*HermY)*expFactor;
+//    wfLap = (- 2*omegaAlpha + omegaAlpha*omegaAlpha*(r_i[0]*r_i[0] + r_i[1]*r_i[1]))*expFactor; // FOR ONLY 2 ELECTRONS -- now working!!
     return wfLap;
 }
