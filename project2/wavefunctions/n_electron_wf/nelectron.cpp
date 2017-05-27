@@ -129,7 +129,7 @@ double NElectron::calculate(double **r)
      *  k   : particle being moved
      */
     WFSlaterOld = WFSlater;
-    if (runJastrow) WFJastrowOld = WFJastrow;
+    if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
     updateSlater(r);
     WFSlater = psiSlater(r);
     if (runJastrow)
