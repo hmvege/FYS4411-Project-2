@@ -177,6 +177,7 @@ void NElectron::quantumForce(double **r, double **F, int k)
     gradSlater[1] = 0;
     gradJastrow[0] = 0;
     gradJastrow[1] = 0;
+    gradientSlater(gradSlater,r,k);
     if (runJastrow) // If set to run with Jastrow
     {
         gradientJastrow(gradJastrow,r,k);
@@ -186,7 +187,6 @@ void NElectron::quantumForce(double **r, double **F, int k)
     }
     else
     {
-        gradientSlater(gradSlater,r,k);
         F[k][0] = 2*gradSlater[0];
         F[k][1] = 2*gradSlater[1];
     }
@@ -219,6 +219,7 @@ void NElectron::sampleSD(double **r, double &E)
      *  r   : particle positions
      *  E   : local energy of current positions
      */
+//    cout << "ERROR IN DERIVATIVES!!" << endl; exit(1);
     dPsiAlpha       = alphaDerivative(r); // Derivative of WF w.r.t. alpha
     dPsiAlphaSum    += dPsiAlpha;
     dPsiEAlphaSum   += dPsiAlpha*E;
@@ -261,7 +262,7 @@ double NElectron::alphaDerivative(double **r)
             dAlphaSpinUp = states[2*j+1]->wfAlpha(r[2*i+1],alpha,omega) * DSpinUpInverse[j][i];
         }
     }
-    return dAlphaSpinUp*dAlphaSpinDown;
+    return dAlphaSpinUp + dAlphaSpinDown;
 }
 
 double NElectron::betaDerivative(double **r)
@@ -277,7 +278,7 @@ double NElectron::betaDerivative(double **r)
         {
             if (i==j) continue;
             r_dist = r_ij(r[i],r[j]);
-            dBeta -= a(i,j)*r_dist*r_dist/((1+beta*r_dist)*(1+beta*r_dist));
+            dBeta -= a(i,j)/((1/r_dist + beta)*(1/r_dist + beta));
         }
     }
     return dBeta;
