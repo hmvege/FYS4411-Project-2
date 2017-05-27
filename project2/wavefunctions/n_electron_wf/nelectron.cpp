@@ -24,11 +24,12 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams
      * [x] implement wavefunctions
      * [x] initialize the set up of the slater determinants
      * [x] implement matrix inverse
-     * [ ] implement inverse update
      * [x] implement wf functions
-     * [ ] implement quantum force
-     * [ ] implement steepest descent
+     * [x] implement quantum force
+     * [x] implement steepest descent
      * [x] get correct results for 2 electrons->identify and remove bugs!
+     * [ ] implement inverse update
+     * [ ] implement ratio evaluation and storage
      * -------------------------------------------------------------------------
      */
     setOmega(new_omega);
@@ -251,6 +252,8 @@ double NElectron::alphaDerivative(double **r)
 {
     /*
      * The derivative of alpha w.r.t. the Slater determinant as used by steepest descent.
+     * Arguments:
+     * r    : particle positions
      */
     double dAlphaSpinDown = 0;
     double dAlphaSpinUp = 0;
@@ -269,6 +272,8 @@ double NElectron::betaDerivative(double **r)
 {
     /*
      * The derivative of beta w.r.t. the Jastrow factor as used by steepest descent.
+     * Arguments:
+     * r    : particle positions
      */
     double dBeta = 0;
     double r_dist = 0;
@@ -302,6 +307,8 @@ void NElectron::initializeSlater(double **r)
 {
     /*
      * Sets the a spin up and spin down Slater matrix. Please ignore the terrible hard-coded matrix allocation.
+     * Arguments:
+     * r    : particle positions
      */
 //    DSpinDown = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
 //    DSpinUp = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
@@ -388,17 +395,44 @@ void NElectron::updateSlater(double **r)
     inverse(DSpinUpInverse, nParticles/2);
 }
 
-double NElectron::updateInverseSlater(double **r, int k)
+void NElectron::updateInverseSlater(double **r, int k)
 {
     /*
      * An efficient way of updating the inverse of the Slater matrices.
      */
-//    double sum = 0;
-//    for (int l = 0; l < nParticles; l++)
-//    {
+    double sum = 0;
+    double R = 0;
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nParticles; j++)
+        {
+            if (j!=k)
+            {
+                for (int l = 0; l < nParticles; l++)
+                {
+                    sum += states[l]->wf(r[k],alpha,omega)*D_inverse[l][j];
+                }
+                D[i][j] -= D_inverse[i][k]/R * sum;
+            }
+            else
+            {
+                for (int l = 0; l < nParticles; l++)
+                {
+                    sum += D[k][l]*D_inverse[l][j];
+                }
+                D[i][j] = D_inverse[i][k]/R * sum;
+            }
+            sum = 0;
+        }
+    }
+    if (k%2==0) // Spin down
+    {
 
-//    }
-    return 0.0;
+    }
+    else // Spin up
+    {
+
+    }
 }
 
 double NElectron::psiSlater(double **r)

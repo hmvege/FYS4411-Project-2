@@ -154,7 +154,17 @@ For the two electron case the Hamiltonian takes on familiar form,
 
 \section{Implementation}
 
+\subsubsection{Slater determinants}
+An efficient way of updating the inverse of the Slater matrix can be found by \husk{SITER}. 
 
+\begin{align}
+D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
+\begin{array}{ll}
+	D_{kj}^{-1}(\mathbf{x}^{old}) - \frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{new})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j\neq i \\
+	\frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{old})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j = i
+\end{array}
+\right.
+\end{align}
 
 \section{Results}
 

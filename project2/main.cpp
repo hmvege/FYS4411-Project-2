@@ -22,11 +22,13 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
 
 /*
  * TODO GENERAL:
- * - Switch to new r_if(r1,r2) function in all classes
- * - Clean up unused variables(e.g. n_VarParams) <- CHECK ALL WARNINGS
- * - Add destructors to where it is appropriate
- * - Make the variable a for the two-electron cases non-global
- * - Clean up main to a simpler interface
+ * [ ] Switch to new r_if(r1,r2) function in all classes
+ * [ ] Clean up unused variables(e.g. n_VarParams) <- CHECK ALL WARNINGS
+ * [ ] Add destructors to where it is appropriate
+ * [ ] Make the variable a for the two-electron cases non-global
+ * [ ] Clean up main to a simpler interface
+ * [ ] Add data sampling to file for every MCCount % 10000
+ * [ ] Parallelize code
  */
 
 

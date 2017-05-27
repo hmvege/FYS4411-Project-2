@@ -67,7 +67,7 @@ double State::wfLaplacian(double *r_i, double alpha, double omega)
 {
     /*
      * Returns the gradient of the wave function. Index 0 is x, 1 is y.
-     * Arguments
+     * Arguments:
      * r_i      : (x,y) position of particle i
      * alpha    : variational paramater
      * omega    : oscillator frequency
@@ -89,7 +89,11 @@ double State::wfLaplacian(double *r_i, double alpha, double omega)
 double State::wfAlpha(double *r_i, double alpha, double omega)
 {
     /*
-     *
+     * The derivative of phi w.r.t. variational parameter alpha.
+     * Arguments:
+     * r_i      : (x,y) position of particle i
+     * alpha    : variational paramater
+     * omega    : oscillator frequency
      */
     double wfA = 0;
     double sqrtOmegaAlpha = sqrt(alpha*omega);
