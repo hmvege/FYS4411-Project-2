@@ -391,47 +391,55 @@ void NElectron::updateSlater(double **r)
 //    DSpinDownInverse.i();
 //    DSpinUpInverse.i();
     // Finding the inverse matrices - COULD BE DONE MORE EFFICIENTLY!!
-    inverse(DSpinDownInverse, nParticles/2);
-    inverse(DSpinUpInverse, nParticles/2);
+//    inverse(DSpinDownInverse, nParticles/2);
+//    inverse(DSpinUpInverse, nParticles/2);
+
+    for (int i = 0; i < nParticles/2; i++)
+    {
+        for (int j = 0; j < nParticles/2; j++)
+        {
+            if (k%2==0) // Spin down
+            {
+                DSpinDownInverseOld[i][j] = DSpinDownInverse[i][j];
+                updateInverseSlaterElement(DSpinDown, DSpinDownInverse, r, i, j, k/2);
+            }
+            else // Spin up
+            {
+                DSpinUpInverseOld[i][j] = DSpinUpInverse[i][j];
+                updateInverseSlaterElement(DSpinUp, DSpinUpInverse, r, i, j, (k-1)/2);
+            }
+        }
+    }
 }
 
-void NElectron::updateInverseSlater(double **r, int k)
+void NElectron::updateInverseSlaterElement(double **D,
+                                           double **DInverse,
+                                           double **r, int i, int j, int k)
 {
     /*
      * An efficient way of updating the inverse of the Slater matrices.
+     * Arguments:
+     *  r   : Particle positions
+     *  i   : Position i in SD matrix
+     *  j   : Position j in SD matrix
+     *  k   : Particle that is being updated
      */
     double sum = 0;
-    double R = 0;
-    for (int i = 0; i < nParticles; i++)
+    if (j!=k)
     {
-        for (int j = 0; j < nParticles; j++)
+        for (int l = 0; l < nParticles; l++)
         {
-            if (j!=k)
-            {
-                for (int l = 0; l < nParticles; l++)
-                {
-                    sum += states[l]->wf(r[k],alpha,omega)*D_inverse[l][j];
-                }
-                D[i][j] -= D_inverse[i][k]/R * sum;
-            }
-            else
-            {
-                for (int l = 0; l < nParticles; l++)
-                {
-                    sum += D[k][l]*D_inverse[l][j];
-                }
-                D[i][j] = D_inverse[i][k]/R * sum;
-            }
-            sum = 0;
+            sum += states[l]->wf(r[k],alpha,omega)*DInverse[l][j];
         }
+        DInverse[i][j] -= D_inverse[i][k]/R * sum;
     }
-    if (k%2==0) // Spin down
+    else
     {
-
-    }
-    else // Spin up
-    {
-
+        for (int l = 0; l < nParticles; l++)
+        {
+            sum += D[k][l]*DInverse[l][j];
+        }
+        DInverse[i][j] = DInverse[i][k]/R * sum;
     }
 }
 
