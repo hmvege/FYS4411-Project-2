@@ -14,10 +14,15 @@ private:
     // Variational parameters
     double alpha;
     double beta;
+    // Wavefunction storage
+    double WFJastrow;
+    double WFSlater;
+    double WFJastrowOld;
+    double WFSlaterOld;
     // Functions used internally
     void initializeSlater(double **r);
     void updateSlater(double **r);
-    void updateInverseSlaterElement(double **r, int i, int j, int k);
+    void updateInverseSlaterElement(double **D, double **DInverse, double **r, int i, int j, int k);
     double psiJastrow(double **r);
     double psiSlater(double **r);
     void gradientJastrow(double *grad, double **r, int k);

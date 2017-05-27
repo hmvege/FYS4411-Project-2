@@ -125,18 +125,21 @@ double NElectron::calculate(double **r)
     /*
      * Returns the wave function for N electrons.
      * Arguments:
-     *  r   : particle positions
+     *  r   : position
+     *  k   : particle being moved
      */
-    updateSlater(r); // UPDATE SLATER MORE EFFICIENTLY HERE!!!
-    double slaterWF = psiSlater(r);
+    WFSlaterOld = WFSlater;
+    if (runJastrow) WFJastrowOld = WFJastrow;
+    updateSlater(r);
+    WFSlater = psiSlater(r);
     if (runJastrow)
     {
-        double jastrowWF = psiJastrow(r);
-        return jastrowWF*slaterWF;
+        WFJastrow = psiJastrow(r);
+        return WFJastrow*WFSlater;
     }
     else
     {
-        return slaterWF;
+        return WFSlater;
     }
 }
 
@@ -390,26 +393,27 @@ void NElectron::updateSlater(double **r)
     }
 //    DSpinDownInverse.i();
 //    DSpinUpInverse.i();
-    // Finding the inverse matrices - COULD BE DONE MORE EFFICIENTLY!!
-//    inverse(DSpinDownInverse, nParticles/2);
-//    inverse(DSpinUpInverse, nParticles/2);
 
-    for (int i = 0; i < nParticles/2; i++)
-    {
-        for (int j = 0; j < nParticles/2; j++)
-        {
-            if (k%2==0) // Spin down
-            {
-                DSpinDownInverseOld[i][j] = DSpinDownInverse[i][j];
-                updateInverseSlaterElement(DSpinDown, DSpinDownInverse, r, i, j, k/2);
-            }
-            else // Spin up
-            {
-                DSpinUpInverseOld[i][j] = DSpinUpInverse[i][j];
-                updateInverseSlaterElement(DSpinUp, DSpinUpInverse, r, i, j, (k-1)/2);
-            }
-        }
-    }
+    // Finding the inverse matrices - COULD BE DONE MORE EFFICIENTLY!!
+    inverse(DSpinDownInverse, nParticles/2);
+    inverse(DSpinUpInverse, nParticles/2);
+
+//    for (int i = 0; i < nParticles/2; i++)
+//    {
+//        for (int j = 0; j < nParticles/2; j++)
+//        {
+//            if (k%2==0) // Spin down
+//            {
+//                DSpinDownInverseOld[i][j] = DSpinDownInverse[i][j];
+//                updateInverseSlaterElement(DSpinDown, DSpinDownInverse, r, i, j, k/2);
+//            }
+//            else // Spin up
+//            {
+//                DSpinUpInverseOld[i][j] = DSpinUpInverse[i][j];
+//                updateInverseSlaterElement(DSpinUp, DSpinUpInverse, r, i, j, (k-1)/2);
+//            }
+//        }
+//    }
 }
 
 void NElectron::updateInverseSlaterElement(double **D,
@@ -424,6 +428,8 @@ void NElectron::updateInverseSlaterElement(double **D,
      *  j   : Position j in SD matrix
      *  k   : Particle that is being updated
      */
+    double R = WFSlater/WFSlaterOld;
+    if (runJastrow) R *= WFJastrow/WFJastrowOld;
     double sum = 0;
     if (j!=k)
     {
@@ -431,7 +437,7 @@ void NElectron::updateInverseSlaterElement(double **D,
         {
             sum += states[l]->wf(r[k],alpha,omega)*DInverse[l][j];
         }
-        DInverse[i][j] -= D_inverse[i][k]/R * sum;
+        DInverse[i][j] -= DInverse[i][k]/R * sum;
     }
     else
     {
