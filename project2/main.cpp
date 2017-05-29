@@ -8,8 +8,6 @@
 #include "samplers/metropolissampler.h"
 #include "samplers/uniformsampling.h"
 #include "samplers/importancesampler.h"
-
-// TEMP
 #include "functions.h"
 
 using namespace std;
@@ -35,18 +33,15 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
 int main()
 {
     // Constants
-    unsigned int MCCycles   = 1e6;
+    unsigned int MCCycles   = 1e5;
     unsigned int optCycles  = 1e5;
     int maxSDIterations     = 0;
     int nParticles          = 2;
     int nDimensions         = 2;
-
-    clock_t programStart, programEnd;
-    programStart = clock();
-
-    // TASK C-F CONSTANTS
     double omega            = 1.0;
     double alpha            = 1.0;//0.988559;
+//    double alpha            = 0.762647; // No jastrow, 2 electrons
+//    double alpha            = 0.6; // No jastrow, 6 electrons
     double a                = 1.0;
     double beta             = 0.4;//0.398665;
     double D                = 0.5; // equals 0.5 in atomic units
@@ -56,6 +51,9 @@ int main()
     bool importanceSampling = true;
     bool coulombInteraction = true;
     bool jastrowFactor      = true;
+
+    clock_t programStart, programEnd;
+    programStart = clock();
 
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction);
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction);
@@ -98,14 +96,14 @@ void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double
 
     if (impSampling)
     {
-        ImportanceSampler importanceSampling(nParticles, nDimensions);
+        ImportanceSampler importanceSampling(nParticles, nDimensions, &WF_2Electron);
         importanceSampling.initializeSampling(0.001, seed, 0.5);
-        importanceSampling.setWaveFunction(&WF_2Electron);
+//        importanceSampling.setWaveFunction(&WF_2Electron);
         VMC_2Electron.setMetropolisSampler(&importanceSampling);
     }
     else
     {
-        UniformSampling uniformSampling(nParticles, nDimensions);
+        UniformSampling uniformSampling(nParticles, nDimensions, &WF_2Electron);
         uniformSampling.initialize(stepLength, seed);
         VMC_2Electron.setMetropolisSampler(&uniformSampling);
     }
@@ -128,21 +126,21 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
 
     WF_2Jastrov.setCoulombInteraction(coulomb);
 
-    // Temporary fix for the sampling of steepest descent metropolis part ========================
-    UniformSampling SDR(nParticles, nDimensions);
-    SDR.initialize(1.14, seed-1);
-    VMC_2Electron.SDR = &SDR;
-    // ===========================================================================================
+//    // Temporary fix for the sampling of steepest descent metropolis part ========================
+//    UniformSampling SDR(nParticles, nDimensions, &WF_2Jastrov);
+//    SDR.initialize(1.14, seed-1);
+//    VMC_2Electron.SDR = &SDR;
+//    // ===========================================================================================
 
     if (impSampling) {
-        ImportanceSampler importanceSampling(nParticles, nDimensions);
+        ImportanceSampler importanceSampling(nParticles, nDimensions, &WF_2Jastrov);
         importanceSampling.initializeSampling(deltat, seed, D);
-        importanceSampling.setWaveFunction(&WF_2Jastrov);
+//        importanceSampling.setWaveFunction(&WF_2Jastrov);
         VMC_2Electron.setMetropolisSampler(&importanceSampling);
     }
     else
     {
-        UniformSampling uniformSampling(nParticles, nDimensions);
+        UniformSampling uniformSampling(nParticles, nDimensions, &WF_2Jastrov);
         uniformSampling.initialize(1.14, seed); // CHECK STEP!
         VMC_2Electron.setMetropolisSampler(&uniformSampling);
     }
@@ -163,14 +161,14 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
     WF_NElectron.setCoulombInteraction(coulomb);
     WF_NElectron.setJastrow(jastrow);
     if (impSampling) {
-        ImportanceSampler importanceSampling(nParticles, nDimensions);
+        ImportanceSampler importanceSampling(nParticles, nDimensions, &WF_NElectron);
         importanceSampling.initializeSampling(deltat, seed, D);        
-        importanceSampling.setWaveFunction(&WF_NElectron);
+//        importanceSampling.setWaveFunction(&WF_NElectron);
         VMC_NElectron.setMetropolisSampler(&importanceSampling);
     }
     else
     {
-        UniformSampling uniformSampling(nParticles, nDimensions);
+        UniformSampling uniformSampling(nParticles, nDimensions, &WF_NElectron);
         uniformSampling.initialize(1.14, seed); // CHECK STEP!
         VMC_NElectron.setMetropolisSampler(&uniformSampling);
     }

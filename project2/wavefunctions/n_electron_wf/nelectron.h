@@ -21,7 +21,7 @@ private:
     double WFSlaterOld;
     // Functions used internally
     void initializeSlater(double **r);
-    void updateSlater(double **r);
+    void updateSlater(double **r, int k);
     void updateInverseSlaterElement(double **D, double **DInverse, double **r, int i, int j, int k);
     double psiJastrow(double **r);
     double psiSlater(double **r);
@@ -70,8 +70,10 @@ public:
     NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams, double new_omega, double new_alpha, double new_beta);
     ~NElectron();
 
-    void initialize(double **r);
-    double calculate(double **r);
+//    void initialize(double **r, double &WF);
+    void initializeWFSampling(double **r);
+    double initializeWaveFunction(double **r);
+    double calculate(double **r, int k);
     double localEnergy(double **r);
     void quantumForce(double **r, double **F, int k);
     void steepestDescent(double &ESum, int NCycles);

@@ -191,7 +191,7 @@ void ludcmp(double **a, int n, int *indx, double *d)
         }
         if(big == ZERO) {
             printf("\n\nSingular matrix in routine ludcmp()\n");
-            exit(1);
+//            exit(1);
         }
         vv[i] = 1.0/big;                 // save scaling */
     } // end i-loop */
@@ -300,5 +300,5 @@ int spinUpIndex(int i)
 
 int spinDownIndex(int i)
 {
-    return 1;
+    return -1;
 }

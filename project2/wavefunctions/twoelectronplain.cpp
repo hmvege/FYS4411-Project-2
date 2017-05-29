@@ -21,7 +21,22 @@ twoElectronPlain::twoElectronPlain(int new_nParticles,
     coulombInteraction  = false; // By default, false
 }
 
-double twoElectronPlain::calculate(double ** r)
+//void twoElectronPlain::initialize(double **r, double &WF)
+//{
+//    WF = calculate(r,0);
+//}
+
+double twoElectronPlain::initializeWaveFunction(double **r)
+{
+    return calculate(r,0);
+}
+
+void twoElectronPlain::initializeWFSampling(double **r)
+{
+    // Not used by the plain 2 electron WF.
+}
+
+double twoElectronPlain::calculate(double ** r, int k)
 {
     /*
      * Calculates the wavefunction

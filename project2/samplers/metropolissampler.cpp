@@ -6,10 +6,11 @@
 using std::cout;
 using std::endl;
 
-MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions)
+MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions, WaveFunctions *newWF)
 {
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
+    setWaveFunction(newWF);
 }
 
 MetropolisSampler::~MetropolisSampler()

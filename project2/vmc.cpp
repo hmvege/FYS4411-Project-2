@@ -39,9 +39,11 @@ void VMC::updateParticle(int i)
 {
     /*
      * Function that performs a Metropolis update on a single particle
+     * Arguments:
+     *  i   : particle being updated
      */
     R->updatePositions(rOld, rNew, i);
-    newWF = WF->calculate(rNew);
+    newWF = WF->calculate(rNew, i);
     if (R->move(rOld, rNew, i, newWF, oldWF))
     {
         for (int j = 0; j < nDimensions; j++)
@@ -99,7 +101,9 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     {
         resetVariables();
         R->initializePositions(rOld, rNew);
-        oldWF = WF->calculate(rOld);
+//        WF->initialize(rOld, oldWF);
+//        oldWF = WF->calculate(rOld);
+        oldWF = WF->initializeWaveFunction(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
             runSDStep();
@@ -125,11 +129,13 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     // Main part of Metropolis ====================================================================
     resetVariables();
     R->initializePositions(rOld, rNew);
-    oldWF = WF->calculate(rOld);
+    oldWF = WF->initializeWaveFunction(rOld);
+//    WF->initialize(rOld);
+//    oldWF = WF->calculate(rOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
         runMetropolisStep();
-//        if (cycle == 50)
+//        if (cycle == 100)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n"); exit(1);
 //        }

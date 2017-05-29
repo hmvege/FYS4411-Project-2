@@ -1,6 +1,9 @@
 #include "uniformsampling.h"
+#include "wavefunctions/wavefunctions.h"
 
-UniformSampling::UniformSampling(int new_nParticles, int new_nDimensions) : MetropolisSampler(new_nParticles, new_nDimensions)
+#include "iostream"
+
+UniformSampling::UniformSampling(int new_nParticles, int new_nDimensions, WaveFunctions *newWF) : MetropolisSampler(new_nParticles, new_nDimensions, newWF)
 {
 //    cout << "Remember to comment on uniform sampling" << edl;
 }
@@ -52,6 +55,6 @@ void UniformSampling::initializePositions(double **rOld, double **rNew)
             rNew[i][j] = rOld[i][j];
         }
     }
-//    WF->initialize(rOld);
-//    return uniform_distribution(generator);
+    std::cout << "okay in uniform sampling" << std::endl;
+    WF->initializeWFSampling(rOld);
 }

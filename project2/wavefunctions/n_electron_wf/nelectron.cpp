@@ -28,6 +28,7 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams
      * [x] implement quantum force
      * [x] implement steepest descent
      * [x] get correct results for 2 electrons->identify and remove bugs!
+     * [ ] fix bug that makes energy slightly too high
      * [ ] implement inverse update
      * [ ] implement ratio evaluation and storage
      * -------------------------------------------------------------------------
@@ -40,6 +41,7 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams
     if (nParticles==2) maxShell = 1;
     else if (nParticles==6) maxShell = 2;
     else if (nParticles==12) maxShell = 3;
+    else if (nParticles==20) maxShell = 4;
     else
     {
         printf("Error: %d does not form a closed shell system of electron.\n", nParticles);
@@ -110,17 +112,61 @@ NElectron::~NElectron()
     delete [] DSpinUpInverseOld;
 }
 
-void NElectron::initialize(double **r)
+//void NElectron::initialize(double **r, double &WF)
+//{
+//    /*
+//     * Initializes the slater determinant for our wave function.
+//     * Arguments:
+//     *  r   : particle positions
+//     */
+//    initializeSlater(r);
+//    WFSlaterOld = WFSlater;
+//    if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
+//    WFSlater = psiSlater(r);
+//    if (runJastrow)
+//    {
+//        WFJastrow = psiJastrow(r);
+//        WF = WFJastrow*WFSlater;
+//    }
+//    else
+//    {
+//        WF = WFSlater;
+//    }
+//}
+
+void NElectron::initializeWFSampling(double **r)
 {
     /*
-     * Initializes the slater determinant for our wave function.
+     * Initializing the wave function sampling.
      * Arguments:
-     *  r   : particle positions
+     *  r   : position
      */
     initializeSlater(r);
 }
 
-double NElectron::calculate(double **r)
+double NElectron::initializeWaveFunction(double **r)
+{
+    /*
+     * Returns the first setup of the wavefunction.
+     * Arguments:
+     *  r   : position
+     */
+//    initializeSlater(r);
+    WFSlaterOld = WFSlater;
+    if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
+    WFSlater = psiSlater(r);
+    if (runJastrow)
+    {
+        WFJastrow = psiJastrow(r);
+        return WFJastrow*WFSlater;
+    }
+    else
+    {
+        return WFSlater;
+    }
+}
+
+double NElectron::calculate(double **r, int k)
 {
     /*
      * Returns the wave function for N electrons.
@@ -130,7 +176,7 @@ double NElectron::calculate(double **r)
      */
     WFSlaterOld = WFSlater;
     if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
-    updateSlater(r);
+    updateSlater(r, k);
     WFSlater = psiSlater(r);
     if (runJastrow)
     {
@@ -313,10 +359,6 @@ void NElectron::initializeSlater(double **r)
      * Arguments:
      * r    : particle positions
      */
-//    DSpinDown = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
-//    DSpinUp = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
-//    DSpinDownInverse = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
-//    DSpinUpInverse = arma::zeros<arma::mat>(nParticles/2,nParticles/2);
     DSpinDown           = new double*[nParticles/2];
     DSpinUp             = new double*[nParticles/2];
     DSpinDownInverse    = new double*[nParticles/2];
@@ -341,14 +383,8 @@ void NElectron::initializeSlater(double **r)
             DSpinUp[i][j]               = states[2*j+1]->wf(r[2*i+1], alpha, omega);
             DSpinDownInverse[i][j]      = DSpinDown[i][j];
             DSpinUpInverse[i][j]        = DSpinUp[i][j];
-//            DSpinDown(i,j) = states[2*j]->wf(r[2*i], alpha, omega);
-//            DSpinUp(i,j) = states[2*j+1]->wf(r[2*i+1], alpha, omega);
-//            DSpinDownInverse(i,j) = DSpinDown(i,j);
-//            DSpinUpInverse(i,j) = DSpinUp(i,j);
         }
     }
-//    DSpinDownInverse.i();
-//    DSpinUpInverse.i();
     inverse(DSpinDownInverse, nParticles/2);
     inverse(DSpinUpInverse, nParticles/2);
     for (int i = 0; i < nParticles/2; i++)
@@ -363,7 +399,7 @@ void NElectron::initializeSlater(double **r)
     }
 }
 
-void NElectron::updateSlater(double **r)
+void NElectron::updateSlater(double **r, int k)
 {
     /*
      * Updates the inverse of the slater determinant as well as the slater determinant itself.
@@ -385,18 +421,27 @@ void NElectron::updateSlater(double **r)
             DSpinUp[i][j]               = states[2*j+1]->wf(r[2*i+1], alpha, omega);
             DSpinDownInverse[i][j]      = DSpinDown[i][j];
             DSpinUpInverse[i][j]        = DSpinUp[i][j];
-//            DSpinDown(i,j) = states[2*j]->wf(r[2*i], alpha, omega);
-//            DSpinUp(i,j) = states[2*j+1]->wf(r[2*i+1], alpha, omega);
-//            DSpinDownInverse(i,j) = DSpinDown(i,j);
-//            DSpinUpInverse(i,j) = DSpinUp(i,j);
         }
     }
-//    DSpinDownInverse.i();
-//    DSpinUpInverse.i();
 
     // Finding the inverse matrices - COULD BE DONE MORE EFFICIENTLY!!
     inverse(DSpinDownInverse, nParticles/2);
     inverse(DSpinUpInverse, nParticles/2);
+
+//    double tempSum1 = 0;
+//    double tempSum2 = 0;
+//    for (int i = 0; i < nParticles/2; i++)
+//    {
+//        for (int j = 0; j < nParticles/2; j++)
+//        {
+//            tempSum1 += DSpinDown[i][j]*DSpinDownInverse[j][i];
+//            tempSum2 += DSpinUp[i][j]*DSpinUpInverse[j][i];
+//        }
+//    }
+//    double eps = 1e-10;
+//    if ((fabs(tempSum1 / double(nParticles/2) - 1) > eps) || fabs((tempSum2 / double(nParticles/2) - 1) > eps)) {
+//        printf("Spin down:  %18.15f   Spin up: %18.15f \n",tempSum1 / double(nParticles/2), tempSum2 /double(nParticles/2));
+//    }
 
 //    for (int i = 0; i < nParticles/2; i++)
 //    {
@@ -483,8 +528,6 @@ void NElectron::gradientSlater(double * grad, double **r, int k)
             grad[0] *= DSpinUpInverse[i][(k-1)/2];
             grad[1] *= DSpinUpInverse[i][(k-1)/2];
         }
-//        grad[0] += wfGradUp[0]*DSpinUpInverse(i,k) + wfGradDown[0]*DSpinDownInverse(i,k);
-//        grad[1] += wfGradUp[1]*DSpinUpInverse(i,k) + wfGradDown[1]*DSpinDownInverse(i,k);
     }
 }
 
@@ -501,12 +544,13 @@ double NElectron::laplacianSlater(double **r, int k)
     {
         if (k%2==0)
         {
-//            lap += states[2*i]->wfLaplacian(r[k], alpha, omega) * DSpinDownInverse(i,k/2);
+//            printf("(%d,%d) \n", i, (k/2));
             lap += states[2*i]->wfLaplacian(r[k], alpha, omega) * DSpinDownInverse[i][k/2];
         }
         else
         {
-//            lap += states[2*i+1]->wfLaplacian(r[k], alpha, omega) * DSpinUpInverse(i,(k-1)/2);
+//            printf("(%d,%d) \n", i, ((k-1)/2));
+//            states[2*i+1]->print();
             lap += states[2*i+1]->wfLaplacian(r[k], alpha, omega) * DSpinUpInverse[i][(k-1)/2];
         }
     }

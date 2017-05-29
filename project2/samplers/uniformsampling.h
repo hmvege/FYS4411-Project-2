@@ -10,7 +10,7 @@ private:
     std::uniform_real_distribution<double> uniform_distribution;
     double Ratio(double **rOld, double **rNew, int i, double newWF, double oldWF);
 public:
-    UniformSampling(int new_nParticles, int new_nDimensions);
+    UniformSampling(int new_nParticles, int new_nDimensions, WaveFunctions *newWF);
     bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
     double nextStep(double **rOld, int i, int j);
     void initialize(double newStepLength, double newSeed);

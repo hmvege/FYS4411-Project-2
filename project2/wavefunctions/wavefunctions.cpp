@@ -12,14 +12,29 @@ WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nV
     nVarParams = new_nVarParams;
 }
 
-void WaveFunctions::initialize(double ** r)
+void WaveFunctions::initializeWFSampling(double ** r)
 {
     /*
      * By default, does nothing. Only used in the N-electron sampling case.
+     *  r : position
      */
+    cout << "If you're seeing this, you are doing it wrong in WaveFunctions::initializeWFClass" << endl;
+    exit(1);
 }
 
-double WaveFunctions::calculate(double ** r)
+double WaveFunctions::initializeWaveFunction(double **r)
+{
+    /*
+     * Returns the wavefunction at a given coordinate.
+     *  r : position
+     */
+    cout << "If you're seeing this, you are doing it wrong in WaveFunctions::initializeWaveFunction" << endl;
+    exit(1);
+    return 1.0; // Add stuff here?
+
+}
+
+double WaveFunctions::calculate(double ** r, int k)
 {
     /*
      * Returns the wavefunction at a given coordinate.

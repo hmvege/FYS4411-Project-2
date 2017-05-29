@@ -2,8 +2,9 @@
 #define HERMITE_H
 
 #include <cmath>
-
+#include <iostream>
 typedef double (*polyArr) (double x);
+
 
 class Hermite
 {

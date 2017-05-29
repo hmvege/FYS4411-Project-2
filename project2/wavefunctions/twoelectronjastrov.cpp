@@ -23,7 +23,23 @@ twoElectronJastrov::twoElectronJastrov(int new_nParticles,
     setBeta(new_beta);
 }
 
-double twoElectronJastrov::calculate(double ** r)
+//void twoElectronJastrov::initialize(double **r)
+//{
+//    WF = calculate(r, 0);
+//}
+
+void twoElectronJastrov::initializeWFSampling(double **r)
+{
+
+}
+
+double twoElectronJastrov::initializeWaveFunction(double **r)
+{
+    return calculate(r,0);
+}
+
+
+double twoElectronJastrov::calculate(double ** r, int k)
 {
     /*
      * Calculates the wavefunction with a Jastrov factor.

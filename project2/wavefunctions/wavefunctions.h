@@ -18,8 +18,10 @@ public:
     virtual ~WaveFunctions() { }
 
     // Virtuals used by all other classes
-    virtual void initialize(double **r);
-    virtual double calculate(double **r);
+    virtual void initializeWFSampling(double **r);
+    virtual double initializeWaveFunction(double **r);
+//    virtual void initialize(double **r, double &WF);
+    virtual double calculate(double **r, int k);
     virtual double localEnergy(double **r);
     virtual void quantumForce(double **r, double **F, int k);
     virtual void steepestDescent(double &E, int NCycles);

@@ -61,13 +61,6 @@ double Hermite::derivative(int n, double x)
      *  d/dx H_n(x) = 2*n*H_(n-1)(x)
      */
     return 2*n*get(n-1, x);
-//    if (n<1)
-//    {
-//        return 0.0;
-//    }
-//    else
-//    {
-//    }
 }
 
 double Hermite::doubleDerivative(int n, double x)

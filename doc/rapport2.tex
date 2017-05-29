@@ -25,6 +25,10 @@
 
 \newcommand{\husk}[1]{\color{red} #1 \color{black}}
 \newcommand{\expect}[1]{\langle{#1}\rangle}
+\newcommand{\bra}[1]{\langle{#1}|}
+\newcommand{\ket}[1]{|{#1}\rangle}
+\newcommand{\rn}{\mathbf{r}^\text{new}}
+\newcommand{\ro}{\mathbf{r}^\text{old}}
 
 \newcommand{\CC}{C\nolinebreak\hspace{-.05em}\raisebox{.4ex}{\tiny\bf +}\nolinebreak\hspace{-.10em}\raisebox{.4ex}{\tiny\bf +}}
 \def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}}}
@@ -70,17 +74,215 @@ such that $\hat{H} = \hat{H}_0 + \hat{H}_1$. The distance between two electrons 
 \end{align}
 
 
-
 \subsection{Variational Monte Carlo}
+In order to go through the basic steps of variational Monte Carlo, we begin by deriving the basic formulas needed. Let $\psi_T$ be our trial wave function, which we can expand into an energy basis which we assume is normalized,
+\begin{align*}
+	\psi_T = \sum_{i=0}c_i \ket{\psi_i}
+\end{align*}
+The expectation value of the energy given by the Hamiltonian $\hat{H}$(from now one omitting the hat) is,
+\begin{align*}
+	\expect{E} &= \bra{\Psi_T}H\ket{\psi_T}\\ 
+	&= \sum_{i=0}\sum_{j=0}c_i^*c_j\bra{\psi_i}H\ket{\psi_j} \\
+	&= \sum_{i=0}\sum_{j=0}c_i^*c_j E_j\expect{\psi_i\psi_j} \\
+	&= \sum_{i=0}|c_i|^2 E_i
+\end{align*}
+From the variational principle in quantum mechanics, we have that the energy of the ground state can be approximated by a trial wave function,
+\begin{align}
+	E_0 \geq E[\psi_T] = \frac{\bra{\psi_T}H\ket{\psi_T}}{\expect{\psi_T|\psi_T}}
+	\label{eq:variational-principle}
+\end{align}
+Writing this on integral form, we get
+\begin{align*}
+	E[H] = \expect{H} &= \frac{\int d\mathbf{r}\psi_T^*(\mathbf{r})H(\mathbf{r})\psi_T(\mathbf{r}) }{\int d\mathbf{r} \psi_T^*(\mathbf{r})\psi_T(\mathbf{r})} \\
+	&=\frac{\sum_{ij} c_i^*c_j\int d\mathbf{r}\psi_i^*(\mathbf{r})H(\mathbf{r})\psi_j(\mathbf{r}) }{\sum_{ij}c_i^*c_j\int d\mathbf{r} \psi_i^*(\mathbf{r})\psi_j(\mathbf{r})} \\
+	&= \frac{\sum_i |c_i|^2 E_i}{\sum_i |c_i|^2} \\
+	&\geq E_0
+\end{align*}
+In order to make any progress with variational Monte Carlo, we need to get ourselves a wave function. This wave function will have to take $N$ particles $\mathbf{r}=(\mathbf{r}_1,\mathbf{r}_2,...,\mathbf{r}_N)$, and have can be varied by a set of variational parameters $\{\alpha_i\}$. The integral we wish to solve is now,
+\begin{align}
+	E[H] = \frac{\int d\mathbf{r}\psi_T^*(\mathbf{r},\alpha)H(\mathbf{r})\psi_T(\mathbf{r},\alpha) }{\int d\mathbf{r} \psi_T^*(\mathbf{r},\alpha)\psi_T(\mathbf{r},\alpha)}
+	\label{eq:variational-integral}
+\end{align}
+As with Monte Carlo methods, we need to define ourselves a probability distribution function(PDF) which will be based off our trial wave function $\psi_T(\mathbf{r})$,
+\begin{align}
+	P(\mathbf{r}) = \frac{|\psi_T(\mathbf{r})|^2}{\int |\psi_T(\mathbf{r})|^2d\mathbf{r}}
+	\label{eq:pdf}
+\end{align}
+We can use this to rewrite our $E[H]$ which now also depends on $\alpha$,
+\begin{align*}
+	E[H(\alpha)] = \int P(\mathbf{r})E_L(\mathbf{r})d\mathbf{r} \approx \frac{1}{N_{MC}}\sum^{N_{MC}}_{i=1}P(\mathbf{r}_i,\alpha)E_L(\mathbf{r}_i,\alpha)
+\end{align*}
+where $N_{MC}$ is the number of Monte Carlo cycles which we run for. We now have an estimate for the ground state energy from the average of our Monte Carlo samples. The algorithm for the VMC(Variational Monte Carlo) method will be based of the Metropolis algorithm \husk{CITE METROPOLIS!!}, such that a quick review of this is in order.
 
-In order to make any progress with variational Monte Carlo, we need to get ourselves a wave function.
+
+
+\subsection{The Metropolis Algorithm}
+The Metropolis algorithm \husk{SITER} is a method for obtaining a sequence of samples when direct sampling is problematic. Given a PDF $P^{(n)}_i$, where $n$ is the time step, and $i$ is the current state, the algorithm is such that a transitioning probability to a new state $j$ is given by $T_{i\rightarrow j}$. Then, the probability of accepting this state is given by $A_{i\rightarrow j}$. If rejected, no move is performed and we remain at state $i$. We will require that $A$ and $T$ is such that $P^{(n\rightarrow \infty)}_i\rightarrow p_i$. This gives rise to the relation
+\begin{align*}
+	P^{(n)}_i &= \sum_j \left[ P^{(n-1)}_j T_{j\rightarrow i} A_{j\rightarrow i} + P^{(n-1)}_i T_{i\rightarrow j} (1 - A_{i\rightarrow j}) \right] \\
+	&= \sum_j \left[ P^{(n-1)}_j T_{j\rightarrow i} A_{j\rightarrow i} - P^{(n-1)}_i T_{i\rightarrow j} A_{i\rightarrow j} + P^{(n-1)}_i T_{i\rightarrow j}) \right] \\
+	&= \sum_j \left[ P^{(n-1)}_j T_{j\rightarrow i} A_{j\rightarrow i} - P^{(n-1)}_i T_{i\rightarrow j} A_{i\rightarrow j} \right] + P^{(n-1)}_i \sum_j T_{i\rightarrow j}) \\
+	&= \sum_j \left[ P^{(n-1)}_j T_{j\rightarrow i} A_{j\rightarrow i} - P^{(n-1)}_i T_{i\rightarrow j} A_{i\rightarrow j} \right] + P^{(n-1)}_i \cdot 1
+\end{align*}
+Since we require our system to make some transition into a new state $j$, $\sum_j T_{i\rightarrow j} = 1$. Now using the requirement $P^{(n\rightarrow \infty)}_i\rightarrow p_i$, we get 
+\begin{align*}
+	p_i &= \sum_j \left[ p_j T_{j\rightarrow i} A_{j\rightarrow i} - p_i T_{i\rightarrow j} A_{i\rightarrow j} \right] + p_i \\
+	&\downarrow \\
+	0 &= \sum_j \left[p_j T_{j\rightarrow i} A_{j\rightarrow i} - p_i T_{i\rightarrow j} A_{i\rightarrow j} \right]
+\end{align*}
+The requirement applies for the system as a whole when time tends to infinity. This is a rather weak requirement, so we seek to enforce a similar condition to each state. Namely,
+\begin{align*}
+	p_j T_{j\rightarrow i} A_{j\rightarrow i} = p_i T_{i\rightarrow j} A_{i\rightarrow j}
+\end{align*}
+which we observe implies that transitioning and accepting a state $i\rightarrow j$ is equal to that of $j \rightarrow i$. By rearranging we get,
+\begin{align}
+	\frac{A_{j\rightarrow i}}{A_{i\rightarrow j}} = \frac{p_j T_{j\rightarrow i}}{p_i T_{i\rightarrow j}}
+	\label{eq:detailed-balance}
+\end{align}
+This is a much stronger requirement, and is called \textit{detailed balance}. The Metropolis algorithm is now all about maximizing $A$, such that 
+\begin{align*}
+	A_{i\rightarrow j} = \min \left( 1 , \frac{p_i T_{i\rightarrow j}}{p_j T_{j\rightarrow i}} \right)
+\end{align*}
+The ratio which we uses to accept or reject a step is defined as
+\begin{align}
+	q(\mathbf{r}^\text{new},\mathbf{r}^\text{old}) = \frac{p_i T_{i\rightarrow j}}{p_j T_{j\rightarrow i}}
+	\label{eq:acceptance-ratio}
+\end{align}
+Let us then recapitulate what the Metropolis algorithm becomes as applied to our VMC problem.
+\begin{algorithm}[H]
+	\caption{Metropolis algorithm for Variational Monte Carlo. }
+	\label{alg:vmc-metropolis-algorithm}
+	\begin{algorithmic}[1]
+		\State Set up initial conditions for our system.
+		\State Sample a new state $j$ with transition probability $T_{i\rightarrow j}$ by the desired sampling method.
+		\State Accept new state $j$ with acceptance probability $A_{i\rightarrow j}$.
+		\State If rejected, we go back to state $i$.
+		\State Sample the system.
+		\State Repeat step 2-5 $N_{MC}$ times.
+	\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Uniform sampling}
+For sampling a new state(by which we mean a new position), we use
+\begin{align}
+	\mathbf{r}^\text{new} = \mathbf{r}^\text{old} + \xi \Delta \mathbf{r}^\text{old}
+	\label{eq:uniform-sampling}
+\end{align}
+where $\xi$ is a random number chosen from a uniform distribution, and $\Delta \mathbf{r}$ is the step length which we update for. For this kind of uniform sampling, we seek to tune $\Delta \mathbf{r}$ to such that we accept roughly $50\%$ all suggested moves. 
+
+The acceptance ratio \eqref{eq:acceptance-ratio} as applied to our VMC calculation, is (dubbing it as $R$ instead of $q(\mathbf{r}^\text{new},\mathbf{r}^\text{old})$),
+\begin{align}
+	R \equiv \frac{|\psi^\text{new}_T|^2}{|\psi^\text{old}_T|^2}
+	\label{eq:vmc-acceptance-ratio-uniform}
+\end{align}
+
+\subsubsection{Importance sampling}
+If we wish to improve our VMC Metropolis algorithm, we can use something called importance sampling. It is based upon the Fokker-Planck equation, which characterizes a move through coordinate space. For one dimension, it reads
+\begin{align}
+	\frac{\partial P}{\partial t} = D \frac{\partial}{\partial x} \left( \frac{\partial}{\partial x} - F \right)P(x,t)
+	\label{eq:fokker-planck}
+\end{align}
+The $D$ is a referred to as the diffusion constant since it is derived from the Fokker-Planck equation, and the $F$ is called the drift term. A new position in coordinate space is chosen from solving the Langevin equation,
+\begin{align}
+	\frac{\partial x(t)}{\partial t} = DF(x(t)) + \eta
+	\label{eq:langevin}
+\end{align}
+$\eta$ is a random variable. This is solved using Euler's method. For our problem, the solution and sampling of a new position is defined by
+\begin{align}
+	\mathbf{r}^\text{new} = \mathbf{r}^\text{old} + D\mathbf{F}(\mathbf{r}^\text{old})\Delta t + \xi\sqrt{\Delta t}
+	\label{eq:importance-sampling}
+\end{align}
+Where $D=0.5$ in atomic units, and $\mathbf{F}$ is the quantum force as defined by,
+\begin{align}
+	\mathbf{F} = \frac{2}{\psi_T}\nabla\psi_T
+	\label{eq:quantum-force}
+\end{align}
+We typically choose $\Delta t\in [0.001,0.01]$. The random variable $\xi$ is chosen from a Gaussian distribution around $0$ with a standard deviation of $1$. Further, the acceptance ratio $q(\mathbf{r}^\text{new},\mathbf{r}^\text{old})$ now becomes,
+\begin{align}
+	q(\mathbf{r}^\text{new},\mathbf{r}^\text{old}) = \frac{G(\mathbf{r}^\text{old},\mathbf{r}^\text{new})|\psi_T(\mathbf{r}^\text{new})|^2}{G(\mathbf{r}^\text{new},\mathbf{r}^\text{old})|\psi_T(\mathbf{r}^\text{old})|^2}
+	\label{eq:transition-probability-importance-sampling}
+\end{align}
+where the $G(\mathbf{r}^\text{new},\mathbf{r}^\text{old})$ is a Green's function which is a solution to the Fokker-Planck equation. This is a transition probability, and is defined by
+\begin{align}
+	G(\mathbf{r}^\text{new},\mathbf{r}^\text{old}) = \frac{1}{(4\pi D \Delta t)^{3N/2}}\exp \left(-(\rn - \ro - D\delta t \mathbf{F}(\ro))^2/4D\Delta t\right)
+	\label{eq:greens-function}
+\end{align}
+A more detailed derivation of importance sampling can be found in \husk{SITER MORTEN KOMPENDIUM HER}. Is we can already observe, it is possible to simplify the Greens ratio \eqref{eq:transition-probability-importance-sampling} due to the exponential. We will begin by using that the squaring of the exponential implies a dot product for vectors. For simplicity, we dub $\mathbf{x} = \mathbf{r}^\text{old}$ and $\mathbf{y} = \mathbf{r}^\text{new}$. Through a lot of patience, we get \husk{REMOVE THIS???}
+\begin{align*}
+	\frac{G(\mathbf{x},\mathbf{y})}{G(\mathbf{y},\mathbf{x})} &= \exp \bigg[ \frac{1}{4D\Delta t} \Big\{
+	 - \big( x_x^2 - x_x y_x - x_x D\Delta t F_x(\mathbf{y}) + y_x^2 - y_x x_x \\
+	&+ y_x D \Delta t F_x (\mathbf{y}) - x_x D \Delta t F_x(\mathbf{y}) + y_x D \Delta t F_x(\mathbf{y}) + D^2 \Delta t^2 F_x^2(\mathbf{y}) \big) \\ 
+	&+ \big( y_x^2 - y_x x_x - y_x D \Delta t F_x(\mathbf{x}) + x_x^2 - x_x y_x \\
+	&+ x_x D \Delta t F_x(\mathbf{x}) + D^2 \Delta t^2 F_x^2(\mathbf{x}) - y_x D \Delta t F_x(\mathbf{x}) + x_x D \Delta t F_x(\mathbf{x}) \big) \\
+	&- \big( x^2_y -x_y y_y - x_y D \Delta t F_y(\mathbf{y}) - x_y y_y + y_y^2 \\
+	&+ y_y D \Delta t F_y(\mathbf{y}) - x_y D \Delta t F_y(\mathbf{y}) + y_y D \Delta t F_y(\mathbf{y} + D^2 \Delta t^2 F_y^2 (\mathbf{y})) \big) \\
+	&+ \big( y_y^2 - y_y x_y - y_y D \Delta t F_y(\mathbf{x}) + x_y^2 - x_y y_y + x_y D \Delta t F_y(\mathbf{x}) \\
+	&+ D^2 \Delta t^2 F_y^2 (\mathbf{x}) - y_y D \Delta t F_y (\mathbf{x}) + x_y D \Delta t F_y (\mathbf{x}) \big) \Big\} \bigg] \\
+	&= \exp \bigg[ \frac{1}{4D\Delta t} \Big\{ - y_x D \Delta t F_x(\mathbf{x}) + x_x D \Delta t F_x(\mathbf{x}) + D^2 \Delta t^2 F_x^2(\mathbf{x}) \\
+	&- y_x D \Delta t F_x (\mathbf{x}) + x_x D\Delta t F_x(\mathbf{x}) + x_x D \Delta t F_x(\mathbf{y}) - y_x D \Delta t F_x (\mathbf{y}) \\
+	&+ x_x D \Delta t F_x (\mathbf{y}) - y_x D \Delta t F_x (\mathbf{y}) - D^2 \Delta t^2 F_x^2(\mathbf{y}) - y_y D \Delta t F_y(\mathbf{x}) \\
+	&+ x_y D \Delta t F_y (\mathbf{x}) + D^2 \Delta t^2 F_y^2 (\mathbf{x}) - y_y D \Delta t F_y(\mathbf{x}) + x_y D \Delta t F_y(\mathbf{x}) \\
+	&+ x_y D \Delta t F_y (\mathbf{y}) - y_y D \Delta t F_y (\mathbf{y}) + x_y D \Delta t F_y (\mathbf{y}) - y_y D \Delta t F_y(\mathbf{y}) \\
+	&- D^2 \Delta t^2 F_y^2(\mathbf{y})\Big\} \bigg] \\
+	&= \exp \bigg[ \frac{1}{4D\Delta t} \Big\{ -y_x D\Delta t \left[ F_x(\mathbf{x}) + F_x(\mathbf{x}) + F_x(\mathbf{y}) + F_x(\mathbf{y}) \right] \\
+	&- D^2 \Delta t^2 \left[ F_x^2(\mathbf{y}) - F_x^2(\mathbf{x}) \right] + 2x_x D \Delta t \left[ F_x(\mathbf{x}) + F_x (\mathbf{y}) \right] \\
+	&- 2y_y D \Delta t \left[ F_y(\mathbf{x}) + F_y(\mathbf{y}) \right] + 2 x_y D \Delta t \left[ F_y(\mathbf{x}) + F_y(\mathbf{y}) \right] \\
+	&- D^2 \Delta t^2 \left[ F_y^2(\mathbf{y}) - F_y^2 (\mathbf{x}) \right] \Big\} \bigg] \\
+	&= \exp \bigg[ - \frac{y_x}{2}\left( F_x(\mathbf{x}) + F_x(\mathbf{y})\right) - \frac{D \Delta t}{4} \left( F_x^2(\mathbf{y}) - F_x^2(\mathbf{x}) \right) \\
+	&+ \frac{x_x}{2}\left(F_x(\mathbf{x}) + F_x (\mathbf{y})\right) - \frac{y_y}{2}\left(F_y(\mathbf{x}) + F_y(\mathbf{y})\right) \\
+	&- \frac{D \Delta t}{4} \left(F^2_y(\mathbf{y}) - F_y^2(\mathbf{x})\right) + \frac{x_y}{4}\left( F_y(\mathbf{x}) + F_y (\mathbf{y}) \right)\bigg] \\
+\end{align*}
+Through the magic of simplification(but mostly patience), we arrive at
+\begin{align*}
+	\frac{G(\mathbf{x},\mathbf{y})}{G(\mathbf{y},\mathbf{x})} &= \exp\bigg[ \frac{1}{2}(x_x-y_x)\left(F_x(\mathbf{x}) + F_x(\mathbf{y})\right) \\
+	&+ \frac{1}{2}\left(x_y - y_y\right)\left( F_y(\mathbf{x}) + F_y(\mathbf{y})\right) \\
+	&- \frac{D\Delta t}{4}\left( F^2_x(\mathbf{y}) - F_x^2(\mathbf{x}) + F_y^2(\mathbf{y}) - F_y^2(\mathbf{x}) \right)\bigg]
+\end{align*}
+Summing over dimensions, and we get
+\begin{align}
+	\frac{G(\mathbf{x},\mathbf{y})}{G(\mathbf{y},\mathbf{x})} &= \exp\Bigg[ \sum_i^{N_\text{dim}} \frac{1}{2}\left( F_i(\mathbf{x}) + F_i(\mathbf{y}) \right) \left( \frac{D \Delta t}{2}\left(F_i(\mathbf{x}) - F_i(\mathbf{y})\right) - y_i + x_i \right) \Bigg]
+	\label{eq:greens-ratio}
+\end{align}
+
+\subsubsection{Steepest descent}
+The steepest descent method is a simple iterative method for finding a local minimum in parameters. It is used when we are tasked to solve systems of linear equations on the form of
+\begin{align*}
+	A \mathbf{x} = \mathbf{b}
+\end{align*}
+where we through an iterative process seeks to minimize the following,
+\begin{align*}
+	\mathbf{r} = \mathbf{b} - A \mathbf{x}
+\end{align*}
+where the exact solution implies that $\mathbf{r}=0$. The process for solving this through steepest descent can be set up as, 
+\begin{align}
+	\mathbf{x}_{i+1} = \mathbf{x}_i - \nabla f(\mathbf{x}_i) \delta t
+	\label{eq:steepest-descent}
+\end{align}
+Applied to our VMC problem, where we will have one or two variational parameters, $\alpha$ and $\beta$, the equations will take on the form of \eqref{eq:steepest-descent},
+\begin{align}
+	\begin{pmatrix}
+		\alpha_{i+1} \\
+		\beta_{i+1}
+	\end{pmatrix}
+	=
+	\begin{pmatrix}
+		\alpha_{i} \\
+		\beta_{i}
+	\end{pmatrix}
+	- \delta t
+	\begin{pmatrix}
+		\frac{d\langle E_L[\alpha] \rangle}{d\alpha} \\
+		\frac{d\langle E_L[\beta] \rangle}{d\beta}
+	\end{pmatrix}
+\end{align}
+Where the $\langle E_L \rangle$ is the expectation value of the local energy and $\delta t$ is the step size of the method. As is evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist, but are not implemented in the project.
 
 
 
 \subsection{Electron wave function}
 Our wave function will consist of two parts: one that comes from the harmonic oscillator potential and is built up based on the fermionic nature of the system, and one that proved a correlation between two particles - the so-called Jastrow factor. The wave function we construct, will be called our \textit{trial wave function}.
 \begin{align}
-	\psi_T(\mathbf{r}) = \psi_C(\mathbf{r})\psi_{OB}(\mathbf{r})
+	\psi_T(\mathbf{r}) = \psi_J(\mathbf{r})\psi_{SD}(\mathbf{r})
 	\label{eq:WF_trial}
 \end{align}
 
@@ -102,7 +304,7 @@ The details surrounding the mysterious variational parameter $\alpha$ will be ex
 \end{align}
 Note that we have defined $\mathbf{r} \equiv (\mathbf{r_1},\mathbf{r_2},\dots,\mathbf{r_N})$. To pull this definition back to our trial wave function \eqref{eq:WF_trial}, we get
 \begin{align}
-	\psi_{OB}(\mathbf{r}) = Det(\Phi(\mathbf{r}))
+	\psi_{SD}(\mathbf{r}) = Det(\Phi(\mathbf{r}))
 	\label{eq:WF_onebody}
 \end{align}
 Where the $OB$ stands for one body, as in one body wave function. We now need to look into the part that accounts for many body effects, the Jastrow factor.
@@ -110,7 +312,7 @@ Where the $OB$ stands for one body, as in one body wave function. We now need to
 \subsubsection{The Jastrow factor}
 The correlation term is called a \textit{Jastrow factor} is as mentioned here to take into account many-body effects of our system. The general shape of it is
 \begin{align}
-	\psi_C(\mathbf{r}) = \prod_{i<j}^N \exp{\left(\frac{ar_{ij}}{1 + \beta r_{ij}}\right)} = \prod_{i=1}^N \prod_{j=i+1}^N \exp{\left(\frac{ar_{ij}}{1 + \beta r_{ij}}\right)}
+	\psi_J(\mathbf{r}) = \prod_{i<j}^N \exp{\left(\frac{ar_{ij}}{1 + \beta r_{ij}}\right)} = \prod_{i=1}^N \prod_{j=i+1}^N \exp{\left(\frac{ar_{ij}}{1 + \beta r_{ij}}\right)}
 	\label{eq:WF_jastrow}
 \end{align}
 where the $C$ stands for correlation. The $a$ is a parameter that is $1$ for parallel spin, and $1/3$ for anti-parallel spin. The $\beta$ is another variational parameter and the $r_{ij}$ is defined by the equation \eqref{eq:electron_distance} as the distance between two electrons. For now, we shall begin by looking closer at the two-electron case.
@@ -121,11 +323,12 @@ where the $C$ stands for correlation. The $a$ is a parameter that is $1$ for par
 \subsection{Two electron case}
 For the two electron case the Hamiltonian takes on familiar form,
 \begin{align}
-	\hat{H} = -\frac{1}{2}\left(\frac{\partial^2}{\partial x^2_1} + \frac{\partial^2}{\partial y^2_1} + \frac{\partial^2}{\partial x^2_2} + \frac{\partial^2}{\partial y^2_2}\right) + \frac{1}{2}\omega^2(x^2_1 + y^2_1 + x^2_2 + y^2_2) + \frac{1}{r_{12}}
+	H = -\frac{1}{2}\left(\frac{\partial^2}{\partial x^2_1} + \frac{\partial^2}{\partial y^2_1} + \frac{\partial^2}{\partial x^2_2} + \frac{\partial^2}{\partial y^2_2}\right) + \frac{1}{2}\omega^2(x^2_1 + y^2_1 + x^2_2 + y^2_2) + \frac{1}{r_{12}}
 	\label{eq:hamiltonian_two_electron}
 \end{align}
 
 \subsubsection{Unperturbed local energy}
+We begin by looking at the unperturbed local energy, in which we will try to convince ourselves that the local energy comes out to be $2\omega$ in atomic units.
 
 \subsubsection{Local energy}
 
@@ -143,15 +346,6 @@ For the two electron case the Hamiltonian takes on familiar form,
 
 
 
-
-\subsection{The Metropolis Algorithm}
-
-\subsubsection{Steepest descent}
-
-\subsubsection{Importance sampling}
-
-
-
 \section{Implementation}
 
 \subsubsection{Slater determinants}
@@ -166,11 +360,18 @@ D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
 \right.
 \end{align}
 
+
+
 \section{Results}
 
 
 
 \section{Discussion and conclusion}
+
+
+
+\section{Appendix}
+\subsection{Hermite polynomials}
 
 
 \husk{REFERANSER!!}

@@ -5,7 +5,7 @@
 using std::cout;
 using std::endl;
 
-ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions) : MetropolisSampler(new_nParticles, new_nDimensions)
+ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions, WaveFunctions *newWF) : MetropolisSampler(new_nParticles, new_nDimensions, newWF)
 {
     // Allocating memory to the force matrices.
     FOld = new double * [nParticles];
@@ -66,7 +66,8 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
             rNew[i][j] = rOld[i][j];
         }
     }
-    WF->initialize(rOld);
+//    WF->initialize(rOld);
+    WF->initializeWFSampling(rOld);
     for (int i = 0; i < nParticles; i++)
     {
         WF->quantumForce(rOld,FOld,i);
