@@ -27,7 +27,8 @@ public:
     virtual void steepestDescent(double &E, int NCycles);
     virtual void sampleSD(double **r, double &E);
     virtual bool SDConvergenceCriteria();
-    virtual void revert(double ** r);
+    virtual void updateWF();
+    virtual void revert();
     // Printers
     virtual void printVariationalParameters();
     // Setters

@@ -46,6 +46,7 @@ void VMC::updateParticle(int i)
     newWF = WF->calculate(rNew, i);
     if (R->move(rOld, rNew, i, newWF, oldWF))
     {
+        WF->updateWF();
         for (int j = 0; j < nDimensions; j++)
         {
             rOld[i][j] = rNew[i][j];
@@ -55,7 +56,7 @@ void VMC::updateParticle(int i)
     }
     else
     {
-        WF->revert(rOld);
+        WF->revert();
         for (int j = 0; j < nDimensions; j++)
         {
             rNew[i][j] = rOld[i][j];
@@ -130,12 +131,10 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     resetVariables();
     R->initializePositions(rOld, rNew);
     oldWF = WF->initializeWaveFunction(rOld);
-//    WF->initialize(rOld);
-//    oldWF = WF->calculate(rOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
         runMetropolisStep();
-//        if (cycle == 50)
+//        if (cycle == 20)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n"); exit(1);
 //        }

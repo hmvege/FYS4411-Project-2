@@ -67,18 +67,12 @@ double WaveFunctions::coulomb(double ** r)
     /*
      * General method for getting the coulomb interaction value
      */
-    double coulombInteraction = 0.0; // PUT THIS INTO CLASS AS A UPPER HALF MATRIX?
-    double r12abs;
+    double coulombInteraction = 0.0;
     for (int i = 0; i < nParticles; i++)
     {
         for (int j = 0; j < i; j++)
         {
-            r12abs = 0.0;
-            for (int k = 0; k < nDimensions; k++)
-            {
-                r12abs += (r[i][k] - r[j][k])*(r[i][k] - r[j][k]);
-            }
-            coulombInteraction += 1/sqrt(r12abs);
+            coulombInteraction += 1/r_ij(r[i],r[j]);
         }
     }
     return coulombInteraction;
@@ -116,7 +110,14 @@ bool WaveFunctions::SDConvergenceCriteria()
     exit(1);
 }
 
-void WaveFunctions::revert(double ** r)
+void WaveFunctions::updateWF()
+{
+    /*
+     * Function used when a move is accepted. Used by the n-electron case.
+     */
+}
+
+void WaveFunctions::revert()
 {
    /*
     * Function used when resetting certain class-contained variables. Needed by the n-electron case.

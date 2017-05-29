@@ -15,7 +15,14 @@ double UniformSampling::Ratio(double ** rOld, double ** rNew, int i, double newW
 
 bool UniformSampling::move(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
-    return acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF);
+    if (acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 double UniformSampling::nextStep(double ** rOld, int i, int j)

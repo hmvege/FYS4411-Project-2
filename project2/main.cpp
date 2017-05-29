@@ -10,6 +10,8 @@
 #include "samplers/importancesampler.h"
 #include "functions.h"
 
+#include "wavefunctions/n_electron_wf/hermite.h"
+
 using namespace std;
 
 void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double stepLength, double seed, bool impSampling, bool coulomb);
@@ -33,24 +35,27 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
 int main()
 {
     // Constants
-    unsigned int MCCycles   = 1e6;
+    unsigned int MCCycles   = 1e4;
     unsigned int optCycles  = 1e5;
     int maxSDIterations     = 0;
-    int nParticles          = 2;
+    int nParticles          = 6;
     int nDimensions         = 2;
     double omega            = 1.0;
-    double alpha            = 1.0;//0.988559;
-//    double alpha            = 0.762647; // No jastrow, 2 electrons
-//    double alpha            = 0.6; // No jastrow, 6 electrons
-    double a                = 1.0;
+//    double alpha            = 1.0;//0.988559;
     double beta             = 0.4;//0.398665;
+//    double alpha            = 0.686717; // No jastrow, 2 electrons
+//    double alpha            = 1.03741; // 6 electrons
+//    double beta             = 0.472513; // 6 electrons
+    double alpha            = 0.599; // No jastrow, 6 electrons
+//    double alpha            = 0.569619; // No jastrow, 12 electrons
+    double a                = 1.0;
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.01; // Steepest descent step length
     double seed             = -1;//std::time(nullptr);
-    bool importanceSampling = true;
+    bool importanceSampling = false;
     bool coulombInteraction = true;
-    bool jastrowFactor      = true;
+    bool jastrowFactor      = false;
 
     clock_t programStart, programEnd;
     programStart = clock();

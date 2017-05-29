@@ -81,14 +81,15 @@ double State::wfLaplacian(double *r_i, double alpha, double omega)
     double HermYDerivative = hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]);
     double HermXSecondDerivative = hermite->doubleDerivative(n_x,sqrtOmegaAlpha*r_i[0]);
     double HermYSecondDerivative = hermite->doubleDerivative(n_y,sqrtOmegaAlpha*r_i[1]);
-    double expFactor = exp(-omegaAlpha*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
+    double rr = r_i[0]*r_i[0] + r_i[1]*r_i[1];
+    double expFactor = exp(-omegaAlpha*0.5*rr);
 //    wfLap = ( (HermY*hermite->doubleDerivative(n_x,sqrtOmegaAlpha*r_i[0])+ HermX*hermite->doubleDerivative(n_y,sqrtOmegaAlpha*r_i[1]))
 //            - 2*omegaAlpha*(r_i[0]*HermY*HermXDerivative + r_i[1]*HermX*HermYDerivative)
 //            - 2*omegaAlpha*HermX*HermY + omegaAlpha*omegaAlpha*(r_i[0]*r_i[0] + r_i[1]*r_i[1])*HermX*HermY)*expFactor;
 //    printf("d^2H/dx^2 = %20.16f  d^2H/dx^2 = %20.16'f \n", HermXDerivative, HermYDerivative);
-    wfLap = ( (HermY*HermXSecondDerivative + HermX*HermYSecondDerivative)
+    wfLap = ((HermY*HermXSecondDerivative + HermX*HermYSecondDerivative)
             - 2*omegaAlpha*(r_i[0]*HermY*HermXDerivative + r_i[1]*HermX*HermYDerivative)
-            + omegaAlpha*(omegaAlpha*(r_i[0]*r_i[0] + r_i[1]*r_i[1]) - 2)*HermX*HermY)*expFactor; // REWRITE SUCH THAT LITTLE OR NO MEMORY IS WRITTEN!
+            + omegaAlpha*(omegaAlpha*rr - 2)*HermX*HermY)*expFactor; // REWRITE SUCH THAT LITTLE OR NO MEMORY IS WRITTEN!
     return wfLap;
 }
 

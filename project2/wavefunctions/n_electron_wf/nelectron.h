@@ -30,7 +30,8 @@ private:
     double laplacianJastrow(double **r, int k, double *gradJastrow);
     double laplacianSlater(double **r, int k);
     double laplacian(double **r, int k);
-    double a(int i, int j); // Returns value of a
+    double get_a(int i, int j); // Returns value of a
+    double **a;
     // Slater spin matrices
     double **DSpinUp;
     double **DSpinDown;
@@ -79,7 +80,8 @@ public:
     void steepestDescent(double &ESum, int NCycles);
     void sampleSD(double **r, double &E);
     bool SDConvergenceCriteria();
-    void revert(double **r);
+    void revert();
+    void updateWF();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }
     void setAlpha(double newAlpha) { alpha = newAlpha; }
