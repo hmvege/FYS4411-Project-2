@@ -153,10 +153,10 @@ double NElectron::initializeWaveFunction(double **r)
      */
 //    initializeSlater(r); Being initialized in the sampling class instead
     WFSlaterOld = WFSlater;
-    if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
     WFSlater = psiSlater(r);
     if (runJastrow)
     {
+        WFJastrowOld = WFJastrow;
         WFJastrow = psiJastrow(r);
         return WFJastrow*WFSlater;
     }
@@ -174,12 +174,12 @@ double NElectron::calculate(double **r, int k)
      *  r   : position
      *  k   : particle being moved
      */
-    WFSlaterOld = WFSlater;
-    if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
+//    WFSlaterOld = WFSlater;
     updateSlater(r, k);
-    WFSlater = psiSlater(r);
+//    WFSlater = psiSlater(r);
     if (runJastrow)
     {
+        WFJastrowOld = WFJastrow;
         WFJastrow = psiJastrow(r);
         return WFJastrow*WFSlater;
     }
@@ -231,7 +231,6 @@ void NElectron::quantumForce(double **r, double **F, int k)
     if (runJastrow) // If set to run with Jastrow
     {
         gradientJastrow(gradJastrow,r,k);
-        gradientSlater(gradSlater,r,k);
         F[k][0] = 2*(gradSlater[0] + gradJastrow[0]);
         F[k][1] = 2*(gradSlater[1] + gradJastrow[1]);
     }
@@ -423,25 +422,11 @@ void NElectron::updateSlater(double **r, int k)
             DSpinUpInverse[i][j]        = DSpinUp[i][j];
         }
     }
-
+    WFSlaterOld = WFSlater;
+    WFSlater = psiSlater(r);
     // Finding the inverse matrices - COULD BE DONE MORE EFFICIENTLY!!
     inverse(DSpinDownInverse, nParticles/2);
     inverse(DSpinUpInverse, nParticles/2);
-
-//    double tempSum1 = 0;
-//    double tempSum2 = 0;
-//    for (int i = 0; i < nParticles/2; i++)
-//    {
-//        for (int j = 0; j < nParticles/2; j++)
-//        {
-//            tempSum1 += DSpinDown[i][j]*DSpinDownInverse[j][i];
-//            tempSum2 += DSpinUp[i][j]*DSpinUpInverse[j][i];
-//        }
-//    }
-//    double eps = 1e-10;
-//    if ((fabs(tempSum1 / double(nParticles/2) - 1) > eps) || fabs((tempSum2 / double(nParticles/2) - 1) > eps)) {
-//        printf("Spin down:  %18.15f   Spin up: %18.15f \n",tempSum1 / double(nParticles/2), tempSum2 /double(nParticles/2));
-//    }
 
 //    for (int i = 0; i < nParticles/2; i++)
 //    {
@@ -449,21 +434,45 @@ void NElectron::updateSlater(double **r, int k)
 //        {
 //            if (k%2==0) // Spin down
 //            {
-//                updateInverseSlaterElement(DSpinDown, DSpinDownOld, DSpinDownInverse, DSpinDownInverseOld, r, i, j, k/2);
+//                DSpinDownInverse[i][j] = updateInverseSlaterElement(DSpinDown, DSpinDownOld, DSpinDownInverseOld, i, j, k/2);
 //            }
 //            else // Spin up
 //            {
-//                updateInverseSlaterElement(DSpinUp, DSpinUpOld, DSpinUpInverse, DSpinUpInverseOld, r, i, j, (k-1)/2);
+//                DSpinUpInverse[i][j] = updateInverseSlaterElement(DSpinUp, DSpinUpOld, DSpinUpInverseOld, i, j, (k-1)/2);
 //            }
 //        }
 //    }
+    // Checking if we got the right inverses
+    double tempSum1 = 0;
+    double tempSum2 = 0;
+    for (int i = 0; i < nParticles/2; i++)
+    {
+        for (int j = 0; j < nParticles/2; j++)
+        {
+            tempSum1 += DSpinDown[i][j]*DSpinDownInverse[j][i];
+            tempSum2 += DSpinUp[i][j]*DSpinUpInverse[j][i];
+        }
+    }
+
+    // TESTING
+//    printf("D*D^-1 = %5.2f\n", DSpinDown[0][0]*DSpinDownInverse[0][0]);
+//    cout << DSpinDown[0][0] << " " << DSpinDownInverse[0][0] << endl;
+//    printf("D*D^-1 = %5.2f\n", DSpinUp[0][0]*DSpinUpInverse[0][0]);
+//    cout << DSpinUp[0][0] << " " << DSpinUpInverse[0][0] << endl <<endl;
+    double eps = 1e-15;
+    if ((fabs(tempSum1 / double(nParticles/2) - 1) > eps) || fabs((tempSum2 / double(nParticles/2) - 1) > eps)) {
+        printf("Spin down:  D*D^-1 = %5.16f\n", DSpinDown[0][0]*DSpinDownInverse[0][0]);
+        printf("Spin up:    D*D^-1 = %5.16f\n", DSpinUp[0][0]*DSpinUpInverse[0][0]);
+        cout << "Inverse not working." << endl;
+        exit(1);
+    }
+
 }
 
-void NElectron::updateInverseSlaterElement(double **DNew,
+double NElectron::updateInverseSlaterElement(double **DNew,
                                            double **DOld,
-                                           double **DInverseNew,
                                            double **DInverseOld,
-                                           double **r, int i, int j, int k)
+                                           int k, int j, int i)
 {
     /*
      * An efficient way of updating the inverse of the Slater matrices.
@@ -474,24 +483,23 @@ void NElectron::updateInverseSlaterElement(double **DNew,
      *  k   : Particle that is being updated
      */
     double R = WFSlater/WFSlaterOld;
-//    if (runJastrow) R *= WFJastrow/WFJastrowOld;
     double sum = 0;
-    if (j!=k)
+    if (j!=i)
     {
         for (int l = 0; l < nParticles/2; l++)
         {
 //            sum += states[l]->wf(r[k],alpha,omega)*DInverse[l][j];
-            sum += DNew[k][l]*DInverseOld[l][j];
+            sum += DNew[i][l]*DInverseOld[l][j];
         }
-        DInverseNew[i][j] -= DInverseOld[i][k]/R * sum;
+        return DInverseOld[k][j] - DInverseOld[k][i]/R * sum;
     }
     else
     {
         for (int l = 0; l < nParticles/2; l++)
         {
-            sum += DOld[k][l]*DInverseOld[l][j];
+            sum += DOld[i][l]*DInverseOld[l][j];
         }
-        DInverseNew[i][j] = DInverseOld[i][k]/R * sum;
+        return DInverseOld[k][i]/R * sum;
     }
 }
 
@@ -585,8 +593,6 @@ void NElectron::gradientJastrow(double * grad, double **r, int k)
      *  r       : positions of the particles
      *  k       : particle we are getting the gradient for
      */
-    grad[0] = 0;
-    grad[1] = 0;
     double commonFactor = 0;
     double r_dist = 0;
     double r_ijBeta = 0;
@@ -681,6 +687,11 @@ void NElectron::revert(double **r)
     /*
      * Function for reverting the slater matrices in case Metropolis step is rejected.
      */
+    WFSlater = WFSlaterOld;
+    if (runJastrow)
+    {
+        WFJastrow = WFJastrowOld;
+    }
     for (int i = 0; i < nParticles/2; i++) // Particles
     {
         for (int j = 0; j < nParticles/2; j++) // States

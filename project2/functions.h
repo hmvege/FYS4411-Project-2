@@ -17,7 +17,4 @@ void **matrix(int row, int col, int num_bytes);
 void ludcmp(double **, int, int *, double*);
 void lubksb(double **, int, int *, double *);
 
-int spinDownIndex(int i);
-int spinUpIndex(int i);
-
 #endif // FUNCTIONS_H

@@ -124,9 +124,6 @@ double ImportanceSampler::GreensRatio(double **y, double **x, int k)
     }
     GreensFunction = exp(GreensFunction);
     return GreensFunction;
-//    return exp(0.5*((x[k][0] - y[k][0])*(FOld[k][0] + FNew[k][0])  +
-//                    (x[k][1] - y[k][1])*(FOld[k][1] + FNew[k][1])) +
-//            deltatD*0.25*(FOld[k][0]*FOld[k][0] + FOld[k][1]*FOld[k][1] - FNew[k][1]*FNew[k][1] - FNew[k][0]*FNew[k][0]));
 }
 
 void ImportanceSampler::printQMForces()

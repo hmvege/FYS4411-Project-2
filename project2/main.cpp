@@ -33,10 +33,10 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
 int main()
 {
     // Constants
-    unsigned int MCCycles   = 1e5;
+    unsigned int MCCycles   = 1e6;
     unsigned int optCycles  = 1e5;
     int maxSDIterations     = 0;
-    int nParticles          = 6;
+    int nParticles          = 2;
     int nDimensions         = 2;
     double omega            = 1.0;
     double alpha            = 1.0;//0.988559;

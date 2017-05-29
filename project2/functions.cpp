@@ -292,13 +292,3 @@ void printMatrix(double **A, int dim)
         cout << endl;
     }
 }
-
-int spinUpIndex(int i)
-{
-    return 1;
-}
-
-int spinDownIndex(int i)
-{
-    return -1;
-}

@@ -176,8 +176,8 @@ void VMC::printResults()
     /*
      * Printing results of the VMC run.
      */
-    cout << "Energy:                    " << ESum << endl;
-    cout << "Variance:                  " << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
+    cout << "Energy:                    " << std::setprecision(15) << ESum << endl;
+    cout << "Variance:                  " << std::setprecision(15) << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
     cout << "Acceptance rate:           " << double(acceptanceCounter) / double(nParticles * MCCycles) * 100 << " %" << endl;
 }
 

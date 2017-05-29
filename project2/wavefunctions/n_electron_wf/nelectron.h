@@ -22,7 +22,7 @@ private:
     // Functions used internally
     void initializeSlater(double **r);
     void updateSlater(double **r, int k);
-    void updateInverseSlaterElement(double **DNew, double **DOld, double **DInverseNew, double **DInverseOld, double **r, int i, int j, int k);
+    double updateInverseSlaterElement(double **DNew, double **DOld, double **DInverseOld, int k, int j, int i);
     double psiJastrow(double **r);
     double psiSlater(double **r);
     void gradientJastrow(double *grad, double **r, int k);
