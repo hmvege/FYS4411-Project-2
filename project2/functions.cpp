@@ -287,8 +287,26 @@ void printMatrix(double **A, int dim)
     {
         for (int j = 0; j < dim; j++)
         {
+//            printf("%10.5f ", A[i][j]);
             cout << A[i][j] << " ";
         }
         cout << endl;
+    }
+}
+
+void multiplieMatrices(double **A, double **B, double **C, int dim)
+/*
+ * Simple matrix multiplier.
+ */
+{
+    for (int i = 0; i < dim; i++)
+    {
+        for (int j = 0; j < dim; j++)
+        {
+            for (int k = 0; k < dim; k++)
+            {
+                C[i][j] += A[i][k]*B[k][j];
+            }
+        }
     }
 }

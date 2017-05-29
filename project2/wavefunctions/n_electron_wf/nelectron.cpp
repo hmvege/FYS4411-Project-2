@@ -128,28 +128,6 @@ NElectron::~NElectron()
     delete [] DSpinUpInverseOld;
 }
 
-//void NElectron::initialize(double **r, double &WF)
-//{
-//    /*
-//     * Initializes the slater determinant for our wave function.
-//     * Arguments:
-//     *  r   : particle positions
-//     */
-//    initializeSlater(r);
-//    WFSlaterOld = WFSlater;
-//    if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
-//    WFSlater = psiSlater(r);
-//    if (runJastrow)
-//    {
-//        WFJastrow = psiJastrow(r);
-//        WF = WFJastrow*WFSlater;
-//    }
-//    else
-//    {
-//        WF = WFSlater;
-//    }
-//}
-
 void NElectron::initializeWFSampling(double **r)
 {
     /*
@@ -167,7 +145,6 @@ double NElectron::initializeWaveFunction(double **r)
      * Arguments:
      *  r   : position
      */
-//    initializeSlater(r); Being initialized in the sampling class instead
     WFSlaterOld = WFSlater;
     WFSlater = psiSlater(r);
     if (runJastrow)
@@ -190,12 +167,9 @@ double NElectron::calculate(double **r, int k)
      *  r   : position
      *  k   : particle being moved
      */
-//    WFSlaterOld = WFSlater;
     updateSlater(r, k);
-//    WFSlater = psiSlater(r);
     if (runJastrow)
     {
-//        WFJastrowOld = WFJastrow;
         WFJastrow = psiJastrow(r);
         return WFJastrow*WFSlater;
     }
@@ -426,11 +400,6 @@ void NElectron::updateSlater(double **r, int k)
     {
         for (int j = 0; j < nParticles/2; j++) // States
         {
-            // Storing old slater matrices
-//            DSpinDownOld[i][j]          = DSpinDown[i][j];
-//            DSpinUpOld[i][j]            = DSpinUp[i][j];
-//            DSpinDownInverseOld[i][j]   = DSpinDownInverse[i][j];
-//            DSpinUpInverseOld[i][j]     = DSpinUpInverse[i][j];
             // Getting new slater matrices
             DSpinDown[i][j]             = states[2*j]->wf(r[2*i], alpha, omega);
             DSpinUp[i][j]               = states[2*j+1]->wf(r[2*i+1], alpha, omega);
@@ -438,8 +407,9 @@ void NElectron::updateSlater(double **r, int k)
             DSpinUpInverse[i][j]        = DSpinUp[i][j];
         }
     }
-//    WFSlaterOld = WFSlater;
     WFSlater = psiSlater(r);
+    inverse(DSpinDownInverse, nParticles/2);
+    inverse(DSpinUpInverse, nParticles/2);
     // Finding the inverse matrices - COULD BE DONE MORE EFFICIENTLY!!
 //    arma::mat DUp = arma::mat(nParticles/2,nParticles/2);
 //    arma::mat DUpInv = arma::mat(nParticles/2,nParticles/2);
@@ -465,8 +435,12 @@ void NElectron::updateSlater(double **r, int k)
 //    }
 //    cout << DDown*DDownInv << endl;
 //    cout << DUp*DUpInv << endl;
-    inverse(DSpinDownInverse, nParticles/2);
-    inverse(DSpinUpInverse, nParticles/2);
+//    double eps = 10-15;
+//    if ((arma::accu(DDown*DDownInv)/(nParticles/2) < eps) || (arma::accu(DUp*DUpInv)/(nParticles/2) < eps))
+//    {
+//        cout << DDown*DDownInv << endl;
+//        cout << DUp*DUpInv << endl;
+//    }
 
 //    for (int i = 0; i < nParticles/2; i++)
 //    {
@@ -486,28 +460,36 @@ void NElectron::updateSlater(double **r, int k)
     // Checking if we got the right inverses =============================
 //    double tempSum1 = 0;
 //    double tempSum2 = 0;
-//    for (int i = 0; i < nParticles/2; i++)
-//    {
-//        for (int j = 0; j < nParticles/2; j++)
-//        {
+//    for (int i = 0; i < nParticles/2; i++) {
+//        for (int j = 0; j < nParticles/2; j++) {
 //            tempSum1 += DSpinDown[i][j]*DSpinDownInverse[j][i];
 //            tempSum2 += DSpinUp[i][j]*DSpinUpInverse[j][i];
 //        }
 //    }
-//    cout << arma::sum(arma::sum(DUp*DUpInv,0),0) << endl;
-//    tempSum1 = arma::accu(DUp*DUpInv);
-//    tempSum2 = arma::accu(DDown*DDownInv);
-    // TESTING
-//    printf("D*D^-1 = %5.2f\n", DSpinDown[0][0]*DSpinDownInverse[0][0]);
-//    cout << DSpinDown[0][0] << " " << DSpinDownInverse[0][0] << endl;
-//    printf("D*D^-1 = %5.2f\n", DSpinUp[0][0]*DSpinUpInverse[0][0]);
-//    cout << DSpinUp[0][0] << " " << DSpinUpInverse[0][0] << endl <<endl;
 //    double eps = 1e-10;
 //    if ((fabs(tempSum1 / double(nParticles/2) - 1) > eps) || fabs((tempSum2 / double(nParticles/2) - 1) > eps)) {
-//        printf("Spin down:  D*D^-1 = %5.16f\n", DSpinDown[0][0]*DSpinDownInverse[0][0]);
-//        printf("Spin up:    D*D^-1 = %5.16f\n", DSpinUp[0][0]*DSpinUpInverse[0][0]);
+////        printf("Spin down:  D*D^-1 = %5.16f\n", DSpinDown[0][0]*DSpinDownInverse[0][0]);
+////        printf("Spin up:    D*D^-1 = %5.16f\n", DSpinUp[0][0]*DSpinUpInverse[0][0]);
 //        cout << "Inverse not working." << endl;
-////        exit(1);
+
+//        // Allocating
+//        double **C = new double*[nParticles/2];
+//        for (int i = 0; i < nParticles/2; i++) { C[i] = new double[nParticles/2]; }
+
+//        printMatrix(DSpinDown,nParticles/2);
+//        cout << endl;
+//        printMatrix(DSpinDownInverse,nParticles/2);
+//        cout << endl;
+//        printMatrix(DSpinUp,nParticles/2);
+//        cout << endl;
+//        printMatrix(DSpinUpInverse,nParticles/2);
+//        cout << endl;
+//        multiplieMatrices(DSpinUpInverse,DSpinUp,C,nParticles/2);
+//        printMatrix(C,nParticles/2);
+//        cout << "====" << endl;
+//        // De-allocating
+//        for (int i = 0; i < nParticles/2; i++) { delete [] C[i];}
+//        delete [] C;
 //    }
 
 }
