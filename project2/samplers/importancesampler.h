@@ -25,8 +25,6 @@ public:
     void initializeSampling(double newStepLength, double newSeed, double newD);
     double GreensRatio(double **y, double **x, int k);
     void setStepLength(double newStepLength) { deltat = newStepLength; }
-
-    // TEMP
     void printQMForces();
 };
 

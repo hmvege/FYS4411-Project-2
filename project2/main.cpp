@@ -36,7 +36,7 @@ int main()
     unsigned int MCCycles   = 1e5;
     unsigned int optCycles  = 1e5;
     int maxSDIterations     = 0;
-    int nParticles          = 2;
+    int nParticles          = 6;
     int nDimensions         = 2;
     double omega            = 1.0;
     double alpha            = 1.0;//0.988559;
@@ -135,7 +135,6 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
     if (impSampling) {
         ImportanceSampler importanceSampling(nParticles, nDimensions, &WF_2Jastrov);
         importanceSampling.initializeSampling(deltat, seed, D);
-//        importanceSampling.setWaveFunction(&WF_2Jastrov);
         VMC_2Electron.setMetropolisSampler(&importanceSampling);
     }
     else
@@ -163,7 +162,6 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
     if (impSampling) {
         ImportanceSampler importanceSampling(nParticles, nDimensions, &WF_NElectron);
         importanceSampling.initializeSampling(deltat, seed, D);        
-//        importanceSampling.setWaveFunction(&WF_NElectron);
         VMC_NElectron.setMetropolisSampler(&importanceSampling);
     }
     else

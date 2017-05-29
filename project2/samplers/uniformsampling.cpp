@@ -55,6 +55,5 @@ void UniformSampling::initializePositions(double **rOld, double **rNew)
             rNew[i][j] = rOld[i][j];
         }
     }
-    std::cout << "okay in uniform sampling" << std::endl;
     WF->initializeWFSampling(rOld);
 }

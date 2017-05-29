@@ -151,7 +151,7 @@ double NElectron::initializeWaveFunction(double **r)
      * Arguments:
      *  r   : position
      */
-//    initializeSlater(r);
+//    initializeSlater(r); Being initialized in the sampling class instead
     WFSlaterOld = WFSlater;
     if (runJastrow) WFJastrowOld = WFJastrow; // Need to update WF before updating slater determinant
     WFSlater = psiSlater(r);
@@ -449,20 +449,20 @@ void NElectron::updateSlater(double **r, int k)
 //        {
 //            if (k%2==0) // Spin down
 //            {
-//                DSpinDownInverseOld[i][j] = DSpinDownInverse[i][j];
-//                updateInverseSlaterElement(DSpinDown, DSpinDownInverse, r, i, j, k/2);
+//                updateInverseSlaterElement(DSpinDown, DSpinDownOld, DSpinDownInverse, DSpinDownInverseOld, r, i, j, k/2);
 //            }
 //            else // Spin up
 //            {
-//                DSpinUpInverseOld[i][j] = DSpinUpInverse[i][j];
-//                updateInverseSlaterElement(DSpinUp, DSpinUpInverse, r, i, j, (k-1)/2);
+//                updateInverseSlaterElement(DSpinUp, DSpinUpOld, DSpinUpInverse, DSpinUpInverseOld, r, i, j, (k-1)/2);
 //            }
 //        }
 //    }
 }
 
-void NElectron::updateInverseSlaterElement(double **D,
-                                           double **DInverse,
+void NElectron::updateInverseSlaterElement(double **DNew,
+                                           double **DOld,
+                                           double **DInverseNew,
+                                           double **DInverseOld,
                                            double **r, int i, int j, int k)
 {
     /*
@@ -474,23 +474,24 @@ void NElectron::updateInverseSlaterElement(double **D,
      *  k   : Particle that is being updated
      */
     double R = WFSlater/WFSlaterOld;
-    if (runJastrow) R *= WFJastrow/WFJastrowOld;
+//    if (runJastrow) R *= WFJastrow/WFJastrowOld;
     double sum = 0;
     if (j!=k)
     {
-        for (int l = 0; l < nParticles; l++)
+        for (int l = 0; l < nParticles/2; l++)
         {
-            sum += states[l]->wf(r[k],alpha,omega)*DInverse[l][j];
+//            sum += states[l]->wf(r[k],alpha,omega)*DInverse[l][j];
+            sum += DNew[k][l]*DInverseOld[l][j];
         }
-        DInverse[i][j] -= DInverse[i][k]/R * sum;
+        DInverseNew[i][j] -= DInverseOld[i][k]/R * sum;
     }
     else
     {
-        for (int l = 0; l < nParticles; l++)
+        for (int l = 0; l < nParticles/2; l++)
         {
-            sum += D[k][l]*DInverse[l][j];
+            sum += DOld[k][l]*DInverseOld[l][j];
         }
-        DInverse[i][j] = DInverse[i][k]/R * sum;
+        DInverseNew[i][j] = DInverseOld[i][k]/R * sum;
     }
 }
 

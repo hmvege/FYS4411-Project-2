@@ -61,12 +61,10 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
         FNew[i] = new double [nDimensions];
         for (int j = 0; j < nDimensions; j ++)
         {
-//            rOld[i][j] = acceptance_dist(generator)*2.0 - 1.0; // STORE OLD QM FORCE
             rOld[i][j] = gaussian_dist(generator)*sqrtDeltat;
             rNew[i][j] = rOld[i][j];
         }
     }
-//    WF->initialize(rOld);
     WF->initializeWFSampling(rOld);
     for (int i = 0; i < nParticles; i++)
     {
@@ -131,9 +129,11 @@ double ImportanceSampler::GreensRatio(double **y, double **x, int k)
 //            deltatD*0.25*(FOld[k][0]*FOld[k][0] + FOld[k][1]*FOld[k][1] - FNew[k][1]*FNew[k][1] - FNew[k][0]*FNew[k][0]));
 }
 
-// REMOVE ONCE DONE
 void ImportanceSampler::printQMForces()
 {
+    /*
+     * Function used for diagnostic and bug-testing purposes.
+     */
     cout << "Old QMF" << endl;
     for (int i = 0; i < nParticles; i++)
     {

@@ -135,7 +135,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
         runMetropolisStep();
-//        if (cycle == 100)
+//        if (cycle == 50)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n"); exit(1);
 //        }
