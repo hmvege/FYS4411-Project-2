@@ -3,20 +3,23 @@
 #include <fstream>
 #include <iomanip>
 #include <ctime>
+#include <mpi.h>
 #include "vmc.h"
 #include "samplers/metropolissampler.h"
 
 using std::cout;
 using std::endl;
 
-VMC::VMC(int new_nParticles, int new_nDimensions, std::string newFilename)
+VMC::VMC(int new_nParticles, int new_nDimensions, std::string newFilename, int new_numprocs, int new_processRank)
 {
     /*
      * Constructor for the Variational Metropolis class. Arguments:
      * new_nParticles   : number of particles
      * new_nDimensions  : number of dimensions
      */
-    filename = newFilename;
+    numprocs = new_numprocs;
+    processRank = new_processRank;
+    filename = newFilename + std::to_string(processRank);
     setNParticles(new_nParticles);
     setNDimensions(new_nDimensions);
     oldWF = 0;
@@ -165,13 +168,8 @@ void VMC::writeToFile()
     /*
      * Writing out to file every MCSamplingFrequency.
      */
-    std::ofstream file;
-    file.open("output/" + filename + "_Particle" + std::to_string(nParticles) + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
-    for (int i = 0; i < MCSamplingFrequency; i++)
-    {
-        file.write(reinterpret_cast<char*>(&EArr[i]), sizeof(double));
-        file << endl;
-    }
+    std::ofstream file("output/" + filename + "_Particle" + std::to_string(nParticles) + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::binary | std::ofstream::app);
+    file.write(reinterpret_cast<const char*> (EArr), MCSamplingFrequency*sizeof(double));
     file.close();
 }
 
@@ -191,8 +189,14 @@ void VMC::statistics(int cycles)
     /*
      * Gets basic statistics of the calculations
      */
+    double ESumTemp = 0;
+    double ESumSquaredTemp = 0;
     ESum /= double(cycles);
     ESumSquared /= double(cycles);
+    MPI_Reduce(&ESum, &ESumTemp, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&ESumSquared, &ESumSquaredTemp, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    ESum = ESumTemp/double(numprocs);
+    ESumSquared = ESumSquaredTemp/double(numprocs);
 }
 
 void VMC::printResults()
@@ -200,9 +204,12 @@ void VMC::printResults()
     /*
      * Printing results of the VMC run.
      */
-    cout << "Energy:                    " << std::setprecision(15) << ESum << endl;
-    cout << "Variance:                  " << std::setprecision(15) << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
-    cout << "Acceptance rate:           " << double(acceptanceCounter) / double(nParticles * MCCycles) * 100 << " %" << endl;
+    if (processRank == 0)
+    {
+        cout << "Energy:                    " << std::setprecision(15) << ESum << endl;
+        cout << "Variance:                  " << std::setprecision(15) << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
+        cout << "Acceptance rate:           " << double(acceptanceCounter) / double(nParticles * MCCycles) * 100 << " %" << endl;
+    }
 }
 
 void VMC::resetVariables()

@@ -14,6 +14,10 @@ private:
     int acceptanceCounter = 0;
     unsigned int MCCycles;
 
+    // For parallel processing
+    int numprocs;
+    int processRank;
+
     // Variables used globally by program
     double oldWF;           // Old wavefunction
     double newWF;           // New wavefunction
@@ -39,7 +43,7 @@ private:
     WaveFunctions *WF = nullptr;
     MetropolisSampler *R = nullptr;
 public:
-    VMC(int new_nParticles, int new_nDimensions, std::string newFilename);
+    VMC(int new_nParticles, int new_nDimensions, std::string newFilename, int new_numprocs, int new_processRank);
     ~VMC();
     void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations, int newMCSamplingFrequency);
     void printResults();
