@@ -8,3 +8,6 @@ data = np.fromfile("output/NElectron_Particle6_MC100000_omega1.000000_alpha1.000
 
 print len(data)
 print np.mean(data)
+
+def apply_blocking(dataset):
+	

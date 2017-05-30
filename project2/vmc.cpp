@@ -113,22 +113,27 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         {
             runSDStep();
         }
+        MPI_Barrier(MPI_COMM_WORLD);
         statistics(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-        WF->printVariationalParameters(SDCounter);
+        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         SDCounter++;
-        if (std::fabs(EOld - ESum) < 1e-9){ break; } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
+//        if (std::fabs(EOld - ESum) < 1e-9)
+//        {
+//            cout << "ok" << endl;
+//            break;
+//        } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
         EOld = ESum;
     }
     if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
     {
         if (SDCounter==maxSteepestDescentIterations)
         {
-            cout << "Warning! No convergence found after " << SDCounter << " iterations" << endl;
+            if (processRank == 0) cout << "Warning! No convergence found after " << SDCounter << " iterations" << endl;
         }
         else
         {
-            cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
+            if (processRank == 0) cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
         }
     }
     // Main part of Metropolis ====================================================================

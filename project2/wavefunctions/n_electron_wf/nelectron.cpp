@@ -4,10 +4,8 @@
 #include "hermite.h"
 #include "state.h"
 #include "functions.h"
-
 #include <armadillo>
-
-// TEMP
+#include <mpi.h>
 #include <iomanip>
 
 using std::cout;
@@ -257,12 +255,25 @@ void NElectron::SDStatistics(int NCycles)
      * r        : positions
      * NCycles  : Monte Carlo cycles
      */
-    dPsiAlphaSum    /= double(NCycles);
-    dPsiEAlphaSum   /= double(NCycles);
+    double temp_dPsiAlphaSum = 0;
+    double temp_dPsiEAlphaSum = 0;
+    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    dPsiAlphaSum = temp_dPsiAlphaSum/double(NCycles);
+    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(NCycles);
+
+//    dPsiAlphaSum    /= double(NCycles);
+//    dPsiEAlphaSum   /= double(NCycles);
     if (runJastrow)
     {
-        dPsiBetaSum     /= double(NCycles);
-        dPsiEBetaSum    /= double(NCycles);
+        double temp_dPsiBetaSum = 0;
+        double temp_dPsiEBetaSum = 0;
+        MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        dPsiBetaSum = temp_dPsiBetaSum/double(NCycles);
+        dPsiEBetaSum = temp_dPsiEBetaSum/double(NCycles);
+//        dPsiBetaSum     /= double(NCycles);
+//        dPsiEBetaSum    /= double(NCycles);
     }
 }
 
