@@ -114,7 +114,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         WF->steepestDescent(ESum, optimizationCycles);
         WF->printVariationalParameters(SDCounter);
         SDCounter++;
-        if (std::fabs(EOld - ESum) < 1e-14){ break; } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
+        if (std::fabs(EOld - ESum) < 1e-9){ break; } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
         EOld = ESum;
     }
     if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
@@ -154,10 +154,10 @@ void VMC::sampleSystem(int cycle)
     /*
      * Base statistics that should be sampled for each run. CHANGE TO STORE IN ARRAY?
      */
-    EArr[(cycle) % MCSamplingFrequency] = E;
     E = WF->localEnergy(rOld);
     ESum += E;
     ESumSquared += E*E;
+    EArr[(cycle) % MCSamplingFrequency] = E;
 }
 
 void VMC::writeToFile()
@@ -166,10 +166,11 @@ void VMC::writeToFile()
      * Writing out to file every MCSamplingFrequency.
      */
     std::ofstream file;
-    file.open("output/" + filename + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
+    file.open("output/" + filename + "_Particle" + std::to_string(nParticles) + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
     for (int i = 0; i < MCSamplingFrequency; i++)
     {
         file.write(reinterpret_cast<char*>(&EArr[i]), sizeof(double));
+        file << endl;
     }
     file.close();
 }
@@ -190,8 +191,8 @@ void VMC::statistics(int cycles)
     /*
      * Gets basic statistics of the calculations
      */
-    ESum /= double(MCCycles);
-    ESumSquared /= double(MCCycles);
+    ESum /= double(cycles);
+    ESumSquared /= double(cycles);
 }
 
 void VMC::printResults()

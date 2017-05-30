@@ -39,8 +39,8 @@ int main()
     unsigned int MCCycles   = 1e6;
     unsigned int optCycles  = 1e5;
     int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 100;
-    int nParticles          = 2;
+    int maxSDIterations     = 0;
+    int nParticles          = 6;
     int nDimensions         = 2;
     double omega            = 1.0;
     double alpha            = 1.0;//0.988559; // 2 electrons
@@ -65,8 +65,8 @@ int main()
     programStart = clock();
 
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency);
-    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency);
-//    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency);
+//    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency);
+    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency);
 
     programEnd = clock();
     for (int i = 0; i < 1e2; i++) { cout << "="; } cout << endl; // Printing a line

@@ -1,6 +1,9 @@
 #Ignoring all build files that go into the binary folder
 bin/*
 
+# Ignoring all data files
+output/*
+
 #OS junk
 *.DS_Store
 

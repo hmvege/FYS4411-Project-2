@@ -22,9 +22,7 @@ private:
     double E = 0;           // Energy
     double ESum = 0;        // Energy sum
     double ESumSquared = 0; // Energy squared sum
-
-    double *EArr;
-    double *ESquaredArr;
+    double *EArr;           // For storing energy to be writting out to file
 
     void resetVariables();
     void updateParticle(int i);
@@ -34,7 +32,6 @@ private:
     void sampleSystemSD();
     void statistics(int cycles);
 
-//    std::ofstream *file;
     std::string filename;
     void writeToFile();
     int MCSamplingFrequency;
