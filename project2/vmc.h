@@ -28,6 +28,13 @@ private:
     double ESumSquared = 0; // Energy squared sum
     double *EArr;           // For storing energy to be writting out to file
 
+    double EKinetic = 0;
+    double EKineticSum = 0;
+    double EKineticSquaredSum = 0;
+    double EPotential = 0;
+    double EPotentialSum = 0;
+    double EPotentialSquaredSum = 0;
+
     void resetVariables();
     void updateParticle(int i);
     void runMetropolisStep(int cycle);

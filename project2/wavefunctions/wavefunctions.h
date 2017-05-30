@@ -20,7 +20,8 @@ public:
     virtual void initializeWFSampling(double **r);
     virtual double initializeWaveFunction(double **r);
     virtual double calculate(double **r, int k);
-    virtual double localEnergy(double **r);
+//    virtual double localEnergy(double **r);
+    virtual void localEnergy(double **r, double &ETotal, double &EKinetic, double &EPotential);
     virtual void quantumForce(double **r, double **F, int k);
     virtual void steepestDescent(double &E, int NCycles);
     virtual void sampleSD(double **r, double &E);

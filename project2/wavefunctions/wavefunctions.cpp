@@ -44,7 +44,7 @@ double WaveFunctions::calculate(double ** r, int k)
     return 1.0; // Add stuff here?
 }
 
-double WaveFunctions::localEnergy(double ** r)
+void WaveFunctions::localEnergy(double **r, double &ETotal, double &EKinetic, double &EPotential)
 {
     /*
      * Returns the energy of the wavefunction at a given coordinate.
@@ -52,7 +52,6 @@ double WaveFunctions::localEnergy(double ** r)
      */
     cout << "If you're seeing this, you are doing it wrong in WaveFunctions::localEnergy" << endl;
     exit(1);
-    return 1.0; // Add more stuff here as well?
 }
 
 void WaveFunctions::quantumForce(double **r, double **F, int k)

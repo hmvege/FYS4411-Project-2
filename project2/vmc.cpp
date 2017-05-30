@@ -116,7 +116,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         MPI_Barrier(MPI_COMM_WORLD);
         statistics(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-        if (processRank == 0) WF->printVariationalParameters(SDCounter);
+//        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         SDCounter++;
 //        if (std::fabs(EOld - ESum) < 1e-9)
 //        {
@@ -125,6 +125,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
 //        } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
         EOld = ESum;
     }
+    if (processRank == 0) WF->printVariationalParameters(SDCounter);
     if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
     {
         if (SDCounter==maxSteepestDescentIterations)
@@ -162,7 +163,11 @@ void VMC::sampleSystem(int cycle)
     /*
      * Base statistics that should be sampled for each run. CHANGE TO STORE IN ARRAY?
      */
-    E = WF->localEnergy(rOld);
+    WF->localEnergy(rOld, E, EKinetic, EPotential);
+    EKineticSum += EKinetic;
+    EKineticSquaredSum += EKinetic*EKinetic;
+    EPotentialSum += EPotential;
+    EPotentialSquaredSum += EPotential*EPotential;
     ESum += E;
     ESumSquared += E*E;
     EArr[(cycle) % MCSamplingFrequency] = E;
@@ -183,7 +188,11 @@ void VMC::sampleSystemSD()
     /*
      * Steepest descent system sampler
      */
-    E = WF->localEnergy(rOld);
+    WF->localEnergy(rOld, E, EKinetic, EPotential);
+    EKineticSum += EKinetic;
+    EKineticSquaredSum += EKinetic*EKinetic;
+    EPotentialSum += EPotential;
+    EPotentialSquaredSum += EPotential*EPotential;
     ESum += E;
     ESumSquared += E*E;
     WF->sampleSD(rOld, E);
@@ -202,6 +211,24 @@ void VMC::statistics(int cycles)
     MPI_Reduce(&ESumSquared, &ESumSquaredTemp, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     ESum = ESumTemp/double(numprocs);
     ESumSquared = ESumSquaredTemp/double(numprocs);
+
+    double EKineticSumTemp = 0;
+    double EKineticSumSquaredTemp = 0;
+    EKineticSum /= double(cycles);
+    EKineticSquaredSum /= double(cycles);
+    MPI_Reduce(&EKineticSum, &EKineticSumTemp, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&EKineticSquaredSum, &EKineticSumSquaredTemp, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    EKineticSum = EKineticSumTemp/double(numprocs);
+    EKineticSquaredSum = EKineticSumSquaredTemp/double(numprocs);
+
+    double EPotentialSumTemp = 0;
+    double EPotentialSumSquaredTemp = 0;
+    EPotentialSum /= double(cycles);
+    EPotentialSquaredSum /= double(cycles);
+    MPI_Reduce(&EPotentialSum, &EPotentialSumTemp, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&EPotentialSquaredSum, &EPotentialSumSquaredTemp, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    EPotentialSum = EPotentialSumTemp/double(numprocs);
+    EPotentialSquaredSum = EPotentialSumSquaredTemp/double(numprocs);
 }
 
 void VMC::printResults()
@@ -211,8 +238,12 @@ void VMC::printResults()
      */
     if (processRank == 0)
     {
+        cout << "Kinetic energy:            " << std::setprecision(15) << EKineticSum << endl;
+        cout << "Kinetic energy variance:   " << std::setprecision(15) << (EKineticSquaredSum - EKineticSum*EKineticSum)/double(MCCycles) << endl;
+        cout << "Potential energy:          " << std::setprecision(15) << EPotentialSum << endl;
+        cout << "Potential energy variance: " << std::setprecision(15) << (EPotentialSquaredSum - EPotentialSum*EPotentialSum)/double(MCCycles) << endl;
         cout << "Energy:                    " << std::setprecision(15) << ESum << endl;
-        cout << "Variance:                  " << std::setprecision(15) << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
+        cout << "Energy variance:           " << std::setprecision(15) << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
         cout << "Acceptance rate:           " << double(acceptanceCounter) / double(nParticles * MCCycles) * 100 << " %" << endl;
     }
 }

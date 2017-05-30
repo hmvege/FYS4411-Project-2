@@ -45,17 +45,17 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     unsigned int MCCycles   = 4e8/numprocs;
     unsigned int optCycles  = 1e5;
     int MCSamplingFrequency = 1e6;
-    int maxSDIterations     = 200; // 0 turns it completely off
+    int maxSDIterations     = 200; // 0 turns it completely off, 200 is default
 //    int nParticles          = 2;
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
     double omega[5]         = {1.0, 0.5, 0.1, 0.05, 0.1};
-    double alpha[4][5] = {
-        {1.0, 0.95, 0.95, 0.91, 0.91},
-        {1.03, 0.93, 0.83, 0.84, 0.84},
-        {1.10, 0.93, 0.83, 0.84, 0.84},
-        {1.06, 0.94, 0.83, 0.84, 0.84}
+    double alpha[4][5][2] = {
+        {{1.0,0.7}, {0.95,0.66}, {0.95,0.66}, {0.91,0.5}, {0.91,0.5}},
+        {{1.03,0.6}, {0.93,0.6}, {0.83,0.6}, {0.84,0.6}, {0.84,0.6}},
+        {{1.10,0.56}, {0.93,0.5}, {0.83,0.4}, {0.84,0.3}, {0.84,0.22}},
+        {{1.06,0.5}, {0.94,0.43}, {0.83,0.3}, {0.84,0.22}, {0.84,0.13}}
     };
     double beta[4][5] = {
         {0.4, 0.36, 0.23, 0.2, 0.2},
@@ -77,9 +77,9 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
     double seed             = -1-processRank;//std::time(nullptr);
-    bool importanceSampling = false;
+    bool importanceSampling = true;
     bool coulombInteraction = true;
-    bool jastrowFactor      = true;
+//    bool jastrowFactor      = true;
 
     clock_t programStart, programEnd;
     clock_t runStart, runEnd;
@@ -88,14 +88,17 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, 1.0, beta,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
 //    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) // Default is less than 4
     {
-        for (int j = 0; j < 5; j++)
+        for (int j = 0; j < 5; j++) // Default is less than 5
         {
-            runStart = clock();
-            runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
-            runEnd= clock();
-            if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
+            for (int k = 0; k < 2; k++) // Jastrow factor
+            {
+                runStart = clock();
+                runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
+                runEnd= clock();
+                if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
+            }
         }
     }
 
@@ -125,7 +128,7 @@ void printRunInfo(int MCCycles, int maxSDIterations, int nParticles, int importa
     cout << "MC-cycles:                 " << MCCycles << endl;
     cout << "Omega:                     " << omega << endl;
     cout << "Alpha:                     " << alpha << endl;
-    if (beta != 0) cout << "Beta:                      " << beta << endl;
+    if (beta != 0 && jastrov) cout << "Beta:                      " << beta << endl;
     cout << "Jastrov                    ";
     if (jastrov) { cout << "TRUE" << endl; } else { cout << "FALSE" << endl; }
     cout << "Steepest descent:          ";

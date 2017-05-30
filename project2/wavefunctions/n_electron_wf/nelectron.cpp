@@ -159,26 +159,27 @@ double NElectron::calculate(double **r, int k)
 }
 
 
-double NElectron::localEnergy(double **r)
+void NElectron::localEnergy(double **r, double &ETotal, double &EKinetic, double &EPotential)
 {
     /*
      * Returns the local energy for N electrons.
      * Arguments:
      *  r   : particle positions
      */
-    double energy = 0;
+    double kineticEnergy = 0;
+    double potentialEnergy = 0;
     for (int i = 0; i < nParticles; i++)
     {
-        energy += -0.5*laplacian(r,i) + 0.5*omega*omega*(r[i][0]*r[i][0] + r[i][1]*r[i][1]);
+        kineticEnergy += -0.5*laplacian(r,i);
+        potentialEnergy += 0.5*omega*omega*(r[i][0]*r[i][0] + r[i][1]*r[i][1]);
     }
     if (coulombInteraction)
     {
-        return energy + coulomb(r);
+        potentialEnergy += coulomb(r);
     }
-    else
-    {
-        return energy;
-    }
+    EKinetic = kineticEnergy;
+    EPotential = potentialEnergy;
+    ETotal = kineticEnergy + potentialEnergy;
 }
 
 void NElectron::quantumForce(double **r, double **F, int k)

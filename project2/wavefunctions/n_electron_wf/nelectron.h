@@ -66,7 +66,7 @@ public:
     void initializeWFSampling(double **r);
     double initializeWaveFunction(double **r);
     double calculate(double **r, int k);
-    double localEnergy(double **r);
+    void localEnergy(double **r, double &ETotal, double &EKinetic, double &EPotential);
     void quantumForce(double **r, double **F, int k);
     void steepestDescent(double &ESum, int NCycles);
     void sampleSD(double **r, double &E);
