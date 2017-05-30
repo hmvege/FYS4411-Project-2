@@ -11,9 +11,8 @@ private:
     double Ratio(double **rOld, double **rNew, int i, double newWF, double oldWF);
 public:
     UniformSampling(int new_nParticles, int new_nDimensions, WaveFunctions *newWF);
-    bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
-    double nextStep(double **rOld, int i, int j);
-    void initialize(double newStepLength, double newSeed);
+    bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);    
+    void initializeSampling(double newStepLength, double newSeed);
     void initializePositions(double **rOld, double **rNew);
     void updatePositions(double **rOld, double **rNew, int k);
     // Public setters

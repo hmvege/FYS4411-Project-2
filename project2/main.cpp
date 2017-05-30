@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <ctime>
+#include <mpi.h>
 #include "vmc.h"
 #include "wavefunctions/twoelectronplain.h"
 #include "wavefunctions/twoelectronjastrov.h"
@@ -10,43 +11,46 @@
 #include "samplers/importancesampler.h"
 #include "functions.h"
 
-#include "wavefunctions/n_electron_wf/hermite.h"
-
 using namespace std;
 
-void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double stepLength, double seed, bool impSampling, bool coulomb);
-void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions, double omega, double alpha, double a, double beta, double D, double deltat, double seed, double SDStepLength, bool runImpSampling, bool coulomb);
+void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double stepLength,
+                  double seed, bool impSampling, bool coulomb, string filename, int MCSamplingFrequency);
+void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions,
+                      double omega, double alpha, double a, double beta, double D, double deltat, double seed,
+                      double SDStepLength, bool runImpSampling, bool coulomb, string filename, int MCSamplingFrequency);
 void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions,
-                   double omega, double alpha, double beta, double D, double deltat, double seed,
-                   double SDStepLength, bool impSampling, bool coulomb, bool jastrow);
+                   double omega, double alpha, double beta, double D, double deltat, double seed, double SDStepLength,
+                   bool impSampling, bool coulomb, bool jastrow, string filename, int MCSamplingFrequency);
 
 /*
  * TODO GENERAL:
- * [ ] Switch to new r_if(r1,r2) function in all classes
- * [ ] Clean up unused variables(e.g. n_VarParams) <- CHECK ALL WARNINGS
- * [ ] Add destructors to where it is appropriate
- * [ ] Make the variable a for the two-electron cases non-global
- * [ ] Clean up main to a simpler interface
+ * [x] Switch to new r_if(r1,r2) function in all classes
+ * [x] Clean up unused variables(e.g. n_VarParams) <- CHECK ALL WARNINGS
  * [ ] Add data sampling to file for every MCCount % 10000
  * [ ] Parallelize code
+ * [ ] Clean up main to a simpler interface for the heavy data gathering run
+ * [ ] Setup blocking
  */
 
 
 int main()
 {
     // Constants
-    unsigned int MCCycles   = 1e4;
+    unsigned int MCCycles   = 1e6;
     unsigned int optCycles  = 1e5;
-    int maxSDIterations     = 0;
-    int nParticles          = 6;
+    int MCSamplingFrequency = 1e5;
+    int maxSDIterations     = 100;
+    int nParticles          = 2;
     int nDimensions         = 2;
     double omega            = 1.0;
-//    double alpha            = 1.0;//0.988559;
-    double beta             = 0.4;//0.398665;
+    double alpha            = 1.0;//0.988559; // 2 electrons
+    double beta             = 0.4;//0.398665; // 2 electrons
+//    double alpha            = 1.03741;    // 6 electrons
+//    double beta             = 0.472513;   // 6 electrons
+//    double alpha            = 1.10364;  // 12 electrons
+//    double beta             = 0.468861; // 12 electrons
 //    double alpha            = 0.686717; // No jastrow, 2 electrons
-//    double alpha            = 1.03741; // 6 electrons
-//    double beta             = 0.472513; // 6 electrons
-    double alpha            = 0.599; // No jastrow, 6 electrons
+//    double alpha            = 0.599; // No jastrow, 6 electrons
 //    double alpha            = 0.569619; // No jastrow, 12 electrons
     double a                = 1.0;
     double D                = 0.5; // equals 0.5 in atomic units
@@ -55,14 +59,14 @@ int main()
     double seed             = -1;//std::time(nullptr);
     bool importanceSampling = false;
     bool coulombInteraction = true;
-    bool jastrowFactor      = false;
+    bool jastrowFactor      = true;
 
     clock_t programStart, programEnd;
     programStart = clock();
 
-//    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction);
-//    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction);
-    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor);
+//    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency);
+    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, a, beta,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency);
+//    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency);
 
     programEnd = clock();
     for (int i = 0; i < 1e2; i++) { cout << "="; } cout << endl; // Printing a line
@@ -89,54 +93,45 @@ void printRunInfo(int MCCycles, int maxSDIterations, int nParticles, int importa
     cout << "RESULTS:" << endl;
 }
 
-void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double stepLength, double seed, bool impSampling, bool coulomb)
+void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double stepLength, double seed, bool impSampling, bool coulomb, std::string filename, int MCSamplingFrequency)
 {
     /*
-     * Function for running the two electron case. CAN BE CONFIGURED INTO A UNIT TEST LATER
+     * Function for running the two electron case.
      */
     printRunInfo(MCCycles, 0, nParticles, impSampling, coulomb, false);
-    twoElectronPlain WF_2Electron(nParticles, nDimensions, 1, omega, alpha);
+    twoElectronPlain WF_2Electron(nParticles, nDimensions, omega, alpha);
     WF_2Electron.setCoulombInteraction(coulomb);
-    VMC VMC_2Electron(nParticles, nDimensions);
+    VMC VMC_2Electron(nParticles, nDimensions, filename);
 
     if (impSampling)
     {
         ImportanceSampler importanceSampling(nParticles, nDimensions, &WF_2Electron);
         importanceSampling.initializeSampling(0.001, seed, 0.5);
-//        importanceSampling.setWaveFunction(&WF_2Electron);
         VMC_2Electron.setMetropolisSampler(&importanceSampling);
     }
     else
     {
         UniformSampling uniformSampling(nParticles, nDimensions, &WF_2Electron);
-        uniformSampling.initialize(stepLength, seed);
+        uniformSampling.initializeSampling(stepLength, seed);
         VMC_2Electron.setMetropolisSampler(&uniformSampling);
     }
     VMC_2Electron.setWaveFunction(&WF_2Electron);
-    VMC_2Electron.runVMC(MCCycles, 0, 0);
+    VMC_2Electron.runVMC(MCCycles, 0, 0, MCSamplingFrequency);
     VMC_2Electron.printResults();
 }
 
 void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions,
                       double omega, double alpha, double a, double beta, double D, double deltat, double seed,
-                      double SDStepLength, bool impSampling, bool coulomb)
+                      double SDStepLength, bool impSampling, bool coulomb, std::string filename, int MCSamplingFrequency)
 {
     /*
      * Function for running the two electron case with Jastrov factor and importance sampling.
      */
     printRunInfo(MCCycles, maxNSD, nParticles, impSampling, coulomb, true);
-    twoElectronJastrov WF_2Jastrov(nParticles, nDimensions, 2, omega, alpha, a, beta);
+    twoElectronJastrov WF_2Jastrov(nParticles, nDimensions, omega, alpha, a, beta);
     WF_2Jastrov.setSDStepLength(SDStepLength);
-    VMC VMC_2Electron(nParticles, nDimensions);
-
+    VMC VMC_2Electron(nParticles, nDimensions, filename);
     WF_2Jastrov.setCoulombInteraction(coulomb);
-
-//    // Temporary fix for the sampling of steepest descent metropolis part ========================
-//    UniformSampling SDR(nParticles, nDimensions, &WF_2Jastrov);
-//    SDR.initialize(1.14, seed-1);
-//    VMC_2Electron.SDR = &SDR;
-//    // ===========================================================================================
-
     if (impSampling) {
         ImportanceSampler importanceSampling(nParticles, nDimensions, &WF_2Jastrov);
         importanceSampling.initializeSampling(deltat, seed, D);
@@ -145,23 +140,23 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
     else
     {
         UniformSampling uniformSampling(nParticles, nDimensions, &WF_2Jastrov);
-        uniformSampling.initialize(1.14, seed); // CHECK STEP!
+        uniformSampling.initializeSampling(1.14, seed);
         VMC_2Electron.setMetropolisSampler(&uniformSampling);
     }
 
     VMC_2Electron.setWaveFunction(&WF_2Jastrov);
-    VMC_2Electron.runVMC(MCCycles, optCycles, maxNSD);
+    VMC_2Electron.runVMC(MCCycles, optCycles, maxNSD, MCSamplingFrequency);
     VMC_2Electron.printResults();
 }
 
 void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions,
                    double omega, double alpha, double beta, double D, double deltat, double seed,
-                   double SDStepLength, bool impSampling, bool coulomb, bool jastrow)
+                   double SDStepLength, bool impSampling, bool coulomb, bool jastrow, std::string filename, int MCSamplingFrequency)
 {
     printRunInfo(MCCycles, maxNSD, nParticles, impSampling, coulomb, jastrow);
-    NElectron WF_NElectron(nParticles, nDimensions, 2, omega, alpha, beta);
+    NElectron WF_NElectron(nParticles, nDimensions, omega, alpha, beta);
     WF_NElectron.setSDStepLength(SDStepLength);
-    VMC VMC_NElectron(nParticles, nDimensions);
+    VMC VMC_NElectron(nParticles, nDimensions, filename);
     WF_NElectron.setCoulombInteraction(coulomb);
     WF_NElectron.setJastrow(jastrow);
     if (impSampling) {
@@ -172,10 +167,10 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
     else
     {
         UniformSampling uniformSampling(nParticles, nDimensions, &WF_NElectron);
-        uniformSampling.initialize(1.14, seed); // CHECK STEP!
+        uniformSampling.initializeSampling(1.14, seed);
         VMC_NElectron.setMetropolisSampler(&uniformSampling);
     }
     VMC_NElectron.setWaveFunction(&WF_NElectron);
-    VMC_NElectron.runVMC(MCCycles,optCycles,maxNSD);
+    VMC_NElectron.runVMC(MCCycles,optCycles,maxNSD, MCSamplingFrequency);
     VMC_NElectron.printResults();
 }

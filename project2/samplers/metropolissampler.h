@@ -18,7 +18,6 @@ public:
     virtual ~MetropolisSampler();
     virtual bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
     virtual double Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF);
-    virtual double nextStep(double **rOld, int i, int j);
     virtual void updatePositions(double ** rOld, double ** rNew, int k);
     virtual void initializePositions(double **rOld, double **rNew);
     // Public setters

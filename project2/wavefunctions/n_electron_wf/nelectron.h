@@ -22,40 +22,33 @@ private:
     // Functions used internally
     void initializeSlater(double **r);
     void updateSlater(double **r, int k);
-    double updateInverseSlaterElement(double **DNew, double **DOld, double **DInverseOld, int k, int j, int i);
+    double updateInverseSlaterElement(arma::mat DNew, arma::mat DOld, arma::mat DInverseOld, int k, int j, int i);
     double psiJastrow(double **r);
-    double psiSlater(double **r);
+    double psiSlater();
     void gradientJastrow(double *grad, double **r, int k);
     void gradientSlater(double *grad, double **r, int k);
     double laplacianJastrow(double **r, int k, double *gradJastrow);
     double laplacianSlater(double **r, int k);
     double laplacian(double **r, int k);
     double get_a(int i, int j); // Returns value of a
-    double **a;
+    double **a; // Matrix for the different a values(they depend on spin
     // Slater spin matrices
-    double **DSpinUp;
-    double **DSpinDown;
-    double **DSpinUpInverse;
-    double **DSpinDownInverse;
+    arma::mat DSpinUp;
+    arma::mat DSpinDown;
+    arma::mat DSpinUpInverse;
+    arma::mat DSpinDownInverse;
     // Storing spin-matrices in case we need to revert:
-    double **DSpinUpOld;
-    double **DSpinDownOld;
-    double **DSpinUpInverseOld;
-    double **DSpinDownInverseOld;
-
-//    arma::mat DSpinDown;
-//    arma::mat DSpinUp;
-//    arma::mat DSpinDownInverse;
-//    arma::mat DSpinUpInverse;
-    // Matrix for the different a values (which deepends on the spin) - retrive on the fly or if-test fastest?
-//    double **a;
+    arma::mat DSpinUpOld;
+    arma::mat DSpinDownOld;
+    arma::mat DSpinUpInverseOld;
+    arma::mat DSpinDownInverseOld;
     // Hermite class instance for use in the states(to avoid creating many different instances of the same class).
     Hermite hermite;
     // Array for storing quantum states and their wave functions
     State ** states;
     // For steepest descent
     void SDStatistics(int NCycles);
-    void printVariationalParameters();
+    void printVariationalParameters(int i);
     double alphaDerivative(double **r);
     double betaDerivative(double **r);
     double dPsiAlpha = 0;
@@ -64,11 +57,9 @@ private:
     double dPsiAlphaSum = 0;
     double dPsiEAlphaSum = 0;
     double dPsiEBetaSum = 0;
-
-    // FOR RUNNING JASTROW
-    bool runJastrow = true;
+    bool runJastrow;
 public:
-    NElectron(int new_nParticles, int new_nDimensions, int new_nVarParams, double new_omega, double new_alpha, double new_beta);
+    NElectron(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_beta);
     ~NElectron();
 
 //    void initialize(double **r, double &WF);
@@ -82,6 +73,7 @@ public:
     bool SDConvergenceCriteria();
     void revert();
     void updateWF();
+    std::string getParameterString();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }
     void setAlpha(double newAlpha) { alpha = newAlpha; }

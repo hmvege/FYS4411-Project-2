@@ -14,19 +14,14 @@ ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions, Wa
 
 ImportanceSampler::~ImportanceSampler()
 {
-//    for (int i = 0; i < nParticles; i++)
-//    {
-//        delete [] FOld[i];
-//        delete [] FNew[i];
-//    }
-//    delete [] FOld;
-//    delete [] FNew;
+
 }
 
 void ImportanceSampler::initializeSampling(double newStepLength, double newSeed, double newD)
 {
     /*
-     * Initialization of the importance sampler,
+     * Initialization of the importance sampler.
+     * Arguments:
      * newStepLength    : The step length of the Metropolis update
      * newSeed          : The seed to be used by the Mersenne twister RNG
      * newD             : 0.5 in atomic units
@@ -50,6 +45,7 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
 {
     /*
      * Class instance for initializing the electron positions.
+     * Arguements:
      * rOld    : Old positions of the electrons
      * rNew    : New positions of the electrons
      */
@@ -91,6 +87,12 @@ bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, 
 {
     /*
      * Comparing if move should be accepted against an uniform distribution. If accepted, stores the new quantum force as the old.
+     * Arguments:
+     *  rOld        : old particle positions
+     *  rNew        : updated particle positions
+     *  i           : particle being moved
+     *  newWF       : updated wave function
+     *  oldWF       : old wave function
      */
     if (acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF))
     {
@@ -105,6 +107,15 @@ bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, 
 
 double ImportanceSampler::Ratio(double **rOld, double **rNew, int i, double newWF, double oldWF)
 {
+    /*
+     * Calculates the ratio used for comparing of a move should be accepted or not.
+     * Arguments:
+     *  rOld        : old particle positions
+     *  rNew        : updated particle positions
+     *  i           : particle being moved
+     *  newWF       : updated wave function
+     *  oldWF       : old wave function
+     */
     return GreensRatio(rNew, rOld, i)*newWF*newWF/(oldWF*oldWF); // Put the G's together!
 }
 

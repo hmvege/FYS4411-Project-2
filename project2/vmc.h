@@ -4,6 +4,7 @@
 #include <random>
 #include "wavefunctions/wavefunctions.h"
 #include "samplers/metropolissampler.h"
+#include <iostream>
 
 class VMC
 {
@@ -22,26 +23,29 @@ private:
     double ESum = 0;        // Energy sum
     double ESumSquared = 0; // Energy squared sum
 
+    double *EArr;
+    double *ESquaredArr;
+
     void resetVariables();
     void updateParticle(int i);
-    void runMetropolisStep();
+    void runMetropolisStep(int cycle);
     void runSDStep();
-    void sampleSystem();
+    void sampleSystem(int cycle);
     void sampleSystemSD();
     void statistics(int cycles);
+
+//    std::ofstream *file;
+    std::string filename;
+    void writeToFile();
+    int MCSamplingFrequency;
 
     WaveFunctions *WF = nullptr;
     MetropolisSampler *R = nullptr;
 public:
-    VMC(int new_nParticles, int new_nDimensions);
+    VMC(int new_nParticles, int new_nDimensions, std::string newFilename);
     ~VMC();
-    void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations);
+    void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations, int newMCSamplingFrequency);
     void printResults();
-
-    // TEMP ==========================================================================================
-    void diagnostics();
-//    MetropolisSampler *SDR = nullptr;
-    // ===============================================================================================
 
     // Setters
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }

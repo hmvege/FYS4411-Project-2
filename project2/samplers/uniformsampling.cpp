@@ -5,16 +5,20 @@
 
 UniformSampling::UniformSampling(int new_nParticles, int new_nDimensions, WaveFunctions *newWF) : MetropolisSampler(new_nParticles, new_nDimensions, newWF)
 {
-//    cout << "Remember to comment on uniform sampling" << edl;
-}
 
-double UniformSampling::Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
-{
-    return (newWF*newWF)/(oldWF*oldWF);
 }
 
 bool UniformSampling::move(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
+    /*
+     * Comparing if move should be accepted against an uniform distribution. If accepted, stores the new quantum force as the old.
+     * Arguments:
+     *  rOld        : old particle positions
+     *  rNew        : updated particle positions
+     *  i           : particle being moved
+     *  newWF       : updated wave function
+     *  oldWF       : old wave function
+     */
     if (acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF))
     {
         return true;
@@ -25,21 +29,42 @@ bool UniformSampling::move(double ** rOld, double ** rNew, int i, double newWF, 
     }
 }
 
-double UniformSampling::nextStep(double ** rOld, int i, int j)
+double UniformSampling::Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF)
 {
-    return  stepLength * uniform_distribution(generator);
+    /*
+     * Calculates the ratio used for comparing of a move should be accepted or not.
+     * Arguments:
+     *  rOld        : old particle positions
+     *  rNew        : updated particle positions
+     *  i           : particle being moved
+     *  newWF       : updated wave function
+     *  oldWF       : old wave function
+     */
+    return (newWF*newWF)/(oldWF*oldWF);
 }
 
 void UniformSampling::updatePositions(double **rOld, double **rNew, int k)
 {
+    /*
+     * Class instance for updating the position of a single electron.
+     * rOld    : Old positions of the electrons
+     * rNew    : New positions of the electrons to be determined
+     * k       : Particle to be updated
+     */
     for (int i = 0; i < nDimensions; i++)
     {
         rNew[k][i] = rOld[k][i] + stepLength*uniform_distribution(generator);
     }
 }
 
-void UniformSampling::initialize(double newStepLength, double newSeed)
+void UniformSampling::initializeSampling(double newStepLength, double newSeed)
 {
+    /*
+     * Initialization of the uniform sampler.
+     * Arguments:
+     * newStepLength    : The step length of the Metropolis update
+     * newSeed          : The seed to be used by the Mersenne twister RNG
+     */
     setSeed(newSeed);
     setStepLength(newStepLength);
     std::mt19937_64 gen(seed); // Starting up the Mersenne-Twister19937 function
@@ -52,6 +77,12 @@ void UniformSampling::initialize(double newStepLength, double newSeed)
 
 void UniformSampling::initializePositions(double **rOld, double **rNew)
 {
+    /*
+     * Class instance for initializing the electron positions.
+     * Arguements:
+     * rOld    : Old positions of the electrons
+     * rNew    : New positions of the electrons
+     */
     for (int i = 0; i < nParticles; i++)
     {
         rOld[i] = new double[nDimensions];

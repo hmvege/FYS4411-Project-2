@@ -41,7 +41,7 @@ double State::wf(double *r_i, double alpha, double omega)
      * omega    : oscillator frequency
      */
     double sqrtOmegaAlpha = sqrt(omega*alpha);
-    return hermite->get(n_x, sqrtOmegaAlpha*r_i[0])*hermite->get(n_y, sqrtOmegaAlpha*r_i[1])*exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
+    return hermite->get(n_x, sqrtOmegaAlpha*r_i[0]) * hermite->get(n_y, sqrtOmegaAlpha*r_i[1]) * exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
 //    return exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1])); // plain and simple omega
 }
 
@@ -58,9 +58,11 @@ void *State::wfGradient(double * wfGrad, double *r_i, double alpha, double omega
     double sqrtOmegaAlpha = sqrt(alpha*omega);
     double HermX = hermite->get(n_x, sqrtOmegaAlpha*r_i[0]);
     double HermY = hermite->get(n_y, sqrtOmegaAlpha*r_i[1]);
+    double HermXDerivative = sqrtOmegaAlpha*hermite->derivative(n_x, sqrtOmegaAlpha*r_i[0]);
+    double HermYDerivative = sqrtOmegaAlpha*hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]);
     double expFactor = exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
-    wfGrad[0] = (hermite->derivative(n_x, sqrtOmegaAlpha*r_i[0]) - omega*alpha*r_i[0]*HermX)*HermY*expFactor;
-    wfGrad[1] = (hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]) - omega*alpha*r_i[1]*HermY)*HermX*expFactor;
+    wfGrad[0] = (HermXDerivative - omega*alpha*r_i[0]*HermX)*HermY*expFactor;
+    wfGrad[1] = (HermYDerivative - omega*alpha*r_i[1]*HermY)*HermX*expFactor;
 }
 
 double State::wfLaplacian(double *r_i, double alpha, double omega)
@@ -77,10 +79,10 @@ double State::wfLaplacian(double *r_i, double alpha, double omega)
     double sqrtOmegaAlpha = sqrt(omegaAlpha);
     double HermX = hermite->get(n_x, sqrtOmegaAlpha*r_i[0]);
     double HermY = hermite->get(n_y, sqrtOmegaAlpha*r_i[1]);
-    double HermXDerivative = hermite->derivative(n_x, sqrtOmegaAlpha*r_i[0]);
-    double HermYDerivative = hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]);
-    double HermXSecondDerivative = hermite->doubleDerivative(n_x,sqrtOmegaAlpha*r_i[0]);
-    double HermYSecondDerivative = hermite->doubleDerivative(n_y,sqrtOmegaAlpha*r_i[1]);
+    double HermXDerivative = sqrtOmegaAlpha*hermite->derivative(n_x, sqrtOmegaAlpha*r_i[0]);
+    double HermYDerivative = sqrtOmegaAlpha*hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]);
+    double HermXSecondDerivative = omegaAlpha*hermite->doubleDerivative(n_x,sqrtOmegaAlpha*r_i[0]);
+    double HermYSecondDerivative = omegaAlpha*hermite->doubleDerivative(n_y,sqrtOmegaAlpha*r_i[1]);
     double rr = r_i[0]*r_i[0] + r_i[1]*r_i[1];
     double expFactor = exp(-omegaAlpha*0.5*rr);
 //    wfLap = ( (HermY*hermite->doubleDerivative(n_x,sqrtOmegaAlpha*r_i[0])+ HermX*hermite->doubleDerivative(n_y,sqrtOmegaAlpha*r_i[1]))

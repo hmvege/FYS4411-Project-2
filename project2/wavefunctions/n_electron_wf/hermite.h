@@ -22,6 +22,24 @@ private:
     static double H10(double x) { return 1024*pow(x,10) - 23040*pow(x,8) + 161280*pow(x,6) - 403200*x*x*x*x + 302400*x*x - 30240; }
 
     polyArr *polynomials = new polyArr[11];
+
+    // First derivative
+    static double dH0(double x) { return 0; }
+    static double dH1(double x) { return 2; }
+    static double dH2(double x) { return 8*x; }
+    static double dH3(double x) { return 24*x*x -12; }
+    static double dH4(double x) { return 64*x*x*x - 96*x; }
+
+    polyArr *polynomialsFirstDerivative = new polyArr[5];
+
+    // Second derivative
+    static double ddH0(double x) { return 0; }
+    static double ddH1(double x) { return 0; }
+    static double ddH2(double x) { return 8; }
+    static double ddH3(double x) { return 48*x; }
+    static double ddH4(double x) { return 192*x*x - 96; }
+
+    polyArr *polynomialsSecondDerivative = new polyArr[5];
 public:
     Hermite();
 

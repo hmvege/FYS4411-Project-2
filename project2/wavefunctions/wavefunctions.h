@@ -1,26 +1,24 @@
 #ifndef WAVEFUNCTIONS_H
 #define WAVEFUNCTIONS_H
 
+#include <iostream>
 
 class WaveFunctions
 {
 protected:
     int nParticles;
     int nDimensions;
-    int nVarParams;
     bool coulombInteraction = true;
     double coulomb(double **r);
     double r_ij(double *r1, double *r2);
     double SDStepLength = 0.01;
 public:
     WaveFunctions() { }
-    WaveFunctions(int new_nParticles, int new_nDimensions, int new_nVarParams);
+    WaveFunctions(int new_nParticles, int new_nDimensions);
     virtual ~WaveFunctions() { }
-
     // Virtuals used by all other classes
     virtual void initializeWFSampling(double **r);
     virtual double initializeWaveFunction(double **r);
-//    virtual void initialize(double **r, double &WF);
     virtual double calculate(double **r, int k);
     virtual double localEnergy(double **r);
     virtual void quantumForce(double **r, double **F, int k);
@@ -29,11 +27,12 @@ public:
     virtual bool SDConvergenceCriteria();
     virtual void updateWF();
     virtual void revert();
+    virtual std::string getParameterString();
     // Printers
-    virtual void printVariationalParameters();
+    virtual void printVariationalParameters(int i);
     // Setters
     void setSDStepLength(double newSDStepLength) { SDStepLength = newSDStepLength; }
-    void setCoulombInteraction(bool C) { coulombInteraction = C; } // TEMP?
+    void setCoulombInteraction(bool C) { coulombInteraction = C; }
 };
 
 #endif // WAVEFUNCTIONS_H

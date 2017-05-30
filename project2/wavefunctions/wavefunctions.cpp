@@ -5,11 +5,10 @@
 using std::cout;
 using std::endl;
 
-WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_nVarParams)
+WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions)
 {
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
-    nVarParams = new_nVarParams;
 }
 
 void WaveFunctions::initializeWFSampling(double ** r)
@@ -98,7 +97,7 @@ void WaveFunctions::sampleSD(double **r, double &E)
     exit(1);
 }
 
-void WaveFunctions::printVariationalParameters()
+void WaveFunctions::printVariationalParameters(int i)
 {
     cout << "Bare wavefunctions class do not contain any variational parameters." << endl;
     exit(1);
@@ -122,4 +121,10 @@ void WaveFunctions::revert()
    /*
     * Function used when resetting certain class-contained variables. Needed by the n-electron case.
     */
+}
+
+std::string WaveFunctions::getParameterString()
+{
+    cout << "Error: This should be implemented at a local basis in each subclass." << endl;
+    exit(1);
 }

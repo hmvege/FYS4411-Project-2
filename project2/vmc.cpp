@@ -9,13 +9,14 @@
 using std::cout;
 using std::endl;
 
-VMC::VMC(int new_nParticles, int new_nDimensions)
+VMC::VMC(int new_nParticles, int new_nDimensions, std::string newFilename)
 {
     /*
      * Constructor for the Variational Metropolis class. Arguments:
      * new_nParticles   : number of particles
      * new_nDimensions  : number of dimensions
      */
+    filename = newFilename;
     setNParticles(new_nParticles);
     setNDimensions(new_nDimensions);
     oldWF = 0;
@@ -64,7 +65,7 @@ void VMC::updateParticle(int i)
     }
 }
 
-void VMC::runMetropolisStep()
+void VMC::runMetropolisStep(int cycle)
 {
     /*
      * Metropolis update
@@ -72,8 +73,8 @@ void VMC::runMetropolisStep()
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(i);
-        sampleSystem();
     }
+    sampleSystem(cycle);
 }
 
 void VMC::runSDStep()
@@ -84,17 +85,19 @@ void VMC::runSDStep()
     for (int i = 0; i < nParticles; i++)
     {
         updateParticle(i);
-        sampleSystemSD();
     }
+    sampleSystemSD();
 }
 
-void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations)
+void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations, int newMCSamplingFrequency)
 {
     /*
      * Function for running the Variational Monte Carlo calculation.
      */
     // Initializing variables and configurations ==================================================
     MCCycles = newMCCycles;
+    MCSamplingFrequency = newMCSamplingFrequency;
+    EArr = new double[MCSamplingFrequency];
     int SDCounter = 0; // Counter for the Steepest Descent algorithm
     // Finding the optimal values for alpha and beta ==============================================
     double EOld = 0; // For checking convergence
@@ -102,8 +105,6 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     {
         resetVariables();
         R->initializePositions(rOld, rNew);
-//        WF->initialize(rOld, oldWF);
-//        oldWF = WF->calculate(rOld);
         oldWF = WF->initializeWaveFunction(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
@@ -111,7 +112,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         }
         statistics(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-        WF->printVariationalParameters();
+        WF->printVariationalParameters(SDCounter);
         SDCounter++;
         if (std::fabs(EOld - ESum) < 1e-14){ break; } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
         EOld = ESum;
@@ -133,24 +134,44 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     oldWF = WF->initializeWaveFunction(rOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
-        runMetropolisStep();
+        runMetropolisStep(cycle);
 //        if (cycle == 100)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n");
 //            exit(1);
 //        }
+        if (((cycle+1) % MCSamplingFrequency) == 0)
+        {
+            writeToFile();
+        }
     }
     statistics(MCCycles);
+    delete [] EArr;
 }
 
-void VMC::sampleSystem()
+void VMC::sampleSystem(int cycle)
 {
     /*
      * Base statistics that should be sampled for each run. CHANGE TO STORE IN ARRAY?
      */
+    EArr[(cycle) % MCSamplingFrequency] = E;
     E = WF->localEnergy(rOld);
     ESum += E;
     ESumSquared += E*E;
+}
+
+void VMC::writeToFile()
+{
+    /*
+     * Writing out to file every MCSamplingFrequency.
+     */
+    std::ofstream file;
+    file.open("output/" + filename + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::out | std::ofstream::binary | std::ofstream::app);
+    for (int i = 0; i < MCSamplingFrequency; i++)
+    {
+        file.write(reinterpret_cast<char*>(&EArr[i]), sizeof(double));
+    }
+    file.close();
 }
 
 void VMC::sampleSystemSD()
@@ -158,7 +179,9 @@ void VMC::sampleSystemSD()
     /*
      * Steepest descent system sampler
      */
-    sampleSystem();
+    E = WF->localEnergy(rOld);
+    ESum += E;
+    ESumSquared += E*E;
     WF->sampleSD(rOld, E);
 }
 
@@ -167,8 +190,8 @@ void VMC::statistics(int cycles)
     /*
      * Gets basic statistics of the calculations
      */
-    ESum /= double(nParticles*cycles);
-    ESumSquared /= double(nParticles*cycles);
+    ESum /= double(MCCycles);
+    ESumSquared /= double(MCCycles);
 }
 
 void VMC::printResults()
@@ -189,30 +212,4 @@ void VMC::resetVariables()
     E = 0;
     ESum = 0;
     acceptanceCounter = 0;
-}
-
-void VMC::diagnostics()
-{
-    // TEMP FUNCITON
-    cout << "WFOld = " << oldWF << endl;
-    cout << "Printing rOld:" << endl;
-    for (int i = 0; i < nParticles; i++)
-    {
-        for (int j = 0; j < nDimensions; j++)
-        {
-            cout << rOld[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << "WFNew = " << newWF << endl;
-    cout << "Printing rNew:" << endl;
-    for (int i = 0; i < nParticles; i++)
-    {
-        for (int j = 0; j < nDimensions; j++)
-        {
-            cout << rNew[i][j] << " ";
-        }
-        cout << endl;
-    }
-    R->printQMForces();
 }
