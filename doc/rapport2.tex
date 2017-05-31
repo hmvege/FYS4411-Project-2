@@ -13,7 +13,7 @@
 \usepackage{hyperref}
 \usepackage{relsize}
 % \usepackage{xspace}
-
+\usepackage{bm}
 \usepackage{tabularx}
 
 \usepackage{algorithm}
@@ -24,7 +24,7 @@
 % \overfullrule=2cm
 
 \newcommand{\husk}[1]{\color{red} #1 \color{black}}
-\newcommand{\expect}[1]{\langle{#1}\rangle}
+\newcommand{\expect}[1]{\left\langle{#1}\right\rangle}
 \newcommand{\bra}[1]{\langle{#1}|}
 \newcommand{\ket}[1]{|{#1}\rangle}
 \newcommand{\rn}{\mathbf{r}^\text{new}}
@@ -261,7 +261,7 @@ where we through an iterative process seeks to minimize the following,
 \end{align*}
 where the exact solution implies that $\mathbf{r}=0$. The process for solving this through steepest descent can be set up as, 
 \begin{align}
-	\mathbf{x}_{i+1} = \mathbf{x}_i - \nabla f(\mathbf{x}_i) \delta t
+	\mathbf{x}_{i+1} = \mathbf{x}_i - \bm{\nabla} f(\mathbf{x}_i) \delta t
 	\label{eq:steepest-descent}
 \end{align}
 Applied to our VMC problem, where we will have one or two variational parameters, $\alpha$ and $\beta$, the equations will take on the form of \eqref{eq:steepest-descent},
@@ -282,11 +282,16 @@ Applied to our VMC problem, where we will have one or two variational parameters
 	\end{pmatrix}
 \end{align}
 Where the $\langle E_L \rangle$ is the expectation value of the local energy and $\delta t$ is the step size of the method. The expectation value of the local energy is found by
-\HUSK{INTRODUSER FORVENTINGSVERDI DERIVERTE HER OG OPPGI HVA MAN MÅ FINNE!!!}
-
+\begin{align}
+	\frac{d\expect{E_L[\alpha_i]}}{d\alpha_i} &= 2 \left( \expect{ \frac{\bar{\psi_{\alpha_i}}}{\psi_T[\alpha_i]}E_L[\alpha_i] } - \expect{\frac{\bar{\psi_{\alpha_i}}}{\psi[\alpha_i]}}\expect{E_L[\alpha_i]} \right)
+	\label{eq:local-energy-variational-derivative}
+\end{align}
+with the derivative of $\psi$ with respect to the variational parameter is defined as
+\begin{align*}
+	\bar{\psi_{\alpha_i}} = \frac{\psi[\alpha_i]}{d\alpha_i}
+\end{align*}
 
 As is evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist\husk{reference?}, but are not implemented in the project.
-
 
 
 \subsection{Electron wave function}
@@ -473,16 +478,40 @@ We also have to find the quantum force given by equation \eqref{eq:quantum-force
 For $r_2$ do we get a minus in front of the last term.
 
 \subsubsection{\texorpdfstring{$\alpha$}{a} and \texorpdfstring{$\beta$}{b} derivatives in the steepest descent algorithm}
-For the steepest descent method \eqref{eq:steepest-descent}, we have to find derivatives of the trial wave function  \eqref{eq:trail-WF-2-electron-jastrow} with respect to $\alpha$ and $\beta$. 
+For the steepest descent method \eqref{eq:steepest-descent}, we have to find derivatives of the trial wave function \eqref{eq:trail-WF-2-electron-jastrow} with respect to $\alpha$ and $\beta$. 
 
-\husk{SKRIV DERIVERTE HER FOR ALPHA BETA}
-
-
+From the equation for the energy expectation value \eqref{eq:local-energy-variational-derivative}, we see that we have to find the derivative of the wave function\eqref{eq:two-body-wf} with respect to the variational parameters $\alpha$ and $\beta$.
+\begin{align}
+	\frac{d\psi_T[\alpha]}{d\alpha} = -\frac{\omega}{2}(r_1^2 + r_2^2)\psi_T
+	\label{eq:2body-alpha-derivative}
+\end{align}
+For $\beta$ we get,
+\begin{align}
+	\frac{d\psi_T[\beta]}{d\beta} = -\frac{a r_{12}^2}{(1+\beta r_{12})^2}\psi_T
+	\label{eq:2body-beta-derivative}
+\end{align}
+Which is what is need in order to apply steepest descent to the two-body Jastrow factor case.
 
 \subsection{\texorpdfstring{$N$}{N} electron case}
-For the $N$-electron case, we apply the Hamiltonian as states in equation \eqref{eq:hamiltonian} at the beginning of the theory section on the trial wave function as stated in \eqref{eq:WF_trial}. 
+For the $N$-electron case, we apply the Hamiltonian as states in equation \eqref{eq:hamiltonian} at the beginning of the theory section on the trial wave function as stated in \eqref{eq:WF_trial}.
+The $N$ electron energy is once more given as the local energy \eqref{eq:local-energy}. From looking at the general Hamiltonian \eqref{eq:hamiltonian}, we see that a major task will be to once more find the laplacian of our trial wave function \eqref{eq:WF_trial}.
+\begin{align}
+	\nabla_i^2\psi_T = \frac{\nabla^2_i\psi_{SD}}{\psi_{SD}} + \frac{\nabla^2_i\psi_J}{\psi_J} + 2\frac{\bm{\nabla}_i\psi_{SD}}{\psi_{SD}}\cdot\frac{\bm{\nabla}_i\psi_{J}}{\psi_J}
+	\label{eq:laplacian-n-electron}
+\end{align}
+We begin by finding the Jastrow terms. The full derivation can be found in the lecture notes for Computational Physics 2 \husk{CITE KOMPENDIEM}. $k$ is here used instead of $i$as in the equation to the Hamiltonian \eqref{eq:hamiltonian}. \husk{HA MED GENERELL FORM OG VIS LITT MER FRAMGANGSMETODE?}
+\begin{align}
+	\frac{1}{\psi_J}\bm{\nabla}_k\psi_J = \sum_{i\neq k}^N \frac{\mathbf{r}_{ik}}{r_{ik}}\frac{a_{ik}}{(1+\beta r_{ik})^2}
+	\label{eq:n-body-jastrow-grad}
+\end{align}
+The laplacian of the Jastrow factor is given as
+\begin{align}
+	\frac{1}{\psi_J}\nabla_k^2 \psi_k = \left( \frac{\bm{\nabla}_k \psi_J}{\psi_J} \right)^2 + \sum_{i\neq k}^N \frac{a_{ik}(1-\beta r_{ik})}{r_{ik}(1+\beta r_{ik})^3}
+	\label{eq:n-body-jastrow-lap}
+\end{align}
 
-\subsubsection{Unperturbed local energy}
+We can now look at the Slater determinant. As shown in http://onlinelibrary.wiley.com/doi/10.1002/qua.560200508/abstract, we can split the spin parts into two Slater determinants, one for spin up and one for spin down since our Hamiltonian is spin independent. Doing this will ensure \husk{HVORFOR SPLITTE?}
+
 
 \subsubsection{Local energy}
 
