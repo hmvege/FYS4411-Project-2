@@ -42,10 +42,10 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 8e6/numprocs;
+    unsigned int MCCycles   = 8e8/numprocs;
     unsigned int optCycles  = 1e5;
-    int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
+    int MCSamplingFrequency = 1e6;
+    int maxSDIterations     = 200; // 0 turns it completely off, 200 is default
 //    int nParticles          = 2;
     int nDimensions         = 2;
     // Values for running parallel
@@ -88,7 +88,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, 1.0, beta,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
 //    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
-    for (int i = 1; i < 2; i++) // Default is i=0 less than 4, particles
+    for (int i = 0; i < 2; i++) // Default is i=0 less than 4, particles
     {
         for (int j = 0; j < 5; j++) // Default is j=0 less than 5, omega values
         {
