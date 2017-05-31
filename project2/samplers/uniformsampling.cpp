@@ -85,8 +85,8 @@ void UniformSampling::initializePositions(double **rOld, double **rNew)
      */
     for (int i = 0; i < nParticles; i++)
     {
-        rOld[i] = new double[nDimensions];
-        rNew[i] = new double[nDimensions];
+//        rOld[i] = new double[nDimensions];
+//        rNew[i] = new double[nDimensions];
         for (int j = 0; j < nDimensions; j ++)
         {
             rOld[i][j] = acceptance_dist(generator)*2.0 - 1.0; // STORE OLD QM FORCE

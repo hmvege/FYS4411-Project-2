@@ -104,6 +104,15 @@ void WaveFunctions::printVariationalParameters(int i)
     exit(1);
 }
 
+void WaveFunctions::printUpdatedVariationalParameters()
+{
+    /*
+     * Prints updated variational parameters from steepest descent.
+     */
+    cout << "Not implemented printUpdatedVariationalParameters for bare WF class" << endl;
+    exit(1);
+}
+
 bool WaveFunctions::SDConvergenceCriteria()
 {
     cout << "Bare wavefunctions class do not Steepest Descent convergence criteria test." << endl;
@@ -122,6 +131,12 @@ void WaveFunctions::revert()
    /*
     * Function used when resetting certain class-contained variables. Needed by the n-electron case.
     */
+}
+
+void WaveFunctions::finalizeSD()
+{
+    cout << "Bare wavefunctions class do not have any finalization of SD." << endl;
+    exit(1);
 }
 
 std::string WaveFunctions::getParameterString()

@@ -26,6 +26,11 @@ VMC::VMC(int new_nParticles, int new_nDimensions, std::string newFilename, int n
     newWF = 0;
     rOld = new double * [nParticles];
     rNew = new double * [nParticles];
+    for (int i = 0; i < nParticles; i++)
+    {
+        rOld[i] = new double[nDimensions];
+        rNew[i] = new double[nDimensions];
+    }
 }
 
 VMC::~VMC()
@@ -103,28 +108,29 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     EArr = new double[MCSamplingFrequency];
     int SDCounter = 0; // Counter for the Steepest Descent algorithm
     // Finding the optimal values for alpha and beta ==============================================
-    double EOld = 0; // For checking convergence
+//    double EOld = 0; // For checking convergence
     while (SDCounter < maxSteepestDescentIterations) // add SD convergence criteria
     {
-        resetVariables();
         R->initializePositions(rOld, rNew);
         oldWF = WF->initializeWaveFunction(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
+//            if ((processRank == 0) && (i % 10000 == 0)) cout << i << endl;
             runSDStep();
         }
-        MPI_Barrier(MPI_COMM_WORLD);
-        statistics(optimizationCycles);
+        statisticsSD(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-//        if (processRank == 0) WF->printVariationalParameters(SDCounter);
+        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         SDCounter++;
 //        if (std::fabs(EOld - ESum) < 1e-9)
 //        {
 //            cout << "ok" << endl;
 //            break;
 //        } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
-        EOld = ESum;
+//        EOld = ESum;
+        resetVariables();
     }
+    if (maxSteepestDescentIterations != 0) { WF->finalizeSD(); } // Takes the average of the WF parmaters
     if (processRank == 0) WF->printVariationalParameters(SDCounter);
     if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
     {
@@ -138,11 +144,11 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         }
     }
     // Main part of Metropolis ====================================================================
-    resetVariables();
     R->initializePositions(rOld, rNew);
     oldWF = WF->initializeWaveFunction(rOld);
     for (unsigned int cycle = 0; cycle < MCCycles; cycle++)
     {
+//        if ((processRank == 0) && (cycle % 10000 == 0)) cout << cycle << endl;
         runMetropolisStep(cycle);
 //        if (cycle == 100)
 //        {
@@ -198,6 +204,19 @@ void VMC::sampleSystemSD()
     WF->sampleSD(rOld, E);
 }
 
+void VMC::statisticsSD(int cycles)
+{
+    /*
+     * Gets basic statistics of the calculations
+     */
+    ESum                    /= double(cycles);
+    ESumSquared             /= double(cycles);
+    EKineticSum             /= double(cycles);
+    EKineticSquaredSum      /= double(cycles);
+    EPotentialSum           /= double(cycles);
+    EPotentialSquaredSum    /= double(cycles);
+}
+
 void VMC::statistics(int cycles)
 {
     /*
@@ -251,9 +270,24 @@ void VMC::printResults()
 void VMC::resetVariables()
 {
     /*
-     * Resets variables used between the steepest desent part and the VMC main run.
+     * Resets variables used between the steepest descent part and the VMC main run.
      */
+    for (int i = 0; i < nParticles; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            rOld[i][j] = 0;
+            rNew[i][j] = 0;
+        }
+    }
     E = 0;
     ESum = 0;
+    ESumSquared = 0;
+    EKinetic = 0;
+    EKineticSum = 0;
+    EKineticSquaredSum = 0;
+    EPotential = 0;
+    EPotentialSum = 0;
+    EPotentialSquaredSum = 0;
     acceptanceCounter = 0;
 }

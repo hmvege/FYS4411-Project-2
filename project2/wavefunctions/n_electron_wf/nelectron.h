@@ -48,7 +48,9 @@ private:
     State ** states;
     // For steepest descent
     void SDStatistics(int NCycles);
+    void finalizeSD();
     void printVariationalParameters(int i);
+    void printUpdatedVariationalParameters();
     double alphaDerivative(double **r);
     double betaDerivative(double **r);
     double dPsiAlpha = 0;

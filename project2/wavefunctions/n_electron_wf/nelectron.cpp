@@ -90,6 +90,16 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, 
         }
     }
 
+    // Initializing spin matrices
+    DSpinDown           = arma::mat(nParticles/2,nParticles/2);
+    DSpinUp             = arma::mat(nParticles/2,nParticles/2);
+    DSpinDownInverse    = arma::mat(nParticles/2,nParticles/2);
+    DSpinUpInverse      = arma::mat(nParticles/2,nParticles/2);
+    DSpinDownOld        = arma::mat(nParticles/2,nParticles/2);
+    DSpinUpOld          = arma::mat(nParticles/2,nParticles/2);
+    DSpinDownInverseOld = arma::mat(nParticles/2,nParticles/2);
+    DSpinUpInverseOld   = arma::mat(nParticles/2,nParticles/2);
+
 //    // Testing
 //    for (int i = 0; i < nParticles; i++)
 //    {
@@ -228,6 +238,10 @@ void NElectron::steepestDescent(double &ESum, int NCycles)
     {
         beta -= SDStepLength * 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
     }
+    dPsiEAlphaSum = 0; // Shouldn't these be reset?
+    dPsiAlphaSum = 0;
+    dPsiBetaSum = 0;
+    dPsiEBetaSum = 0;
 }
 
 void NElectron::sampleSD(double **r, double &E)
@@ -256,28 +270,46 @@ void NElectron::SDStatistics(int NCycles)
      * r        : positions
      * NCycles  : Monte Carlo cycles
      */
+//    double temp_dPsiAlphaSum = 0;
+//    double temp_dPsiEAlphaSum = 0;
+//    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+//    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+//    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
+//    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
+//    if (runJastrow)
+//    {
+//        double temp_dPsiBetaSum = 0;
+//        double temp_dPsiEBetaSum = 0;
+//        MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+//        MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+//        dPsiBetaSum = temp_dPsiBetaSum/double(numprocs);
+//        dPsiEBetaSum = temp_dPsiEBetaSum/double(numprocs);
+//    }
+    dPsiAlphaSum    /= double(NCycles);
+    dPsiEAlphaSum   /= double(NCycles);
+    if (runJastrow)
+    {
+        dPsiBetaSum     /= double(NCycles);
+        dPsiEBetaSum    /= double(NCycles);
+    }
+}
+
+void NElectron::finalizeSD()
+{
     double temp_dPsiAlphaSum = 0;
     double temp_dPsiEAlphaSum = 0;
     MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&temp_dPsiAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&temp_dPsiEAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    dPsiAlphaSum = temp_dPsiAlphaSum/double(NCycles);
-    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(NCycles);
-//    dPsiAlphaSum    /= double(NCycles);
-//    dPsiEAlphaSum   /= double(NCycles);
+    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
+    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
     if (runJastrow)
     {
         double temp_dPsiBetaSum = 0;
         double temp_dPsiEBetaSum = 0;
         MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
         MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&temp_dPsiBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&temp_dPsiEBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        dPsiBetaSum = temp_dPsiBetaSum/double(NCycles);
-        dPsiEBetaSum = temp_dPsiEBetaSum/double(NCycles);
-//        dPsiBetaSum     /= double(NCycles);
-//        dPsiEBetaSum    /= double(NCycles);
+        dPsiBetaSum = temp_dPsiBetaSum/double(numprocs);
+        dPsiEBetaSum = temp_dPsiEBetaSum/double(numprocs);
     }
 }
 
@@ -335,6 +367,19 @@ void NElectron::printVariationalParameters(int i)
     cout << endl;
 }
 
+void NElectron::printUpdatedVariationalParameters()
+{
+    /*
+     * Prints updated variational parameters from steepest descent.
+     */
+    cout << "Updated variational parameters: " << endl;
+    cout << "Alpha = " << std::setw(10) << alpha << endl;;
+    if (runJastrow)
+    {
+        cout << "Beta = " << std::setw(10) << beta << endl;
+    }
+}
+
 bool NElectron::SDConvergenceCriteria()
 {
     printf("Steepest Descent convergence criteria not implemented\n");
@@ -348,14 +393,6 @@ void NElectron::initializeSlater(double **r)
      * Arguments:
      * r    : particle positions
      */
-    DSpinDown           = arma::mat(nParticles/2,nParticles/2);
-    DSpinUp             = arma::mat(nParticles/2,nParticles/2);
-    DSpinDownInverse    = arma::mat(nParticles/2,nParticles/2);
-    DSpinUpInverse      = arma::mat(nParticles/2,nParticles/2);
-    DSpinDownOld        = arma::mat(nParticles/2,nParticles/2);
-    DSpinUpOld          = arma::mat(nParticles/2,nParticles/2);
-    DSpinDownInverseOld = arma::mat(nParticles/2,nParticles/2);
-    DSpinUpInverseOld   = arma::mat(nParticles/2,nParticles/2);
     for (int i = 0; i < nParticles/2; i++) // Particles
     {
         for (int j = 0; j < nParticles/2; j++) // States
@@ -394,9 +431,37 @@ void NElectron::updateSlater(double **r, int k)
             DSpinUp(i,j)    = states[2*j+1]->wf(r[2*i+1], alpha, omega);
         }
     }
+    if ((fabs(det(DSpinDown)) < 1e-16) || (fabs(det(DSpinUp)) < 1e-16))
+    {
+        cout << "ERROR"     << endl;
+        cout << "Positions: " << endl;
+        for (int i = 0; i < nParticles; i++)
+        {
+            for (int j = 0; j < nDimensions; j++)
+            {
+                cout << std::setw(10) << r[i][j] << " ";
+            }
+            cout << endl;
+        }
+        cout << "Wave functions: " << endl;
+        for (int i = 0; i < nParticles/2; i++) // Particles
+        {
+            for (int j = 0; j < nParticles/2; j++) // States
+            {
+                printf("Spin down: %12.8f \n", states[2*j]->wf(r[2*i], alpha, omega));
+                printf("Spin up: %12.8f \n", states[2*j+1]->wf(r[2*i+1], alpha, omega));
+            }
+        }
+        cout << "DSpinDown: \n" << DSpinDown    <<  endl;
+        cout << "DSpinUp: \n"   << DSpinUp      <<  endl;
+        exit(1);
+    }
     WFSlater = psiSlater();
     DSpinDownInverse = arma::inv(DSpinDown);
     DSpinUpInverse = arma::inv(DSpinUp);
+//    arma::inv(DSpinDownInverse,DSpinDown);
+//    arma::inv(DSpinUpInverse,DSpinUp);
+
 
 //    for (int i = 0; i < nParticles/2; i++)
 //    {

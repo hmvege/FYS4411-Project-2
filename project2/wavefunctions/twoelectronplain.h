@@ -19,12 +19,14 @@ public:
     double calculate(double **r, int k);
     virtual double localEnergy(double **r);
     void quantumForce(double **r, double **F, int k);
+    void finalizeSD();
     std::string getParameterString();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }
     void setAlpha(double newAlpha) { alpha = newAlpha; }
     // Printers
     void printVariationalParameters(int i);
+    void printUpdatedVariationalParameters();
 };
 
 #endif // TWOELECTRONPLAIN_H

@@ -42,6 +42,7 @@ private:
     void sampleSystem(int cycle);
     void sampleSystemSD();
     void statistics(int cycles);
+    void statisticsSD(int cycles);
 
     std::string filename;
     void writeToFile();

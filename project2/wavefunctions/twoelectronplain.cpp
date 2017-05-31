@@ -83,6 +83,13 @@ void twoElectronPlain::quantumForce(double **r, double **F, int k)
     }
 }
 
+void twoElectronPlain::finalizeSD()
+{
+    /*
+     * SD not implemented for the two electron WF.
+     */
+}
+
 void twoElectronPlain::printVariationalParameters(int i)
 {
     /*
@@ -90,6 +97,15 @@ void twoElectronPlain::printVariationalParameters(int i)
      * Current steepest descent iteration
      */
     cout << "i = " << std::setw(5) << i << " Alpha = " << alpha << endl;
+}
+
+void twoElectronPlain::printUpdatedVariationalParameters()
+{
+    /*
+     * Prints updated variational parameters from steepest descent.
+     */
+    cout << "Updated variational parameters: " << endl;
+    cout << "Alpha = " << std::setw(10) << alpha << endl;
 }
 
 std::string twoElectronPlain::getParameterString()

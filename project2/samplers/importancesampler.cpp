@@ -10,6 +10,11 @@ ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions, Wa
     // Allocating memory to the force matrices.
     FOld = new double * [nParticles];
     FNew = new double * [nParticles];
+    for (int i = 0; i < nParticles; i++)
+    {
+        FOld[i] = new double [nDimensions];
+        FNew[i] = new double [nDimensions];
+    }
 }
 
 ImportanceSampler::~ImportanceSampler()
@@ -51,12 +56,13 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
      */
     for (int i = 0; i < nParticles; i++)
     {
-        rOld[i] = new double [nDimensions];
-        rNew[i] = new double [nDimensions];
-        FOld[i] = new double [nDimensions];
-        FNew[i] = new double [nDimensions];
+//        rOld[i] = new double [nDimensions];
+//        rNew[i] = new double [nDimensions];
+//        FOld[i] = new double [nDimensions];
+//        FNew[i] = new double [nDimensions];
         for (int j = 0; j < nDimensions; j ++)
         {
+//            rOld[i][j] = gaussian_dist(generator)*sqrtDeltat;
             rOld[i][j] = gaussian_dist(generator)*sqrtDeltat;
             rNew[i][j] = rOld[i][j];
         }

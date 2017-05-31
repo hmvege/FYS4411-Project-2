@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <iomanip>
+#include <mpi.h>
 
 using std::cout;
 using std::endl;
@@ -142,10 +143,26 @@ void twoElectronJastrov::SDStatistics(int NCycles)
      * Arguments:
      *  NCycles     : Monte Carlo cycles
      */
-    dPsiBetaSum     /= double(nParticles*NCycles);
-    dPsiAlphaSum    /= double(nParticles*NCycles);
-    dPsiEAlphaSum   /= double(nParticles*NCycles);
-    dPsiEBetaSum    /= double(nParticles*NCycles);
+    dPsiBetaSum     /= double(NCycles);
+    dPsiAlphaSum    /= double(NCycles);
+    dPsiEAlphaSum   /= double(NCycles);
+    dPsiEBetaSum    /= double(NCycles);
+}
+
+void twoElectronJastrov::finalizeSD()
+{
+    double temp_dPsiAlphaSum = 0;
+    double temp_dPsiEAlphaSum = 0;
+    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
+    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
+    double temp_dPsiBetaSum = 0;
+    double temp_dPsiEBetaSum = 0;
+    MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    dPsiBetaSum = temp_dPsiBetaSum/double(numprocs);
+    dPsiEBetaSum = temp_dPsiEBetaSum/double(numprocs);
 }
 
 void twoElectronJastrov::printVariationalParameters(int i)
@@ -156,6 +173,16 @@ void twoElectronJastrov::printVariationalParameters(int i)
      *  i   : current steepest descent iteration
      */
     cout << "i = " << std::setw(5) << i << " Alpha = " << std::setw(10) << alpha << " Beta = " << std::setw(10) << beta << endl;
+}
+
+void twoElectronJastrov::printUpdatedVariationalParameters()
+{
+    /*
+     * Prints updated variational parameters from steepest descent.
+     */
+    cout << "Updated variational parameters: " << endl;
+    cout << "Alpha = " << std::setw(10) << alpha << endl;
+    cout << "Beta = " << std::setw(10) << beta << endl;
 }
 
 std::string twoElectronJastrov::getParameterString()

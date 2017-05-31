@@ -42,57 +42,53 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 8e8/numprocs;
-    unsigned int optCycles  = 1e5;
-    int MCSamplingFrequency = 1e6;
-    int maxSDIterations     = 200; // 0 turns it completely off, 200 is default
-//    int nParticles          = 2;
+    unsigned int MCCycles   = 1e6;
+    unsigned int optCycles  = 1e4;
+    int MCSamplingFrequency = 1e5;
+    int maxSDIterations     = 100; // 0 turns it completely off, 200 is default
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
     double omega[5]         = {1.0, 0.5, 0.1, 0.05, 0.1};
-    double alpha[4][5][2] = {
+    double alpha[4][5][2]   = {
         {{1.0,0.7}, {0.95,0.66}, {0.95,0.66}, {0.91,0.5}, {0.91,0.5}},
         {{1.03,0.6}, {0.93,0.6}, {0.83,0.6}, {0.84,0.6}, {0.84,0.6}},
         {{1.10,0.56}, {0.93,0.5}, {0.83,0.4}, {0.84,0.3}, {0.84,0.22}},
         {{1.06,0.5}, {0.94,0.43}, {0.83,0.3}, {0.84,0.22}, {0.84,0.13}}
     };
-    double beta[4][5] = {
+    double beta[4][5]       = {
         {0.4, 0.36, 0.23, 0.2, 0.2},
         {0.47, 0.41, 0.2, 0.15, 0.1},
         {0.47, 0.41, 0.2, 0.15, 0.1},
         {0.47, 0.41, 0.2, 0.15, 0.1}
     };
-//    double omega            = 1.0;
-//    double alpha            = 1.0;//0.988559; // 2 electrons
-//    double beta             = 0.4;//0.398665; // 2 electrons
-//    double alpha            = 1.03741;    // 6 electrons
-//    double beta             = 0.472513;   // 6 electrons
-//    double alpha            = 1.10364;  // 12 electrons
-//    double beta             = 0.468861; // 12 electrons
-//    double alpha            = 0.686717; // No jastrow, 2 electrons
-//    double alpha            = 0.599; // No jastrow, 6 electrons
-//    double alpha            = 0.569619; // No jastrow, 12 electrons
+    // For testing on 2 particles
+//    int nParticles_2        = 2;
+//    double alpha_2plain     = 0.686717; // No jastrow, 2 electrons
+//    double omega_2          = 1.0;
+//    double alpha_2jas       = 1.0;//0.988559; // 2 electrons
+//    double beta_2jas        = 0.4;//0.398665; // 2 electrons
+    // Global setings
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
     double seed             = -1-processRank;//std::time(nullptr)-processRank;
     bool importanceSampling = true;
     bool coulombInteraction = true;
-//    bool jastrowFactor      = true;
-
+    // Timers
     clock_t programStart, programEnd;
     clock_t runStart, runEnd;
     programStart = clock();
 
-//    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
-//    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, 1.0, beta,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
+//    run2Electron(MCCycles, nParticles_2, nDimensions, omega_2, alpha_2plain, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
+//    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2jas, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
 //    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
-    for (int i = 0; i < 2; i++) // Default is i=0 less than 4, particles
+    // Main loop for all different cases
+    for (int i = 1; i < 2; i++) // Default is i=0, i < 4, particles
     {
-        for (int j = 0; j < 5; j++) // Default is j=0 less than 5, omega values
+        for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
         {
-            for (int k = 0; k < 2; k++) // Jastrow factor, jastrow on/off
+            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
             {
                 runStart = clock();
                 runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);

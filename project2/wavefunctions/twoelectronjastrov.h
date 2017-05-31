@@ -29,6 +29,7 @@ public:
     void quantumForce(double **r, double **F, int k);
     void steepestDescent(double &ESum, int NCycles);
     void sampleSD(double **r, double &E);
+    void finalizeSD();
     std::string getParameterString();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }
@@ -37,6 +38,7 @@ public:
     void set_a(double new_a) { a = new_a; }
     // Printers
     void printVariationalParameters(int i);
+    void printUpdatedVariationalParameters();
 };
 
 #endif // TWOELECTRONJASTROV_H

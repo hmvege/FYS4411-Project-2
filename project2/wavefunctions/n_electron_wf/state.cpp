@@ -112,5 +112,8 @@ double State::wfAlpha(double *r_i, double alpha, double omega)
     wfA = ( sqrt(omega/alpha) * (  r_i[0]*HermY*hermite->derivative(n_x, sqrtOmegaAlpha*r_i[0])
                                  + r_i[1]*HermX*hermite->derivative(n_y, sqrtOmegaAlpha*r_i[1]))
                   - omega*(r_i[0]*r_i[0] + r_i[1]*r_i[1])*HermX*HermY)*0.5*expFactor;
+//    wfA = ( (  HermY*hermite->getAlphaDerivative(n_x, r_i[0], alpha, omega)
+//             + HermX*hermite->getAlphaDerivative(n_y, r_i[1], alpha, omega))
+//                  - 0.5*omega*(r_i[0]*r_i[0] + r_i[1]*r_i[1])*HermX*HermY)*expFactor;
     return wfA;
 }
