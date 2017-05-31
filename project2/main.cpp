@@ -44,7 +44,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     // Constants
     unsigned int MCCycles   = 8e6/numprocs;
     unsigned int optCycles  = 1e5;
-    int MCSamplingFrequency = 1e6;
+    int MCSamplingFrequency = 1e5;
     int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
 //    int nParticles          = 2;
     int nDimensions         = 2;
@@ -76,7 +76,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
-    double seed             = std::time(nullptr)-processRank;
+    double seed             = -1-processRank;//std::time(nullptr)-processRank;
     bool importanceSampling = true;
     bool coulombInteraction = true;
 //    bool jastrowFactor      = true;

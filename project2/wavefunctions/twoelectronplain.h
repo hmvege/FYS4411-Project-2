@@ -11,11 +11,13 @@ private:
     double omega;
     double alpha;
 public:
+    using WaveFunctions::localEnergy;
+
     twoElectronPlain(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank, double new_omega, double new_alpha);
     void initializeWFSampling(double **r);
     double initializeWaveFunction(double **r);
     double calculate(double **r, int k);
-    double localEnergy(double **r);
+    virtual double localEnergy(double **r);
     void quantumForce(double **r, double **F, int k);
     std::string getParameterString();
     // Setters
