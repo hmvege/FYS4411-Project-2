@@ -1,5 +1,7 @@
 #Ignoring all build files that go into the binary folder
-bin/*
+bin/*.o
+*.stash
+Makefile
 
 # Ignoring all data files
 output/*

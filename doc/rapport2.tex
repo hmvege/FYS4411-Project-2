@@ -98,7 +98,7 @@ Writing this on integral form, we get
 	&= \frac{\sum_i |c_i|^2 E_i}{\sum_i |c_i|^2} \\
 	&\geq E_0
 \end{align*}
-In order to make any progress with variational Monte Carlo, we need to get ourselves a wave function. This wave function will have to take $N$ particles $\mathbf{r}=(\mathbf{r}_1,\mathbf{r}_2,...,\mathbf{r}_N)$, and have can be varied by a set of variational parameters $\{\alpha_i\}$. The integral we wish to solve is now,
+In order to make any progress with variational Monte Carlo, we need to get ourselves a wave function. This wave function will have to take $N$ particles $\mathbf{r}=(\mathbf{r}_1,\mathbf{r}_2,...,\mathbf{r}_N)$, and have can be varied by a set of variational parameters $\alpha=\{\alpha_i\}$. The integral we wish to solve is now,
 \begin{align}
 	E[H] = \frac{\int d\mathbf{r}\psi_T^*(\mathbf{r},\alpha)H(\mathbf{r})\psi_T(\mathbf{r},\alpha) }{\int d\mathbf{r} \psi_T^*(\mathbf{r},\alpha)\psi_T(\mathbf{r},\alpha)}
 	\label{eq:variational-integral}
@@ -108,11 +108,17 @@ As with Monte Carlo methods, we need to define ourselves a probability distribut
 	P(\mathbf{r}) = \frac{|\psi_T(\mathbf{r})|^2}{\int |\psi_T(\mathbf{r})|^2d\mathbf{r}}
 	\label{eq:pdf}
 \end{align}
-We can use this to rewrite our $E[H]$ which now also depends on $\alpha$,
+We can now define $E_L$ as our local energy,
+\begin{align}
+	E_L = \frac{1}{\psi_T}H\psi_T
+	\label{eq:local-energy}
+\end{align}
+We can use this and the PDF, we can rewrite our $E[H]$ which now also depends on $\alpha$,
 \begin{align*}
 	E[H(\alpha)] = \int P(\mathbf{r})E_L(\mathbf{r})d\mathbf{r} \approx \frac{1}{N_{MC}}\sum^{N_{MC}}_{i=1}P(\mathbf{r}_i,\alpha)E_L(\mathbf{r}_i,\alpha)
 \end{align*}
-where $N_{MC}$ is the number of Monte Carlo cycles which we run for. We now have an estimate for the ground state energy from the average of our Monte Carlo samples. The algorithm for the VMC(Variational Monte Carlo) method will be based of the Metropolis algorithm \husk{CITE METROPOLIS!!}, such that a quick review of this is in order.
+where $N_{MC}$ is the number of Monte Carlo cycles which we run for. 
+We now have an estimate for the ground state energy from the average of our Monte Carlo samples. The algorithm for the VMC(Variational Monte Carlo) method will be based of the Metropolis algorithm \husk{CITE METROPOLIS!!}, such that a quick review of this is in order.
 
 
 
@@ -275,7 +281,11 @@ Applied to our VMC problem, where we will have one or two variational parameters
 		\frac{d\langle E_L[\beta] \rangle}{d\beta}
 	\end{pmatrix}
 \end{align}
-Where the $\langle E_L \rangle$ is the expectation value of the local energy and $\delta t$ is the step size of the method. As is evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist, but are not implemented in the project.
+Where the $\langle E_L \rangle$ is the expectation value of the local energy and $\delta t$ is the step size of the method. The expectation value of the local energy is found by
+\HUSK{INTRODUSER FORVENTINGSVERDI DERIVERTE HER OG OPPGI HVA MAN MÅ FINNE!!!}
+
+
+As is evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist\husk{reference?}, but are not implemented in the project.
 
 
 
@@ -302,7 +312,12 @@ The details surrounding the mysterious variational parameter $\alpha$ will be ex
 	\end{vmatrix}
 	\label{eq:slater_determinant}
 \end{align}
-Note that we have defined $\mathbf{r} \equiv (\mathbf{r_1},\mathbf{r_2},\dots,\mathbf{r_N})$. To pull this definition back to our trial wave function \eqref{eq:WF_trial}, we get
+From how we have described the position, we introduce following, useful notation, 
+\begin{align}
+	r_i = \sqrt{x_i^2 + y_i^2}
+	\label{eq:position-length}
+\end{align}
+Note that we have defined $\mathbf{r} \equiv (\mathbf{r_1},\mathbf{r_2},\dots,\mathbf{r_N})$ in the Slater determinant\eqref{eq:slater_determinant}. To pull this definition back to our trial wave function \eqref{eq:WF_trial}, we get
 \begin{align}
 	\psi_{SD}(\mathbf{r}) = Det(\Phi(\mathbf{r}))
 	\label{eq:WF_onebody}
@@ -326,18 +341,146 @@ For the two electron case the Hamiltonian takes on familiar form,
 	H = -\frac{1}{2}\left(\frac{\partial^2}{\partial x^2_1} + \frac{\partial^2}{\partial y^2_1} + \frac{\partial^2}{\partial x^2_2} + \frac{\partial^2}{\partial y^2_2}\right) + \frac{1}{2}\omega^2(x^2_1 + y^2_1 + x^2_2 + y^2_2) + \frac{1}{r_{12}}
 	\label{eq:hamiltonian_two_electron}
 \end{align}
+We will assume the spin is anti-parallel and the total spin is $0$ in the ground state for the $2$ electron case due to Pauli's exclusion principle.
 
-\subsubsection{Unperturbed local energy}
-We begin by looking at the unperturbed local energy, in which we will try to convince ourselves that the local energy comes out to be $2\omega$ in atomic units.
-
+\subsubsection{Unperturbed expectation value}
+We begin by looking at the unperturbed expectation value, in which we will try to convince ourselves that the energy comes out to be $2\omega$ in atomic units. Given a wave function,
+\begin{align}
+	\Phi_0(\mathbf{r}_1,\mathbf{r}_2) = C \exp \left(-\frac{\omega}{2}(r_1^2 + r_2^2)\right)
+	\label{eq:two-body-wf}
+\end{align}
+with $r_1$ and $r_2$ being defined by the notation introduced in the Slater determinant\eqref{eq:position-length}.
+\begin{align*}
+	\expect{E_0} &= \bra{\Psi_0}H_0\ket{\Psi_0} \\
+	&= \int C\exp \left(-\frac{\omega}{2}(r_1^2 + r_2^2)\right) \Big( -\frac{1}{2} \left(\nabla^2_1 + \nabla^2_2 \right) + \frac{1}{2}\omega^2\left( r_1^2 + r_2^2 \right) \Big) \\ &\times C\exp\left(-\frac{\omega}{2}(r_1^2 + r_2^2)\right) d x_1 d y_1 d x_2 d y_2 \\
+\end{align*}
+Since the derivatives are similar, we can look a single derivative, and then solve for that one.
+\begin{align*}
+	\frac{\partial^2}{\partial x^2} \exp \left(-\frac{\omega}{2}x^2\right) &= \frac{\partial}{\partial x} \left( -\omega x \right) \exp \left(-\frac{\omega}{2}x^2\right) \\
+	&= \left( \omega^2 x^2 - \omega \right) \exp \left(-\frac{\omega}{2}x^2\right)
+\end{align*}
+Inserting this, into our integral, we get,
+\begin{align*}
+	I_{x_1} &= -\frac{1}{2}\int \exp \left(-\frac{\omega}{2}\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right)\right) \frac{\partial^2}{\partial x_1^2} \\
+	&\times \exp \left(-\frac{\omega}{2}\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right)\right) dx_1 dy_1 dx_2 dy_2\\
+	&= -\frac{1}{2}\int \left( \omega^2 x_1^2 - \omega \right) \exp \left(-\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right)\right) dx_1 dy_1 dx_2 dy_2\\
+	&= -\frac{\omega}{2}\bigg( \omega \int x^2 \exp \left(-\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right)\right) dx_1 dy_1 dx_2 dy_2 \\
+	&- \int \exp \left(-\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right)\right) dx_1 dy_1 dx_2 dy_2 \bigg)\\
+\end{align*}
+We can now use the integral formulas seen in the appendix, integral \eqref{eq:gaussian-integral} and \eqref{eq:gaussian-integral-x-squared}. Noting that there are actually four integrations happening, we get
+\begin{align*}
+	-\frac{\omega}{2}&\bigg( \omega \int x^2 \exp \left(-\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right)\right) dx_1 dy_1 dx_2 dy_2 \\
+	&- \int \exp \left(-\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right)\right) dx_1 dy_1 dx_2 dy_2 \bigg) \\
+	&= -\frac{\omega}{2}\bigg( \left(\frac{\pi^\frac{1}{2}}{2}\omega^{-\frac{3}{2}}\right)\left(\pi^\frac{1}{2} \omega^{-\frac{1}{2}}\right)^3 - \left(\pi^\frac{1}{2} \omega^{-\frac{1}{2}}\right)^4\bigg) \\
+	&= -\frac{\omega}{2}\bigg( \frac{\pi^2}{2}\omega^{-3} + \pi^2\omega^{-2} \bigg) \\
+	&= -\frac{\pi^2}{4\omega} + \frac{\pi^2}{2\omega} \\
+	&= \frac{\pi^2}{4\omega}
+\end{align*}
+Putting this together with the other Gaussian symmetric integral coming from the harmonic oscillator, we get
+\begin{align*}
+	\expect{E_0} &= C^2\left( 4\frac{\pi^2}{4\omega} + 4\frac{\pi^2}{4\omega} \right) \\
+	&= C^2 \frac{2\pi^2}{\omega}
+\end{align*}
+We now need to find the constant C.
+\begin{align*}
+	\bra{\Phi_0}\ket{\Phi_0} &= C^2\int\exp \left( -\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right) \right) dx_1dy_1dx_2dy_2 \\
+	&= C^2\left( \sqrt{\frac{\pi}{\omega}} \right)^4
+\end{align*}
+Since our wave function is required to be normalized $C$ becomes,
+\begin{align*}
+	C = \frac{\omega}{\pi}
+\end{align*}
+Inserting this, and we get our expectation value
+\begin{align*}
+	\expect{E_0} &= \frac{\omega^2}{\pi^2}\frac{2\pi^2}{\omega} = 2\omega
+\end{align*}
+Which, is the answer we expected. This will provide a useful test for us later on.
 
 \subsubsection{Local energy}
+We now seek to find an expression for the local energy as given by equation \eqref{eq:local-energy}, for the two electron case.
+\begin{align}
+	E_L = \frac{1}{\psi_T}H\psi_T
+\end{align}
+The trial wave function is given as
+\begin{align}
+	\psi_T = \psi_{SD} \psi_J = C\exp\left( -\frac{\omega \alpha}{2}\left(r_1^2 + r_2^2\right)\right) \exp\left(\frac{ar_{12}}{1+\beta r_{12}} \right)
+	\label{eq:trail-WF-2-electron-jastrow}
+\end{align}
+When the Hamiltonian is given as in equation \eqref{eq:hamiltonian_two_electron}, the main problem is to find the laplacian, 
+\begin{align*}
+	\nabla^2 = \nabla_1^2 + \nabla_2^2 = \frac{\partial^2}{\partial x_1^2} + \frac{\partial^2}{\partial y_1^2} + \frac{\partial^2}{\partial y_2^2} + \frac{\partial^2}{\partial y_2^2}
+\end{align*}
+and it is thus where we shall begin. For simplicity, we write
+\begin{align*}
+	\frac{\nabla^2 \psi_T}{\psi_T} = \frac{\nabla^2 \left( C\exp\left( -\frac{\omega \alpha}{2}\left(r_1^2 + r_2^2\right) + \frac{ar_{12}}{1+\beta r_{12}} \right) \right)}{\psi_T}
+\end{align*}
+We start by doing a single derivative.
+\begin{align}
+	\frac{\partial}{\partial x_1} \psi_T = \psi_T\left(-\omega\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right)
+	\label{eq:two-electron-first-derivative}
+\end{align}
+For the derivative with respect to $x_2$ we get an additional minus sign in the last term. For the second derivative, we get
+\begin{align*}
+	\frac{\partial^2}{\partial x_1^2} \psi_T &= \frac{\partial}{\partial x_1} \left(\psi_T\left(-\omega\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right)\right) \\
+	&=\psi_T \bigg( \frac{\partial}{\partial x_1}\left(-\omega\alpha x_1\right) + \frac{\partial}{\partial x_1}\left( \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right) \bigg) \\
+	&+ \left(-\omega\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2}\right) \frac{\partial}{\partial x_1}\left(\psi_T\right) \\
+\end{align*}
+We now do the second term by itself,
+\begin{align*}
+	\frac{\partial}{\partial x_1}\left( \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right) \bigg) &= \frac{a}{r_{12}(1+\beta r_{12})^2} - \frac{a(x_1-x_2)^2}{r_{12}^3(1+\beta r_{12}^2} - \frac{2a\beta(x_1-x_2)^2}{r_{12}^2(1+\beta r_12)^3}
+\end{align*}
+An overall minus sign appears when taking the derivative with respect to $x_2$. We now look at the last term in our second derivative.
+\begin{align*}
+	\bigg(-\omega &\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \bigg) \frac{\partial}{\partial x_1}\left(\psi_T\right) = \bigg( \omega^2\alpha^2 x_1^2 - \frac{\omega\alpha a x_1(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \\
+	& - \frac{\omega\alpha a x_1 (x_1 - x_2)}{r_{12}(1+\beta r_{12})^2} + \frac{a^2(x_1 - x_2)^2}{r_{12}^2(1+\beta r_{12})^4}\bigg) \psi_T \\
+	&= \bigg( \omega^2\alpha^2 x_1^2 - \frac{2\omega\alpha a x_1(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} + \frac{a^2(x_1 - x_2)^2}{r_{12}^2(1+\beta r_{12})^4}\bigg) \psi_T
+\end{align*}
+Putting all this together, the second derivative becomes
+\begin{align*}
+	\frac{\partial^2}{\partial x_1^2} \psi_T &= \bigg( - \omega \alpha + \omega^2\alpha^2 x_1^2 - \frac{2\omega\alpha a x_1(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} + \frac{a^2(x_1 - x_2)^2}{r_{12}^2(1+\beta r_{12})^4} \\
+	& + \frac{a}{r_{12}(1+\beta r_{12})^2} - \frac{a(x_1-x_2)^2}{r_{12}^3(1+\beta r_{12}^2} - \frac{2a\beta(x_1-x_2)^2}{r_{12}^2(1+\beta r_12)^3} \bigg) \psi_T \\
+	&= \bigg( - \omega \alpha + \omega^2\alpha^2 x_1^2 - \frac{2\omega\alpha a x_1(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} + \frac{2a}{(1+\beta r_{12})^2} 
+	\\ &\times \bigg( \frac{1}{2r_{12}} - \frac{(x_1 - x_2)^2}{2 r_{12}^3} - \frac{\beta (x_1 x_2)^2}{r_{12}^2(1+\beta r_{12})} + \frac{a(x_1-x_2)^2}{2r_{12}^2(1+\beta r_{12})^2} \bigg) \bigg) \psi_T
+\end{align*}
+We can now pull the derivative with respect to $x_1$ and $x_2$ together.
+\begin{align*}
+	&\left( \frac{\partial^2}{\partial x_1^2} + \frac{\partial^2}{\partial x_1^2} \right)\psi_T = \bigg( - 2\omega \alpha + \omega^2\alpha^2 \left(x_1^2 + x_2^2\right) - \frac{2\omega\alpha a (x_1 - x_2)^2}{r_{12}(1+\beta r_{12})^2} \\
+	&+ \frac{2a}{(1+\beta r_{12})^2} \bigg( \frac{1}{r_{12}} - \frac{(x_1 - x_2)^2}{r_{12}^3} - \frac{2\beta (x_1 - x_2)^2}{r_{12}^2(1+\beta r_{12})} + \frac{a(x_1-x_2)^2}{r_{12}^2(1+\beta r_{12})^2} \bigg) \bigg) \psi_T
+\end{align*}
+Putting this together with the derivatives with respect to $y_1$ and $y_2$ and using the relation given in the beginning \eqref{eq:electron_distance}, we get
+\begin{align*}
+	\frac{\nabla^2 \psi_T}{\psi_T} &= - 4\omega \alpha + \omega^2 \alpha ^2(r_1^2 + r_2^2) - \frac{2\omega\alpha a r_{12}}{(1+\beta r_{12})^2} \\
+	&+ \frac{2a}{(1+\beta r_{12})^2}\bigg( \frac{2}{r_{12}} - \frac{r_{12}^2}{r_{12}^3} - \frac{2\beta r_{12}^2}{r_{12}^2(1+ \beta r_{12})} + \frac{a r_{12}^2}{r_{12}^2(1+\beta r_{12})^2}\bigg)
+\end{align*}
+which becomes our final expression for the Laplacian,
+\begin{align}
+	\frac{\nabla^2 \psi_T}{\psi_T} &= \omega^2 \alpha ^2(r_1^2 + r_2^2) - 4\omega \alpha - \frac{2\omega\alpha a r_{12}}{(1+\beta r_{12})^2} \\
+	&+ \frac{2a}{(1+\beta r_{12})^2}\bigg(\frac{a }{(1+\beta r_{12})^2} + \frac{1}{r_{12}} - \frac{2\beta}{(1+ \beta r_{12})} \bigg)
+	\label{eq:two-electron-laplacian}
+\end{align}
+Which gives the total local energy by adding the harmonic oscillator term and coulomb interaction,
+\begin{align}
+	E_L &= -\frac{1}{2}\bigg((\alpha ^2-1)\omega^2(r_1^2 + r_2^2) - 4\omega \alpha - \frac{2\omega\alpha a r_{12}}{(1+\beta r_{12})^2} \\
+	&+ \frac{2a}{(1+\beta r_{12})^2}\bigg(\frac{a }{(1+\beta r_{12})^2} + \frac{1}{r_{12}} - \frac{2\beta}{(1+ \beta r_{12})} \bigg)\bigg) + \frac{1}{r_{12}}
+	\label{eq:two-electron-local-energy}
+\end{align}
 
 \subsubsection{Quantum force}
+We also have to find the quantum force given by equation \eqref{eq:quantum-force}, which involves taking the gradient of the wave function. As we already know the first derivatives from taking the gradient\eqref{eq:two-electron-first-derivative}, the process is trivial.
+\begin{align*}
+	\mathbf{F} = \left(-\omega\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{i} + \left(-\omega\alpha y_1 + \frac{a(y_1-y_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{j}
+\end{align*}
+For $r_2$ do we get a minus in front of the last term.
+
+\subsubsection{\texorpdfstring{$\alpha$}{a} and \texorpdfstring{$\beta$}{b} derivatives in the steepest descent algorithm}
+For the steepest descent method \eqref{eq:steepest-descent}, we have to find derivatives of the trial wave function  \eqref{eq:trail-WF-2-electron-jastrow} with respect to $\alpha$ and $\beta$. 
+
+\husk{SKRIV DERIVERTE HER FOR ALPHA BETA}
 
 
 
 \subsection{\texorpdfstring{$N$}{N} electron case}
+For the $N$-electron case, we apply the Hamiltonian as states in equation \eqref{eq:hamiltonian} at the beginning of the theory section on the trial wave function as stated in \eqref{eq:WF_trial}. 
 
 \subsubsection{Unperturbed local energy}
 
@@ -345,11 +488,15 @@ We begin by looking at the unperturbed local energy, in which we will try to con
 
 \subsubsection{Quantum force}
 
+\subsubsection{\texorpdfstring{$\alpha$}{a} and \texorpdfstring{$\beta$}{b} derivatives in the steepest descent algorithm}
+\husk{Kanskje ikke ha med noe her?}
 
 
 \section{Implementation}
 
-\subsubsection{Slater determinants}
+\subsection{TESTS}
+
+\subsection{Slater determinants}
 An efficient way of updating the inverse of the Slater matrix can be found by \husk{SITER}. 
 
 \begin{align}
@@ -362,7 +509,6 @@ D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
 \end{align}
 
 
-
 \section{Results}
 
 
@@ -373,7 +519,19 @@ D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
 
 \section{Appendix}
 \subsection{Hermite polynomials}
+\husk{Ha med polynomene som brukes}
 
+\subsection{Useful formulas}
+Solution to a Gaussian integral is given as,
+\begin{align}
+	\int \exp\left( - \omega x^2 \right) d x = \sqrt{\frac{\pi}{\omega}} = \sqrt{\pi}\omega^{-\frac{1}{2}}
+	\label{eq:gaussian-integral}
+\end{align}
+Another symmetric Gaussian integral is given as,
+\begin{align}
+	\int x^2 \exp\left( - \omega x^2 \right) d x = \frac{\sqrt{\pi}}{2}\omega^{-\frac{3}{2}}
+	\label{eq:gaussian-integral-x-squared}
+\end{align}
 
 \husk{REFERANSER!!}
 
