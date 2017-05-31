@@ -12,9 +12,11 @@ protected:
     double coulomb(double **r);
     double r_ij(double *r1, double *r2);
     double SDStepLength = 0.01;
+    int numprocs;
+    int processRank;
 public:
     WaveFunctions() { }
-    WaveFunctions(int new_nParticles, int new_nDimensions);
+    WaveFunctions(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank);
     virtual ~WaveFunctions() { }
     // Virtuals used by all other classes
     virtual void initializeWFSampling(double **r);

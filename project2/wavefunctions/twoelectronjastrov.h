@@ -20,7 +20,7 @@ private:
     double dPsiEBetaSum = 0;
     void SDStatistics(int NCycles);
 public:
-    twoElectronJastrov(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_a, double new_beta);
+    twoElectronJastrov(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank, double new_omega, double new_alpha, double new_a, double new_beta);
     void initializeWFSampling(double **r);
     double initializeWaveFunction(double **r);
     double calculate(double **r, int k);

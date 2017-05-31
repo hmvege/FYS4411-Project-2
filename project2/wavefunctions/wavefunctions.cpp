@@ -5,10 +5,12 @@
 using std::cout;
 using std::endl;
 
-WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions)
+WaveFunctions::WaveFunctions(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank)
 {
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
+    numprocs = new_numprocs;
+    processRank = new_processRank;
 }
 
 void WaveFunctions::initializeWFSampling(double ** r)

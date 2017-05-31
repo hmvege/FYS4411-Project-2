@@ -11,7 +11,7 @@ private:
     double omega;
     double alpha;
 public:
-    twoElectronPlain(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha);
+    twoElectronPlain(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank, double new_omega, double new_alpha);
     void initializeWFSampling(double **r);
     double initializeWaveFunction(double **r);
     double calculate(double **r, int k);

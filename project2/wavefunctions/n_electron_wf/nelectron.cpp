@@ -11,7 +11,7 @@
 using std::cout;
 using std::endl;
 
-NElectron::NElectron(int new_nParticles, int new_nDimensions, double new_omega, double new_alpha, double new_beta) : WaveFunctions(new_nParticles, new_nDimensions)
+NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank, double new_omega, double new_alpha, double new_beta) : WaveFunctions(new_nParticles, new_nDimensions, new_numprocs, new_processRank)
 {
     /*
      * Class for the wavefunction of the N-electron case. Takes only closed shell systems.
@@ -260,9 +260,10 @@ void NElectron::SDStatistics(int NCycles)
     double temp_dPsiEAlphaSum = 0;
     MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&temp_dPsiAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&temp_dPsiEAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     dPsiAlphaSum = temp_dPsiAlphaSum/double(NCycles);
     dPsiEAlphaSum = temp_dPsiEAlphaSum/double(NCycles);
-
 //    dPsiAlphaSum    /= double(NCycles);
 //    dPsiEAlphaSum   /= double(NCycles);
     if (runJastrow)
@@ -271,6 +272,8 @@ void NElectron::SDStatistics(int NCycles)
         double temp_dPsiEBetaSum = 0;
         MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
         MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&temp_dPsiBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&temp_dPsiEBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
         dPsiBetaSum = temp_dPsiBetaSum/double(NCycles);
         dPsiEBetaSum = temp_dPsiEBetaSum/double(NCycles);
 //        dPsiBetaSum     /= double(NCycles);
@@ -682,5 +685,12 @@ std::string NElectron::getParameterString()
     /*
      * Returns string to be used in filename.
      */
-    return "_omega" + std::to_string(omega) + "_alpha" + std::to_string(alpha) + "_beta" + std::to_string(beta);
+    if (runJastrow)
+    {
+        return "_omega" + std::to_string(omega) + "_alpha" + std::to_string(alpha) + "_beta" + std::to_string(beta);
+    }
+    else
+    {
+        return "_omega" + std::to_string(omega) + "_alpha" + std::to_string(alpha);
+    }
 }

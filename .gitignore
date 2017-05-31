@@ -5,6 +5,8 @@ Makefile
 
 # Ignoring all data files
 output/*
+output_run1/*
+
 
 #OS junk
 *.DS_Store

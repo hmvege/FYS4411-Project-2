@@ -42,10 +42,10 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 4e8/numprocs;
+    unsigned int MCCycles   = 8e7/numprocs;
     unsigned int optCycles  = 1e5;
     int MCSamplingFrequency = 1e6;
-    int maxSDIterations     = 200; // 0 turns it completely off, 200 is default
+    int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
 //    int nParticles          = 2;
     int nDimensions         = 2;
     // Values for running parallel
@@ -76,7 +76,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
-    double seed             = -1-processRank;//std::time(nullptr);
+    double seed             = std::time(nullptr)-processRank;
     bool importanceSampling = true;
     bool coulombInteraction = true;
 //    bool jastrowFactor      = true;
@@ -88,11 +88,11 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2Electron(MCCycles, nParticles, nDimensions, omega, alpha, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, 1.0, beta,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
 //    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
-    for (int i = 0; i < 4; i++) // Default is less than 4
+    for (int i = 0; i < 2; i++) // Default is i=0 less than 4, particles
     {
-        for (int j = 0; j < 5; j++) // Default is less than 5
+        for (int j = 0; j < 5; j++) // Default is j=0 less than 5, omega values
         {
-            for (int k = 0; k < 2; k++) // Jastrow factor
+            for (int k = 0; k < 2; k++) // Jastrow factor, jastrow on/off
             {
                 runStart = clock();
                 runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
@@ -148,7 +148,7 @@ void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double
      * Function for running the two electron case.
      */
     if (processRank == 0) { printRunInfo(MCCycles, 0, nParticles, impSampling, coulomb, false, omega, alpha, 0); }
-    twoElectronPlain WF_2Electron(nParticles, nDimensions, omega, alpha);
+    twoElectronPlain WF_2Electron(nParticles, nDimensions, numprocs, processRank, omega, alpha);
     WF_2Electron.setCoulombInteraction(coulomb);
     VMC VMC_2Electron(nParticles, nDimensions, filename, numprocs, processRank);
 
@@ -177,7 +177,7 @@ void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD,
      * Function for running the two electron case with Jastrov factor and importance sampling.
      */
     if (processRank == 0) { printRunInfo(MCCycles, maxNSD, nParticles, impSampling, coulomb, true, omega, alpha, beta); }
-    twoElectronJastrov WF_2Jastrov(nParticles, nDimensions, omega, alpha, a, beta);
+    twoElectronJastrov WF_2Jastrov(nParticles, nDimensions, numprocs, processRank, omega, alpha, a, beta);
     WF_2Jastrov.setSDStepLength(SDStepLength);
     VMC VMC_2Electron(nParticles, nDimensions, filename, numprocs, processRank);
     WF_2Jastrov.setCoulombInteraction(coulomb);
@@ -203,7 +203,7 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
                    bool impSampling, bool coulomb, bool jastrow, std::string filename, int MCSamplingFrequency, int numprocs, int processRank)
 {
     if (processRank == 0) { printRunInfo(MCCycles, maxNSD, nParticles, impSampling, coulomb, jastrow, omega, alpha, beta); }
-    NElectron WF_NElectron(nParticles, nDimensions, omega, alpha, beta);
+    NElectron WF_NElectron(nParticles, nDimensions, numprocs, processRank, omega, alpha, beta);
     WF_NElectron.setSDStepLength(SDStepLength);
     VMC VMC_NElectron(nParticles, nDimensions, filename, numprocs, processRank);
     WF_NElectron.setCoulombInteraction(coulomb);

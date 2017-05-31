@@ -1,0 +1,207 @@
+> $ mpirun -n 8 bin/project2                                                                                                                                                                            [±master ●]
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     1
+Alpha:                     0.7
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha =    1.01674
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.737979018305096
+Kinetic energy variance:   2.91289128330175e-08
+Potential energy:          2.4501395950903
+Potential energy variance: 7.30853680713773e-07
+Energy:                    3.18811857342494
+Energy variance:           6.98191621196051e-07
+Acceptance rate:           100 %
+Run complete. Time used: 92.316745
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     1
+Alpha:                     1
+Beta:                      0.4
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.965973943694384 Beta = 0.37387052177209
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.894609718092412
+Kinetic energy variance:   1.94637388641116e-07
+Potential energy:          2.10609136729338
+Potential energy variance: 1.88733843226033e-07
+Energy:                    3.0007010478656
+Energy variance:           2.59453054711223e-10
+Acceptance rate:           99.994845 %
+Run complete. Time used: 118.010848
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.5
+Alpha:                     0.66
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.749961371942043
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.335521648870967
+Kinetic energy variance:   5.69232630327518e-09
+Potential energy:          1.47270162971466
+Potential energy variance: 3.47795963254497e-07
+Energy:                    1.80822325583766
+Energy variance:           3.40475135655015e-07
+Acceptance rate:           100 %
+Run complete. Time used: 93.995092
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.5
+Alpha:                     0.95
+Beta:                      0.36
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.955301081047148 Beta = 0.289132958089173
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.434906705466549
+Kinetic energy variance:   7.00670332714007e-08
+Potential energy:          1.22619926260022
+Potential energy variance: 6.98983860194858e-08
+Energy:                    1.66110594728819
+Energy variance:           1.52156813359117e-10
+Acceptance rate:           99.997465 %
+Run complete. Time used: 118.508437
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.1
+Alpha:                     0.66
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.396256777249911
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0632969558610287
+Kinetic energy variance:   2.08521310621067e-10
+Potential energy:          0.481868031439914
+Potential energy variance: 6.18875581673995e-08
+Energy:                    0.545164979378306
+Energy variance:           6.20161221896297e-08
+Acceptance rate:           100 %
+Run complete. Time used: 93.137376
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.1
+Alpha:                     0.95
+Beta:                      0.23
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.921368776150866 Beta = 0.112168205772812
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0923897649260723
+Kinetic energy variance:   1.37224488400939e-09
+Potential energy:          0.353493717708371
+Potential energy variance: 1.31932572927592e-09
+Energy:                    0.445883476977548
+Energy variance:           9.15343003117824e-11
+Acceptance rate:           99.999735 %
+Run complete. Time used: 117.824535
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.05
+Alpha:                     0.5
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.253197139819501
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0237761323165755
+Kinetic energy variance:   2.95551673595377e-11
+Potential energy:          0.309654750647019
+Potential energy variance: 2.64361642633702e-08
+Energy:                    0.333430877909302
+Energy variance:           2.64283402860597e-08
+Acceptance rate:           100 %
+Run complete. Time used: 93.168696
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.05
+Alpha:                     0.91
+Beta:                      0.2
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.889675055775934 Beta = 0.0851247515164758
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0461284172878397
+Kinetic energy variance:   3.87253524912539e-10
+Potential energy:          0.213658354297451
+Potential energy variance: 4.07878841086885e-10
+Energy:                    0.259786768303524
+Energy variance:           5.15036736262353e-11
+Acceptance rate:           99.99994 %
+Run complete. Time used: 117.707864
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.1
+Alpha:                     0.5
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.384958497951116
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.049037084704924
+Kinetic energy variance:   1.20927918677197e-10
+Potential energy:          0.487959852097937
+Potential energy variance: 8.45788146747781e-08
+Energy:                    0.536996929044278
+Energy variance:           8.43312549887855e-08
+Acceptance rate:           100 %
+Run complete. Time used: 92.197185
+====================================================================================================
+N electrons                2
+MC-cycles:                 10000000
+Omega:                     0.1
+Alpha:                     0.91
+Beta:                      0.2
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       TRUE
+Coulomb interaction:       TRUE
+RESULTS:
+i =   200 Alpha = 0.91573454973643 Beta = 0.19128281818705
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.088927660016322
+Kinetic energy variance:   1.33779387062524e-09
+Potential energy:          0.352829405014346
+Potential energy variance: 1.25341548683674e-09
+Energy:                    0.441757059494913
+Energy variance:           2.77029167311371e-11
+Acceptance rate:           99.99961 %
+Run complete. Time used: 117.231258
+====================================================================================================

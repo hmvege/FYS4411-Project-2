@@ -8,10 +8,12 @@ using std::endl;
 
 twoElectronJastrov::twoElectronJastrov(int new_nParticles,
                                        int new_nDimensions,
+                                       int new_numprocs,
+                                       int new_processRank,
                                        double new_omega,
                                        double new_alpha,
                                        double new_a,
-                                       double new_beta) : WaveFunctions(new_nParticles, new_nDimensions)
+                                       double new_beta) : WaveFunctions(new_nParticles, new_nDimensions, new_numprocs, new_processRank)
 {
     /*
      * Class for a two-electron system. Energy should be equal to 2, and variance should be 0.
