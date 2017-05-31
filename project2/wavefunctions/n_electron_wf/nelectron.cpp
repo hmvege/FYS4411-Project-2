@@ -99,6 +99,14 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, 
     DSpinUpOld          = arma::mat(nParticles/2,nParticles/2);
     DSpinDownInverseOld = arma::mat(nParticles/2,nParticles/2);
     DSpinUpInverseOld   = arma::mat(nParticles/2,nParticles/2);
+    DSpinDown.zeros();
+    DSpinDownOld.zeros();
+    DSpinUp.zeros();
+    DSpinUpOld.zeros();
+    DSpinDownInverse.zeros();
+    DSpinDownInverseOld.zeros();
+    DSpinUpInverse.zeros();
+    DSpinUpInverseOld.zeros();
 
 //    // Testing
 //    for (int i = 0; i < nParticles; i++)
@@ -138,8 +146,8 @@ double NElectron::initializeWaveFunction(double **r)
     WFSlaterOld = WFSlater;
     if (runJastrow)
     {
-        WFJastrowOld = WFJastrow;
         WFJastrow = psiJastrow(r);
+        WFJastrowOld = WFJastrow;
         return WFJastrow*WFSlater;
     }
     else
@@ -148,7 +156,7 @@ double NElectron::initializeWaveFunction(double **r)
     }
 }
 
-double NElectron::calculate(double **r, int k)
+double NElectron::calculate(double **rNew, int k)
 {
     /*
      * Returns the wave function for N electrons.
@@ -156,10 +164,10 @@ double NElectron::calculate(double **r, int k)
      *  r   : position
      *  k   : particle being moved
      */
-    updateSlater(r, k);
+    updateSlater(rNew, k);
     if (runJastrow)
     {
-        WFJastrow = psiJastrow(r);
+        WFJastrow = psiJastrow(rNew);
         return WFJastrow*WFSlater;
     }
     else
@@ -270,21 +278,6 @@ void NElectron::SDStatistics(int NCycles)
      * r        : positions
      * NCycles  : Monte Carlo cycles
      */
-//    double temp_dPsiAlphaSum = 0;
-//    double temp_dPsiEAlphaSum = 0;
-//    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-//    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-//    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
-//    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
-//    if (runJastrow)
-//    {
-//        double temp_dPsiBetaSum = 0;
-//        double temp_dPsiEBetaSum = 0;
-//        MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-//        MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-//        dPsiBetaSum = temp_dPsiBetaSum/double(numprocs);
-//        dPsiEBetaSum = temp_dPsiEBetaSum/double(numprocs);
-//    }
     dPsiAlphaSum    /= double(NCycles);
     dPsiEAlphaSum   /= double(NCycles);
     if (runJastrow)
@@ -359,12 +352,12 @@ void NElectron::printVariationalParameters(int i)
     /*
      * Temporary function for printing the variational parameters used.
      */
-    cout << "i = " << std::setw(5) << i << " Alpha = " << std::setw(10) << alpha;
+    cout << "\nSD iteration = " << std::setw(5) << i << " Alpha = " << std::setw(10) << alpha;
     if (runJastrow)
     {
         cout << " Beta = " << std::setw(10) << beta;
     }
-    cout << endl;
+    cout << endl << endl;;
 }
 
 void NElectron::printUpdatedVariationalParameters()
@@ -401,6 +394,8 @@ void NElectron::initializeSlater(double **r)
             DSpinUp(i,j)               = states[2*j+1]->wf(r[2*i+1], alpha, omega);
         }
     }
+//    WFSlaterOld = psiSlater();;
+//    WFSlater = WFSlaterOld;
     DSpinDownInverse = arma::inv(DSpinDown);
     DSpinUpInverse = arma::inv(DSpinUp);
     for (int i = 0; i < nParticles/2; i++)
@@ -413,9 +408,13 @@ void NElectron::initializeSlater(double **r)
             DSpinUpInverseOld(i,j)     = DSpinUpInverse(i,j);
         }
     }
+//    if (processRank==0) {
+//        printDiagnostics(r, 0);
+//        exit(1);
+//    }
 }
 
-void NElectron::updateSlater(double **r, int k)
+void NElectron::updateSlater(double **rNew, int k)
 {
     /*
      * Updates the inverse of the slater determinant as well as the slater determinant itself.
@@ -427,38 +426,38 @@ void NElectron::updateSlater(double **r, int k)
     {
         for (int j = 0; j < nParticles/2; j++) // States
         {
-            DSpinDown(i,j)  = states[2*j]->wf(r[2*i], alpha, omega);
-            DSpinUp(i,j)    = states[2*j+1]->wf(r[2*i+1], alpha, omega);
+            DSpinDown(i,j)  = states[2*j]->wf(rNew[2*i], alpha, omega);
+            DSpinUp(i,j)    = states[2*j+1]->wf(rNew[2*i+1], alpha, omega);
         }
     }
-    if ((fabs(det(DSpinDown)) < 1e-16) || (fabs(det(DSpinUp)) < 1e-16))
-    {
-        cout << "ERROR"     << endl;
-        cout << "Positions: " << endl;
-        for (int i = 0; i < nParticles; i++)
-        {
-            for (int j = 0; j < nDimensions; j++)
-            {
-                cout << std::setw(10) << r[i][j] << " ";
-            }
-            cout << endl;
-        }
-        cout << "Wave functions: " << endl;
-        for (int i = 0; i < nParticles/2; i++) // Particles
-        {
-            for (int j = 0; j < nParticles/2; j++) // States
-            {
-                printf("Spin down: %12.8f \n", states[2*j]->wf(r[2*i], alpha, omega));
-                printf("Spin up: %12.8f \n", states[2*j+1]->wf(r[2*i+1], alpha, omega));
-            }
-        }
-        cout << "DSpinDown: \n" << DSpinDown    <<  endl;
-        cout << "DSpinUp: \n"   << DSpinUp      <<  endl;
-        exit(1);
-    }
-    WFSlater = psiSlater();
+//    if (k%2==0) {
+//        for (int j = 0; j < nParticles/2; j++) // States
+//        {
+//            DSpinDown(k/2,j)  = states[2*j]->wf(r[k/2], alpha, omega);
+//            WFSlaterOld = WFSlater;
+//            WFSlater = psiSlater();
+//            DSpinDownInverse = arma::inv(DSpinDown);
+//        }
+//    } else {
+//        for (int j = 0; j < nParticles/2; j++) // States
+//        {
+//            DSpinUp((k-1)/2,j)    = states[2*j+1]->wf(r[(k-1)/2], alpha, omega);
+//            WFSlaterOld = WFSlater;
+//            WFSlater = psiSlater();
+//            DSpinUpInverse = arma::inv(DSpinUp);
+//        }
+//    }
     DSpinDownInverse = arma::inv(DSpinDown);
     DSpinUpInverse = arma::inv(DSpinUp);
+    WFSlater = psiSlater();
+
+
+    if ((fabs(det(DSpinDown)) < 1e-16) || (fabs(det(DSpinUp)) < 1e-16))
+    {
+        printDiagnostics(rNew, k);
+        exit(1);
+    }
+//    WFSlaterOld = WFSlater;
 //    arma::inv(DSpinDownInverse,DSpinDown);
 //    arma::inv(DSpinUpInverse,DSpinUp);
 
@@ -542,11 +541,13 @@ void NElectron::gradientSlater(double * grad, double **r, int k)
      *  k       : particle we are getting the gradient for
      */
     double *wfGrad = new double[2];
+    wfGrad[0] = 0;
+    wfGrad[1] = 0;
     for (int i = 0; i < nParticles/2; i++)
     {
         if (k%2==0)
         {
-            states[2*i]->wfGradient(wfGrad,r[k],alpha,omega); // Should be regular indices
+            states[2*i]->wfGradient(wfGrad,r[k],alpha,omega);
             grad[0] += wfGrad[0]*DSpinDownInverse(i,k/2);
             grad[1] += wfGrad[1]*DSpinDownInverse(i,k/2);
         }
@@ -745,6 +746,28 @@ void NElectron::revert()
     }
 }
 
+void NElectron::reset()
+{
+    /*
+     * Function for reverting the slater matrices in case Metropolis step is rejected.
+     */
+    WFSlater = 0;
+    WFSlaterOld = 0;
+    if (runJastrow)
+    {
+        WFJastrow = 0;
+        WFJastrowOld = 0;
+    }
+    DSpinDown.zeros();
+    DSpinDownOld.zeros();
+    DSpinUp.zeros();
+    DSpinUpOld.zeros();
+    DSpinDownInverse.zeros();
+    DSpinDownInverseOld.zeros();
+    DSpinUpInverse.zeros();
+    DSpinUpInverseOld.zeros();
+}
+
 std::string NElectron::getParameterString()
 {
     /*
@@ -758,4 +781,72 @@ std::string NElectron::getParameterString()
     {
         return "_omega" + std::to_string(omega) + "_alpha" + std::to_string(alpha);
     }
+}
+
+void NElectron::printDiagnostics(double **r, int k)
+{
+    for (int i = 0; i < 1e2; i++) cout << "=";
+    cout << "\nERROR" << endl;
+    cout << "Particle k" << k << endl;
+    cout << "Spin down positions: " << endl;
+    for (int i = 0; i < nParticles/2; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            cout << std::setw(10) << r[2*i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+    cout << "Spin up positions: " << endl;
+    for (int i = 0; i < nParticles/2; i++)
+    {
+        for (int j = 0; j < nDimensions; j++)
+        {
+            cout << std::setw(10) << r[2*i+1][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+
+    cout << "Variational parameters: " << endl;
+    cout << "Alpha = " << alpha << endl;
+    if (runJastrow) cout << "Beta = " << beta << endl;
+    cout << "Wave functions: " << endl;
+    cout << "WFSlater= " << WFSlater << endl;
+    cout << "WFSlaterOld = " << WFSlaterOld << endl;
+    if (runJastrow) {
+        cout << "WFJastrow = " << WFJastrow << endl;
+        cout << "WFJastrowOld = " << WFJastrowOld << endl;
+    }
+    cout << endl;
+    for (int i = 0; i < nParticles/2; i++) // Particles
+    {
+        for (int j = 0; j < nParticles/2; j++) // States
+        {
+            printf("(%2d, %2d) Spin down: %20.16f ", i, j, states[2*j]->wf(r[2*i], alpha, omega));
+        }
+        cout << endl;
+    }
+    cout << endl;
+    for (int i = 0; i < nParticles/2; i++) // Particles
+    {
+        for (int j = 0; j < nParticles/2; j++) // States
+        {
+            printf("(%2d, %2d)   Spin up: %20.16f ", i, j, states[2*j+1]->wf(r[2*i+1], alpha, omega));
+        }
+        cout << endl;
+    }
+    cout << endl;
+    cout << "DSpinDown: \n" << DSpinDown    <<  endl;
+    cout << "DSpinUp: \n"   << DSpinUp      <<  endl;
+    cout << "DSpinDownInverse: \n" << DSpinDownInverse    <<  endl;
+    cout << "DSpinUpInverse: \n"   << DSpinUpInverse      <<  endl;
+    cout << endl;;
+    cout << "DSpinDownOld: \n" << DSpinDownOld    <<  endl;
+    cout << "DSpinUpOld: \n"   << DSpinUpOld      <<  endl;
+    cout << "DSpinDownInverseOld: \n" << DSpinDownInverseOld    <<  endl;
+    cout << "DSpinUpInverseOld: \n"   << DSpinUpInverseOld      <<  endl;
+    cout << endl;
+    for (int i = 0; i < 1e2; i++) if (processRank == 0) cout << "=";
 }

@@ -6,7 +6,7 @@
 using std::cout;
 using std::endl;
 
-MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions, WaveFunctions *newWF)
+MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions)
 {
     /*
      * Base constructor of any of the sampling classes.
@@ -17,7 +17,6 @@ MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions, Wa
      */
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
-    setWaveFunction(newWF);
 }
 
 MetropolisSampler::~MetropolisSampler()

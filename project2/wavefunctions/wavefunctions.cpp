@@ -129,8 +129,15 @@ void WaveFunctions::updateWF()
 void WaveFunctions::revert()
 {
    /*
-    * Function used when resetting certain class-contained variables. Needed by the n-electron case.
+    * Function used when reverting certain class-contained variables. Needed by the n-electron case.
     */
+}
+
+void WaveFunctions::reset()
+{
+    /*
+     * Function used when resetting certain class-contained variables. Needed by the n-electron case.
+     */
 }
 
 void WaveFunctions::finalizeSD()

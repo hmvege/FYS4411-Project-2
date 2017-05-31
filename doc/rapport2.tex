@@ -308,7 +308,7 @@ The wave function for an electron in a two dimensional harmonic oscillator poten
 \end{align}
 The details surrounding the mysterious variational parameter $\alpha$ will be explained further on. For now, we will place these $\phi$'s into a Slater determinant. The Slater determinant is a creature that describes the wave function of a fermionic system, while also enforcing anti-symmetrization and thus the Pauli principle. Our Slater determinant will take the following form, when we describe the specific state of a system by $n_x, n_y$ and a specific particle $\mathbf{r}_i = x_i\mathbf{i} + y_i\mathbf{j}$,
 \begin{align}
-	Det(\Phi(\mathbf{r})) \equiv \frac{1}{\sqrt{N!}}
+	D = \det(\Phi(\mathbf{r})) \equiv \frac{1}{\sqrt{N!}}
 	\begin{vmatrix}
 		\phi_1(\mathbf{r}_1)	& \phi_2(\mathbf{r}_1) 	& \hdots 	& \phi_N(\mathbf{r}_1) 	\\
 		\phi_1(\mathbf{r}_2) 	& \phi_2(\mathbf{r}_2) 	& \hdots 	& \phi_N(\mathbf{r}_2) 	\\
@@ -324,7 +324,7 @@ From how we have described the position, we introduce following, useful notation
 \end{align}
 Note that we have defined $\mathbf{r} \equiv (\mathbf{r_1},\mathbf{r_2},\dots,\mathbf{r_N})$ in the Slater determinant\eqref{eq:slater_determinant}. To pull this definition back to our trial wave function \eqref{eq:WF_trial}, we get
 \begin{align}
-	\psi_{SD}(\mathbf{r}) = Det(\Phi(\mathbf{r}))
+	\psi_{SD}(\mathbf{r}) = \det(\Phi(\mathbf{r})) = D
 	\label{eq:WF_onebody}
 \end{align}
 Where the $OB$ stands for one body, as in one body wave function. We now need to look into the part that accounts for many body effects, the Jastrow factor.
@@ -510,10 +510,21 @@ The laplacian of the Jastrow factor is given as
 	\label{eq:n-body-jastrow-lap}
 \end{align}
 
-We can now look at the Slater determinant. As shown in http://onlinelibrary.wiley.com/doi/10.1002/qua.560200508/abstract, we can split the spin parts into two Slater determinants, one for spin up and one for spin down since our Hamiltonian is spin independent. If we do not do this the determinant will be zero.
-
-
-
+We can now look at the Slater determinant. As shown in http://onlinelibrary.wiley.com/doi/10.1002/qua.560200508/abstract, we can split the spin parts into two Slater determinants, one for spin up and one for spin down since our Hamiltonian is spin independent. If we do not do this the determinant will be zero. By using the definition we presented in \eqref{eq:WF_onebody}, we get
+\begin{align}
+	\psi_{SD} = D = D_{\uparrow}D_{\downarrow}
+	\label{eq:slater-det-spin-up-down}
+\end{align}
+This gives following expressions for the gradient,
+\begin{align}
+	\frac{\bm{\nabla}\psi_{SD}}{\psi_{SD}} = \frac{\bm{\nabla}D_{\downarrow}}{D_{\downarrow}} + \frac{\bm{\nabla}D_{\uparrow}}{D_{\uparrow}}
+	\label{eq:slater-spin-down-up-grad}
+\end{align}
+and the laplacian
+\begin{align}
+	\frac{{\nabla}^2\psi_{SD}}{\psi_{SD}} = \frac{{\nabla}^2D_{\downarrow}}{D_{\downarrow}} + \frac{{\nabla}^2D_{\uparrow}}{D_{\uparrow}}
+	\label{eq:slater-spin-down-up-lap}
+\end{align}
 
 
 

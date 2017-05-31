@@ -14,10 +14,9 @@ private:
     double **FOld; // Old quantum force
     double **FNew; // New quantum force
     std::normal_distribution<double> gaussian_dist;
-//    WaveFunctions *WF = nullptr; // Will this create a double instance of the wavefunction, as we have one stored in the vmc?
     double Ratio(double **rOld, double **rNew, int i, double newWF, double oldWF);
 public:
-    ImportanceSampler(int new_nParticles, int new_nDimensions, WaveFunctions *newWF);
+    ImportanceSampler(int new_nParticles, int new_nDimensions);
     ~ImportanceSampler();
     bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
     void initializePositions(double **rOld, double **rNew);

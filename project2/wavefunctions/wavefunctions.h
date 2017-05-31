@@ -31,6 +31,7 @@ public:
     virtual bool SDConvergenceCriteria();
     virtual void updateWF();
     virtual void revert();
+    virtual void reset();
     virtual std::string getParameterString();
     // Printers
     virtual void printVariationalParameters(int i);

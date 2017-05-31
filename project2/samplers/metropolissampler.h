@@ -14,7 +14,7 @@ protected:
     std::uniform_real_distribution<double> acceptance_dist; // For choosing to accept a new Metropolis move or not
     WaveFunctions *WF = nullptr; // Will this create a double instance of the wavefunction, as we have one stored in the vmc?
 public:
-    MetropolisSampler(int new_nParticles, int new_nDimensions, WaveFunctions *newWF);
+    MetropolisSampler(int new_nParticles, int new_nDimensions);
     virtual ~MetropolisSampler();
     virtual bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
     virtual double Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF);

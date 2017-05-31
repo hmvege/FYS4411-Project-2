@@ -51,6 +51,14 @@ void VMC::updateParticle(int i)
      * Arguments:
      *  i   : particle being updated
      */
+//    for (int k = 0; k < nParticles; k++) {
+//        if ( k != i) {
+//            for (int j=0; j < nDimensions; j++) {
+//                rNew[k][j] = rOld[k][j];
+//            }
+//        }
+//    }
+
     R->updatePositions(rOld, rNew, i);
     newWF = WF->calculate(rNew, i);
     if (R->move(rOld, rNew, i, newWF, oldWF))
@@ -59,12 +67,13 @@ void VMC::updateParticle(int i)
         for (int j = 0; j < nDimensions; j++)
         {
             rOld[i][j] = rNew[i][j];
-            oldWF = newWF;
         }
+        oldWF = newWF;
         acceptanceCounter++;
     }
     else
     {
+        newWF = oldWF;
         WF->revert();
         for (int j = 0; j < nDimensions; j++)
         {
@@ -115,12 +124,14 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         oldWF = WF->initializeWaveFunction(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
         {
-//            if ((processRank == 0) && (i % 10000 == 0)) cout << i << endl;
+//            if ((processRank == 0) && (i % 1000 == 0)) {
+//                cout << "i = " << std::setw(8) << i << "  oldWF = " << std::setw(12) << oldWF << "  newWF = " << std::setw(12) << newWF << endl;
+//            }
             runSDStep();
         }
         statisticsSD(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-        if (processRank == 0) WF->printVariationalParameters(SDCounter);
+//        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         SDCounter++;
 //        if (std::fabs(EOld - ESum) < 1e-9)
 //        {
@@ -280,6 +291,8 @@ void VMC::resetVariables()
             rNew[i][j] = 0;
         }
     }
+    newWF = 0;
+    oldWF = 0;
     E = 0;
     ESum = 0;
     ESumSquared = 0;
@@ -290,4 +303,10 @@ void VMC::resetVariables()
     EPotentialSum = 0;
     EPotentialSquaredSum = 0;
     acceptanceCounter = 0;
+}
+
+void VMC::setMetropolisSampler(MetropolisSampler *newRatio)
+{
+    R = newRatio;
+    R->setWaveFunction(WF);
 }

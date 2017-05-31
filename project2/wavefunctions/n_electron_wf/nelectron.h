@@ -21,7 +21,7 @@ private:
     double WFSlaterOld;
     // Functions used internally
     void initializeSlater(double **r);
-    void updateSlater(double **r, int k);
+    void updateSlater(double **rNew, int k);
     double updateInverseSlaterElement(arma::mat DNew, arma::mat DOld, arma::mat DInverseOld, int k, int j, int i);
     double psiJastrow(double **r);
     double psiSlater();
@@ -65,10 +65,9 @@ public:
     NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank, double new_omega, double new_alpha, double new_beta);
     ~NElectron();
 
-//    void initialize(double **r, double &WF);
     void initializeWFSampling(double **r);
     double initializeWaveFunction(double **r);
-    double calculate(double **r, int k);
+    double calculate(double **rNew, int k);
     virtual void localEnergy(double **r, double &ETotal, double &EKinetic, double &EPotential);
     void quantumForce(double **r, double **F, int k);
     void steepestDescent(double &ESum, int NCycles);
@@ -76,6 +75,7 @@ public:
     bool SDConvergenceCriteria();
     void revert();
     void updateWF();
+    void reset();
     std::string getParameterString();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }
@@ -83,6 +83,9 @@ public:
     void setBeta(double newBeta) { beta = newBeta; }
 
     void setJastrow(bool jastrow) { runJastrow = jastrow; }
+
+    // FOR BUG HUNTING
+    void printDiagnostics(double **r, int k);
 };
 
 #endif // NELECTRON_H

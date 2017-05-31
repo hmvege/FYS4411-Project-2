@@ -60,7 +60,7 @@ public:
     void setWaveFunction(WaveFunctions *newWF) { WF = newWF; }
     void setNParticles(int new_nParticles) { nParticles = new_nParticles; }
     void setNDimensions(int new_nDimensions) { nDimensions= new_nDimensions; }
-    void setMetropolisSampler(MetropolisSampler *newRatio) { R = newRatio; }
+    void setMetropolisSampler(MetropolisSampler *newRatio);
 };
 
 #endif // VMC_H

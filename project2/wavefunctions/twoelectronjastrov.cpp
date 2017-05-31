@@ -108,7 +108,6 @@ void twoElectronJastrov::steepestDescent(double &ESum, int NCycles)
      *  ESum        : Local energy sum from running N MC cycles
      *  NCyclces    : Number of MC cycles used
      */
-    cout << "NOT PROPERLY IMPLEMENTED SD FOR PARALLEL PROCESSING!" << endl;
     SDStatistics(NCycles);
     double alphaDerivative = 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
     double betaDerivative = 2*(dPsiEBetaSum - dPsiBetaSum*ESum);

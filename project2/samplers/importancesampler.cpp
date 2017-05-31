@@ -5,7 +5,7 @@
 using std::cout;
 using std::endl;
 
-ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions, WaveFunctions *newWF) : MetropolisSampler(new_nParticles, new_nDimensions, newWF)
+ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions) : MetropolisSampler(new_nParticles, new_nDimensions)
 {
     // Allocating memory to the force matrices.
     FOld = new double * [nParticles];
@@ -14,12 +14,23 @@ ImportanceSampler::ImportanceSampler(int new_nParticles, int new_nDimensions, Wa
     {
         FOld[i] = new double [nDimensions];
         FNew[i] = new double [nDimensions];
+        for (int j = 0; j < nDimensions; j++)
+        {
+            FOld[i][j] = 0;
+            FNew[i][j] = 0;
+        }
     }
 }
 
 ImportanceSampler::~ImportanceSampler()
 {
-
+    for (int i = 0; i < nParticles; i++)
+    {
+        delete [] FOld[i];
+        delete [] FNew[i];
+    }
+    delete [] FOld;
+    delete [] FNew;
 }
 
 void ImportanceSampler::initializeSampling(double newStepLength, double newSeed, double newD)
@@ -54,24 +65,24 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
      * rOld    : Old positions of the electrons
      * rNew    : New positions of the electrons
      */
+
     for (int i = 0; i < nParticles; i++)
     {
-//        rOld[i] = new double [nDimensions];
-//        rNew[i] = new double [nDimensions];
-//        FOld[i] = new double [nDimensions];
-//        FNew[i] = new double [nDimensions];
         for (int j = 0; j < nDimensions; j ++)
         {
-//            rOld[i][j] = gaussian_dist(generator)*sqrtDeltat;
             rOld[i][j] = gaussian_dist(generator)*sqrtDeltat;
             rNew[i][j] = rOld[i][j];
         }
     }
+//    WF->reset();
     WF->initializeWFSampling(rOld);
     for (int i = 0; i < nParticles; i++)
     {
         WF->quantumForce(rOld,FOld,i);
-        FNew[i] = FOld[i];
+        for (int j = 0; j < nDimensions; j++)
+        {
+            FNew[i][j] = FOld[i][j];
+        }
     }
 }
 
@@ -86,7 +97,15 @@ void ImportanceSampler::updatePositions(double **rOld, double **rNew, int k)
     for (int i = 0; i < nDimensions; i++)
     {
         rNew[k][i] = rOld[k][i] + deltatD*FOld[k][i] + sqrtDeltat*gaussian_dist(generator);
+//        double rnd = sqrtDeltat*gaussian_dist(generator);
+//        rNew[k][i] = rOld[k][i] + deltatD*FOld[k][i] + rnd;//sqrtDeltat*gaussian_dist(generator);
+//        if (fabs(rNew[k][i]) > 5) {
+//            cout << "Rand = " << rnd << endl;
+//            cout << "rOld[" <<k << "]["<< i<<"] = "<< rOld[k][i] << endl;
+//            cout << "FOld[" <<k << "]["<< i<<"] = "<< FOld[k][i] << endl;
+//        }
     }
+
 }
 
 bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, double oldWF)
@@ -102,11 +121,24 @@ bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, 
      */
     if (acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF))
     {
-        FOld = FNew;
+        for (int k = 0; k < nParticles; k++)
+        {
+            for (int j = 0; j < nDimensions; j ++)
+            {
+                FOld[k][j] = FNew[k][j];
+            }
+        }
         return true;
     }
     else
     {
+        for (int k = 0; k < nParticles; k++)
+        {
+            for (int j = 0; j < nDimensions; j ++)
+            {
+                FNew[k][j] = FOld[k][j];
+            }
+        }
         return false;
     }
 }
@@ -129,9 +161,10 @@ double ImportanceSampler::GreensRatio(double **y, double **x, int k)
 {
     /*
      * Importance sampling ratio from two Greens functions, q = G(x,y)/G(y,x)
-     * y : new positions
-     * x : old positions
-     * k : particle number
+     * Arguments:
+     *  y : new positions
+     *  x : old positions
+     *  k : particle number
      */
     WF->quantumForce(y,FNew,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
     double GreensFunction = 0;
@@ -140,6 +173,8 @@ double ImportanceSampler::GreensRatio(double **y, double **x, int k)
         GreensFunction += 0.5*(FOld[k][j] + FNew[k][j])*(deltatD*0.5*(FOld[k][j] - FNew[k][j]) - y[k][j] + x[k][j]);
     }
     GreensFunction = exp(GreensFunction);
+//    GreensFunction = exp(0.125*deltat*(sqrt(FOld[k][0]*FOld[k][0]+FOld[k][1]*FOld[k][1])+sqrt(FNew[k][0]*FNew[k][0]+FNew[k][1]*FNew[k][1]))
+//            + 0.25*deltat*((x[k][0]-y[k][0])*(FNew[k][0]+FOld[k][0]) + (x[k][0]-y[k][1])*(FNew[k][1]+FOld[k][1])));
     return GreensFunction;
 }
 
