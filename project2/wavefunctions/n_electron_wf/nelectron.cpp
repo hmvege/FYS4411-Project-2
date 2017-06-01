@@ -209,23 +209,28 @@ void NElectron::quantumForce(double **r, double **F, int k)
      *  F   : quantum forces for all particles
      *  k   : particle we are finding the quantum force for
      */
-    double *gradSlater = new double[2];
-    double *gradJastrow = new double[2];
-    gradSlater[0] = 0;
-    gradSlater[1] = 0;
-    gradJastrow[0] = 0;
-    gradJastrow[1] = 0;
+    double *gradSlater = new double[nDimensions];
+    double *gradJastrow = new double[nDimensions];
+    for (int j = 0; j < nDimensions; j++)
+    {
+        gradSlater[j] = 0;
+        gradJastrow[j] = 0;
+    }
     gradientSlater(gradSlater,r,k);
     if (runJastrow) // If set to run with Jastrow
     {
         gradientJastrow(gradJastrow,r,k);
-        F[k][0] = 2*(gradSlater[0] + gradJastrow[0]);
-        F[k][1] = 2*(gradSlater[1] + gradJastrow[1]);
+        for (int j = 0; j < nDimensions; j++)
+        {
+            F[k][j] = 2*(gradSlater[j] + gradJastrow[j]);
+        }
     }
     else
     {
-        F[k][0] = 2*gradSlater[0];
-        F[k][1] = 2*gradSlater[1];
+        for (int j = 0; j < nDimensions; j++)
+        {
+            F[k][j] = 2*gradSlater[j];
+        }
     }
 
     delete [] gradSlater;
@@ -540,25 +545,33 @@ void NElectron::gradientSlater(double * grad, double **r, int k)
      *  r       : positions of the particles
      *  k       : particle we are getting the gradient for
      */
-    double *wfGrad = new double[2];
-    wfGrad[0] = 0;
-    wfGrad[1] = 0;
+    double *wfGrad = new double[nDimensions];
+    for (int j = 0; j < nDimensions; j++)
+    {
+        wfGrad[j] = 0;
+    }
     for (int i = 0; i < nParticles/2; i++)
     {
         if (k%2==0)
         {
             states[2*i]->wfGradient(wfGrad,r[k],alpha,omega);
-            grad[0] += wfGrad[0]*DSpinDownInverse(i,k/2);
-            grad[1] += wfGrad[1]*DSpinDownInverse(i,k/2);
+            for (int j = 0; j < nDimensions; j++)
+            {
+                grad[j] += wfGrad[j]*DSpinDownInverse(i,k/2);
+            }
         }
         else
         {
             states[2*i+1]->wfGradient(wfGrad,r[k],alpha,omega);
-            grad[0] += wfGrad[0]*DSpinUpInverse(i,(k-1)/2);
-            grad[1] += wfGrad[1]*DSpinUpInverse(i,(k-1)/2);
+            for (int j = 0; j < nDimensions; j++)
+            {
+                grad[j] += wfGrad[j]*DSpinUpInverse(i,(k-1)/2);
+            }
         }
-        wfGrad[0] = 0;
-        wfGrad[1] = 0;
+        for (int j = 0; j < nDimensions; j++)
+        {
+            wfGrad[j] = 0;
+        }
     }
     delete [] wfGrad;
 }
@@ -622,8 +635,11 @@ void NElectron::gradientJastrow(double * grad, double **r, int k)
         r_dist          = r_ij(r[i],r[k]);
         r_ijBeta        = (1.0 + beta*r_dist);
         commonFactor    = a[i][k]/(r_dist*r_ijBeta*r_ijBeta);
-        grad[0]         += (r[k][0] - r[i][0])*commonFactor;
-        grad[1]         += (r[k][1] - r[i][1])*commonFactor;
+        for (int j = 0; j < nDimensions; j++)
+        {
+            grad[j] += (r[k][j] - r[i][j])*commonFactor;
+
+        }
     }
 }
 
@@ -660,12 +676,13 @@ double NElectron::laplacian(double **r, int k)
      *  k   : particle to find the laplacian for
      */
     double lap = 0;
-    double *gradSlater = new double[2];
-    double *gradJastrow = new double[2];
-    gradSlater[0] = 0;
-    gradSlater[1] = 0;
-    gradJastrow[0] = 0;
-    gradJastrow[1] = 0;
+    double *gradSlater = new double[nDimensions];
+    double *gradJastrow = new double[nDimensions];
+    for (int j = 0; j < nDimensions; j++)
+    {
+        gradSlater[j] = 0;
+        gradJastrow[j] = 0;
+    }
     if (runJastrow) // Running with/without Jastrow
     {
         gradientSlater(gradSlater,r,k);

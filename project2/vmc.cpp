@@ -283,14 +283,14 @@ void VMC::resetVariables()
     /*
      * Resets variables used between the steepest descent part and the VMC main run.
      */
-    for (int i = 0; i < nParticles; i++)
-    {
-        for (int j = 0; j < nDimensions; j++)
-        {
-            rOld[i][j] = 0;
-            rNew[i][j] = 0;
-        }
-    }
+//    for (int i = 0; i < nParticles; i++)
+//    {
+//        for (int j = 0; j < nDimensions; j++)
+//        {
+//            rOld[i][j] = 0;
+//            rNew[i][j] = 0;
+//        }
+//    }
     newWF = 0;
     oldWF = 0;
     E = 0;

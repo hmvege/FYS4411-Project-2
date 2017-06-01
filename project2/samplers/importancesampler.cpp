@@ -74,7 +74,7 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
             rNew[i][j] = rOld[i][j];
         }
     }
-//    WF->reset();
+    WF->reset();
     WF->initializeWFSampling(rOld);
     for (int i = 0; i < nParticles; i++)
     {
@@ -173,8 +173,6 @@ double ImportanceSampler::GreensRatio(double **y, double **x, int k)
         GreensFunction += 0.5*(FOld[k][j] + FNew[k][j])*(deltatD*0.5*(FOld[k][j] - FNew[k][j]) - y[k][j] + x[k][j]);
     }
     GreensFunction = exp(GreensFunction);
-//    GreensFunction = exp(0.125*deltat*(sqrt(FOld[k][0]*FOld[k][0]+FOld[k][1]*FOld[k][1])+sqrt(FNew[k][0]*FNew[k][0]+FNew[k][1]*FNew[k][1]))
-//            + 0.25*deltat*((x[k][0]-y[k][0])*(FNew[k][0]+FOld[k][0]) + (x[k][0]-y[k][1])*(FNew[k][1]+FOld[k][1])));
     return GreensFunction;
 }
 

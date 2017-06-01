@@ -72,9 +72,9 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.0045; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
-//    double seed             = -1-processRank;//std::time(nullptr)-processRank;
-    double seed             = std::time(nullptr)-processRank;
-    bool importanceSampling = true;
+    double seed             = -1-processRank;//std::time(nullptr)-processRank;
+//    double seed             = std::time(nullptr)-processRank;
+    bool importanceSampling = false;
     bool coulombInteraction = true;
     // Timers
     clock_t programStart, programEnd;
@@ -89,7 +89,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     {
         for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
         {
-            for (int k = 0; k < 1; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
+            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
             {
                 runStart = clock();
                 runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
