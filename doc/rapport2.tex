@@ -288,10 +288,10 @@ Where the $\langle E_L \rangle$ is the expectation value of the local energy and
 \end{align}
 with the derivative of $\psi$ with respect to the variational parameter is defined as
 \begin{align*}
-	\bar{\psi_{\alpha_i}} = \frac{\psi[\alpha_i]}{d\alpha_i}
+	\bar{\psi}_{\alpha_i} = \frac{\psi[\alpha_i]}{d\alpha_i}
 \end{align*}
 
-As is evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist\husk{reference?}, but are not implemented in the project.
+As evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist\husk{reference?}, but are not implemented in the project.
 
 
 \subsection{Electron wave function}
@@ -447,7 +447,7 @@ Putting all this together, the second derivative becomes
 	&= \bigg( - \omega \alpha + \omega^2\alpha^2 x_1^2 - \frac{2\omega\alpha a x_1(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} + \frac{2a}{(1+\beta r_{12})^2} 
 	\\ &\times \bigg( \frac{1}{2r_{12}} - \frac{(x_1 - x_2)^2}{2 r_{12}^3} - \frac{\beta (x_1 x_2)^2}{r_{12}^2(1+\beta r_{12})} + \frac{a(x_1-x_2)^2}{2r_{12}^2(1+\beta r_{12})^2} \bigg) \bigg) \psi_T
 \end{align*}
-We can now pull the derivative with respect to $x_1$ and $x_2$ together.
+We can now add the derivative with respect to $x_1$ and $x_2$.
 \begin{align*}
 	&\left( \frac{\partial^2}{\partial x_1^2} + \frac{\partial^2}{\partial x_1^2} \right)\psi_T = \bigg( - 2\omega \alpha + \omega^2\alpha^2 \left(x_1^2 + x_2^2\right) - \frac{2\omega\alpha a (x_1 - x_2)^2}{r_{12}(1+\beta r_{12})^2} \\
 	&+ \frac{2a}{(1+\beta r_{12})^2} \bigg( \frac{1}{r_{12}} - \frac{(x_1 - x_2)^2}{r_{12}^3} - \frac{2\beta (x_1 - x_2)^2}{r_{12}^2(1+\beta r_{12})} + \frac{a(x_1-x_2)^2}{r_{12}^2(1+\beta r_{12})^2} \bigg) \bigg) \psi_T
@@ -525,6 +525,7 @@ and the laplacian
 	\frac{{\nabla}^2\psi_{SD}}{\psi_{SD}} = \frac{{\nabla}^2D_{\downarrow}}{D_{\downarrow}} + \frac{{\nabla}^2D_{\uparrow}}{D_{\uparrow}}
 	\label{eq:slater-spin-down-up-lap}
 \end{align}
+Now, for the derivative of the Slater determinant, we get by the definition given in 
 
 
 
