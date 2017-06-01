@@ -51,14 +51,6 @@ void VMC::updateParticle(int i)
      * Arguments:
      *  i   : particle being updated
      */
-//    for (int k = 0; k < nParticles; k++) {
-//        if ( k != i) {
-//            for (int j=0; j < nDimensions; j++) {
-//                rNew[k][j] = rOld[k][j];
-//            }
-//        }
-//    }
-
     R->updatePositions(rOld, rNew, i);
     newWF = WF->calculate(rNew, i);
     if (R->move(rOld, rNew, i, newWF, oldWF))
