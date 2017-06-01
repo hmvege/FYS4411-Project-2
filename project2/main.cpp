@@ -45,7 +45,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     unsigned int MCCycles   = 1e5;
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 100; // 0 turns it completely off, 200 is default
+    int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
@@ -75,7 +75,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double seed             = -1-processRank;//std::time(nullptr)-processRank;
 //    double seed             = std::time(nullptr)-processRank;
     bool importanceSampling = false;
-    bool coulombInteraction = true;
+    bool coulombInteraction = false;
     // Timers
     clock_t programStart, programEnd;
     clock_t runStart, runEnd;
@@ -85,11 +85,11 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2jas, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
 //    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
     // Main loop for all different cases
-    for (int i = 1; i < 2; i++) // Default is i=0, i < 4, particles
+    for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
     {
         for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
         {
-            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
+            for (int k = 0; k < 1; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
             {
                 runStart = clock();
                 runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
@@ -195,18 +195,18 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
                    double omega, double alpha, double beta, double D, double deltat, double seed, double SDStepLength,
                    bool impSampling, bool coulomb, bool jastrow, std::string filename, int MCSamplingFrequency, int numprocs, int processRank)
 {
+    if (!jastrow && !coulomb) alpha = 1.0;
     if (processRank == 0) { printRunInfo(MCCycles, maxNSD, nParticles, impSampling, coulomb, jastrow, omega, alpha, beta); }
     NElectron WF_NElectron(nParticles, nDimensions, numprocs, processRank, omega, alpha, beta);
     WF_NElectron.setSDStepLength(SDStepLength);
     VMC VMC_NElectron(nParticles, nDimensions, filename, numprocs, processRank);
-    WF_NElectron.setCoulombInteraction(coulomb);
     WF_NElectron.setJastrow(jastrow);
+    WF_NElectron.setCoulombInteraction(coulomb);
     VMC_NElectron.setWaveFunction(&WF_NElectron);
     if (impSampling) {
         ImportanceSampler importanceSampling(nParticles, nDimensions);
         importanceSampling.initializeSampling(deltat, seed, D);
         VMC_NElectron.setMetropolisSampler(&importanceSampling);
-//        VMC_NElectron.setWaveFunction(&WF_NElectron);
         VMC_NElectron.runVMC(MCCycles,optCycles,maxNSD, MCSamplingFrequency);
         VMC_NElectron.printResults();
     }
@@ -215,11 +215,7 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
         UniformSampling uniformSampling(nParticles, nDimensions);
         uniformSampling.initializeSampling(1.14, seed);
         VMC_NElectron.setMetropolisSampler(&uniformSampling);
-//        VMC_NElectron.setWaveFunction(&WF_NElectron);
         VMC_NElectron.runVMC(MCCycles,optCycles,maxNSD, MCSamplingFrequency);
         VMC_NElectron.printResults();
     }
-//    VMC_NElectron.setWaveFunction(&WF_NElectron);
-//    VMC_NElectron.runVMC(MCCycles,optCycles,maxNSD, MCSamplingFrequency);
-//    VMC_NElectron.printResults();
 }
