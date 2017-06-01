@@ -49,7 +49,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
-    double omega[5]         = {1.0, 0.5, 0.1, 0.05, 0.1};
+    double omega[5]         = {1.0, 0.5, 0.1, 0.05, 0.01};
     double alpha[4][5][2]   = {
         {{1.0,0.7}, {0.95,0.66}, {0.95,0.66}, {0.91,0.5}, {0.91,0.5}},
         {{1.03,0.6}, {0.93,0.6}, {0.83,0.6}, {0.84,0.6}, {0.84,0.6}},
@@ -87,9 +87,9 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     // Main loop for all different cases
     for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
     {
-        for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
+        for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
         {
-            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
+            for (int k = 0; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
             {
                 runStart = clock();
                 runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
