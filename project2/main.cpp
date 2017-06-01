@@ -42,7 +42,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 1e5;
+    unsigned int MCCycles   = 1e7;
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
     int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
@@ -85,11 +85,11 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2jas, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
 //    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
     // Main loop for all different cases
-    for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
+    for (int i = 0; i < 1; i++) // Default is i=0, i < 4, particles
     {
-        for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
+        for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
         {
-            for (int k = 0; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
+            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
             {
                 runStart = clock();
                 runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
