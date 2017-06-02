@@ -123,7 +123,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         }
         statisticsSD(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-//        if (processRank == 0) WF->printVariationalParameters(SDCounter);
+        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         SDCounter++;
 //        if (std::fabs(EOld - ESum) < 1e-9)
 //        {

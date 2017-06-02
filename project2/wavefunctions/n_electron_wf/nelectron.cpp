@@ -87,6 +87,12 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, 
         for (int j = 0; j < nParticles; j++)
         {
             a[i][j] = get_a(i,j);
+//            cout << "a = " <<a[i][j] << " ";
+//            cout << "i = " << i << endl;
+//            states[i]->print();
+//            cout << "j = " << j << endl;
+//            states[j]->print();
+//            cout << endl;
         }
     }
 
@@ -300,6 +306,8 @@ void NElectron::finalizeSD()
     MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
     dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
     dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
+    MPI_Bcast(&dPsiAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&dPsiEAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     if (runJastrow)
     {
         double temp_dPsiBetaSum = 0;
@@ -308,6 +316,8 @@ void NElectron::finalizeSD()
         MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
         dPsiBetaSum = temp_dPsiBetaSum/double(numprocs);
         dPsiEBetaSum = temp_dPsiEBetaSum/double(numprocs);
+        MPI_Bcast(&dPsiBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        MPI_Bcast(&dPsiEBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
 }
 
@@ -456,6 +466,12 @@ void NElectron::updateSlater(double **rNew, int k)
     DSpinUpInverse = arma::inv(DSpinUp);
     WFSlater = psiSlater();
 
+    if (((arma::accu(DSpinDownInverse*DSpinDown)/3.0 - 1) > 1e-10) || ((arma::accu(DSpinUpInverse*DSpinUp)/3.0 - 1) > 1e-10))
+    {
+        cout << "ACCU ERROR: " << arma::accu(DSpinDownInverse*DSpinDown)/3.0 << endl;
+        printDiagnostics(rNew, k);
+        exit(1);
+    }
 
     if ((fabs(det(DSpinDown)) < 1e-16) || (fabs(det(DSpinUp)) < 1e-16))
     {
