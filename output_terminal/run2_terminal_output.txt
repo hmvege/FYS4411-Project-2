@@ -1,0 +1,758 @@
+> $ mpirun -n 8 bin/project2                                                                                                                                                                            [±master ●]
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     1
+Alpha:                     0.7
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha =    0.73802
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.737366331974178
+Kinetic energy variance:   2.71387729648796e-08
+Potential energy:          2.43165261850671
+Potential energy variance: 5.24117838922699e-07
+Energy:                    3.16901895048091
+Energy variance:           4.90978831825339e-07
+Acceptance rate:           60.28706 %
+Run complete. Time used: 19.088918
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     1
+Alpha:                     1
+Beta:                      0.4
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.995623103939939 Beta = 0.396456345781305
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.896192190479723
+Kinetic energy variance:   1.92031835039585e-07
+Potential energy:          2.10420926250801
+Potential energy variance: 1.86113202385396e-07
+Energy:                    3.00040145298775
+Energy variance:           2.0212787608056e-10
+Acceptance rate:           57.6034 %
+Run complete. Time used: 28.480088
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.5
+Alpha:                     0.66
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.675295603926785
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.337715641449502
+Kinetic energy variance:   5.69896625484464e-09
+Potential energy:          1.46841150370924
+Potential energy variance: 6.75295656671939e-07
+Energy:                    1.80612714515882
+Energy variance:           6.68305435481966e-07
+Acceptance rate:           72.221415 %
+Run complete. Time used: 18.600735
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.5
+Alpha:                     0.95
+Beta:                      0.36
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.950557577059084 Beta = 0.350375106586488
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.435921558149952
+Kinetic energy variance:   6.33247578853409e-08
+Potential energy:          1.22478487123348
+Potential energy variance: 6.31190520071681e-08
+Energy:                    1.66070642938347
+Energy variance:           1.17733781121609e-10
+Acceptance rate:           69.24465 %
+Run complete. Time used: 28.088007
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.1
+Alpha:                     0.66
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.638339745664465
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.063817250883826
+Kinetic energy variance:   2.03110802732322e-10
+Potential energy:          0.473098587146947
+Potential energy variance: 5.77369972043441e-08
+Energy:                    0.536915838030763
+Energy variance:           5.79525418549867e-08
+Acceptance rate:           87.630595 %
+Run complete. Time used: 18.586472
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.1
+Alpha:                     0.95
+Beta:                      0.23
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.945698089352947 Beta = 0.201409006752497
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0922554987119334
+Kinetic energy variance:   2.22216690131726e-09
+Potential energy:          0.349704538728466
+Potential energy variance: 2.07203991132917e-09
+Energy:                    0.441960037440404
+Energy variance:           3.30395718397852e-11
+Acceptance rate:           85.373645 %
+Run complete. Time used: 28.107638
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.05
+Alpha:                     0.5
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.490797596713125
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0245189650681323
+Kinetic energy variance:   2.99900356550378e-11
+Potential energy:          0.298300288454751
+Potential energy variance: 2.16403951769553e-08
+Energy:                    0.322819253522846
+Energy variance:           2.16623873372551e-08
+Acceptance rate:           92.313645 %
+Run complete. Time used: 18.631015
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.05
+Alpha:                     0.91
+Beta:                      0.2
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.906648253299741 Beta = 0.167240387922581
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0457978159865605
+Kinetic energy variance:   3.47047115877813e-10
+Potential energy:          0.209579105050075
+Potential energy variance: 3.21450049750523e-10
+Energy:                    0.255376921036621
+Energy variance:           1.69298524489853e-11
+Acceptance rate:           89.662635 %
+Run complete. Time used: 28.125664
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.01
+Alpha:                     0.5
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.487482789872525
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.004873110155814
+Kinetic energy variance:   1.18283355055821e-12
+Potential energy:          0.107904232041144
+Potential energy variance: 3.95079471081167e-09
+Energy:                    0.112777342196956
+Energy variance:           3.96330997577146e-09
+Acceptance rate:           96.570355 %
+Run complete. Time used: 18.80558
+====================================================================================================
+N electrons                2
+MC-cycles:                 80000000
+Omega:                     0.01
+Alpha:                     0.91
+Beta:                      0.2
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.905843513213949 Beta = 0.15412372156308
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0098357785460344
+Kinetic energy variance:   1.32618959848813e-11
+Potential energy:          0.0714765062150341
+Potential energy variance: 3.30008431067988e-11
+Energy:                    0.0813122847610631
+Energy variance:           2.09553877165444e-11
+Acceptance rate:           95.228175 %
+Run complete. Time used: 28.639813
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     1
+Alpha:                     0.6
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.626404365871208
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            3.1262270689783
+Kinetic energy variance:   9.76671766032737e-08
+Potential energy:          17.6587777966063
+Potential energy variance: 2.61853403293145e-06
+Energy:                    20.785004865585
+Energy variance:           2.51858993603821e-06
+Acceptance rate:           57.990135 %
+Run complete. Time used: 239.567068
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     1
+Alpha:                     1.03
+Beta:                      0.47
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 1.0248583685565 Beta = 0.436724597830906
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            3.76090246021913
+Kinetic energy variance:   1.70840644116007e-06
+Potential energy:          16.446082646298
+Potential energy variance: 1.64347886991406e-06
+Energy:                    20.2069851065177
+Energy variance:           1.81234870886101e-08
+Acceptance rate:           54.420005 %
+Run complete. Time used: 326.67569
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.5
+Alpha:                     0.6
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.584366348521409
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            1.46202564361763
+Kinetic energy variance:   2.13722692276392e-08
+Potential energy:          10.8831217016518
+Potential energy variance: 1.42186699794954e-06
+Energy:                    12.3451473452697
+Energy variance:           1.41482813074326e-06
+Acceptance rate:           69.87775 %
+Run complete. Time used: 240.230859
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.5
+Alpha:                     0.93
+Beta:                      0.41
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.930861733967794 Beta = 0.38895762227985
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            1.74618238388276
+Kinetic energy variance:   2.36365246464197e-07
+Potential energy:          10.0653154788026
+Potential energy variance: 2.2883806464279e-07
+Energy:                    11.8114978626853
+Energy variance:           4.6470559105444e-09
+Acceptance rate:           66.9223216666667 %
+Run complete. Time used: 335.273276
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.1
+Alpha:                     0.6
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.561717850344914
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.28058688871207
+Kinetic energy variance:   7.86162115792152e-10
+Potential energy:          3.78531342554445
+Potential energy variance: 2.10029759915595e-07
+Energy:                    4.0659003142567
+Energy variance:           2.13931834347358e-07
+Acceptance rate:           86.3030466666667 %
+Run complete. Time used: 248.431379
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.1
+Alpha:                     0.83
+Beta:                      0.2
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.832104207518188 Beta = 0.222312404593364
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.330608307814687
+Kinetic energy variance:   5.90787745811987e-09
+Potential energy:          3.23998657107022
+Potential energy variance: 5.72528525216338e-09
+Energy:                    3.57059487888481
+Energy variance:           4.68794872616485e-10
+Acceptance rate:           84.6659833333333 %
+Run complete. Time used: 333.03736
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.05
+Alpha:                     0.6
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.565075479440695
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.141146176022785
+Kinetic energy variance:   1.9960441981945e-10
+Potential energy:          2.4958838690295
+Potential energy variance: 1.3027623223019e-07
+Energy:                    2.63703004505222
+Energy variance:           1.32125631157428e-07
+Acceptance rate:           90.2362583333333 %
+Run complete. Time used: 243.77444
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.05
+Alpha:                     0.84
+Beta:                      0.15
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.83925572538327 Beta = 0.178580952972766
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.172967479270535
+Kinetic energy variance:   1.2246384709028e-09
+Potential energy:          2.00399546770725
+Potential energy variance: 1.23071106969039e-09
+Energy:                    2.17696294697774
+Energy variance:           3.05955006419278e-10
+Acceptance rate:           88.8142 %
+Run complete. Time used: 327.744653
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.01
+Alpha:                     0.6
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.573391199716472
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0287099898170806
+Kinetic energy variance:   8.25680628555739e-12
+Potential energy:          1.01292582800459
+Potential energy variance: 2.58285937519174e-08
+Energy:                    1.04163581782168
+Energy variance:           2.60534953807194e-08
+Acceptance rate:           95.5773866666667 %
+Run complete. Time used: 241.927832
+====================================================================================================
+N electrons                6
+MC-cycles:                 80000000
+Omega:                     0.01
+Alpha:                     0.84
+Beta:                      0.1
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.835681384803121 Beta = 0.15228960409189
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.0383848014570205
+Kinetic energy variance:   6.83630465409573e-11
+Potential energy:          0.735775555494326
+Potential energy variance: 2.94186355338477e-10
+Energy:                    0.774160356951321
+Energy variance:           2.54244434661755e-10
+Acceptance rate:           94.7142133333333 %
+Run complete. Time used: 327.098723
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     1
+Alpha:                     0.56
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.571314072994835
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            7.98021939971038
+Kinetic energy variance:   2.27481412568027e-07
+Potential energy:          59.1123296487559
+Potential energy variance: 7.9332305511376e-06
+Energy:                    67.0925490484631
+Energy variance:           7.74568903793806e-06
+Acceptance rate:           55.569545 %
+Run complete. Time used: 3511.968636
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     1
+Alpha:                     1.1
+Beta:                      0.47
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 1.09798397197754 Beta = 0.429038801803885
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            9.5722533222077
+Kinetic energy variance:   2.9123704373418e-06
+Potential energy:          56.3607690160893
+Potential energy variance: 2.63847137110379e-06
+Energy:                    65.9330223382963
+Energy variance:           9.08890758521011e-08
+Acceptance rate:           51.4366133333333 %
+Run complete. Time used: 3949.970516
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     0.5
+Alpha:                     0.5
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.497784324460398
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            3.47045207208901
+Kinetic energy variance:   4.30260891525881e-08
+Potential energy:          36.9055293564263
+Potential energy variance: 2.82939293514471e-06
+Energy:                    40.3759814285148
+Energy variance:           2.80488189345472e-06
+Acceptance rate:           68.6688583333333 %
+Run complete. Time used: 3521.009403
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     0.5
+Alpha:                     0.93
+Beta:                      0.41
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.931258649677525 Beta = 0.419894687952177
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            4.30177928417392
+Kinetic energy variance:   6.32742255210692e-07
+Potential energy:          34.9510611558048
+Potential energy variance: 6.00891442628904e-07
+Energy:                    39.2528404399785
+Energy variance:           1.83237842795052e-08
+Acceptance rate:           64.7030783333333 %
+Run complete. Time used: 3965.973028
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     0.1
+Alpha:                     0.4
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.365409702755311
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.509025347655947
+Kinetic energy variance:   9.24322665925348e-10
+Potential energy:          12.576993117877
+Potential energy variance: 3.82918679128719e-07
+Energy:                    13.0860184655339
+Energy variance:           3.85700020524501e-07
+Acceptance rate:           87.4125866666667 %
+Run complete. Time used: 3514.432859
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     0.1
+Alpha:                     0.83
+Beta:                      0.2
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.820852734017927 Beta = 0.288384342268306
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.832620427946306
+Kinetic energy variance:   2.91823325572095e-08
+Potential energy:          11.6128682603354
+Potential energy variance: 3.08607389978533e-08
+Energy:                    12.4454886882817
+Energy variance:           4.36889853250477e-09
+Acceptance rate:           83.2675525 %
+Run complete. Time used: 3965.691316
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     0.05
+Alpha:                     0.3
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.258601268172701
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.182628173171203
+Kinetic energy variance:   1.19235628368098e-10
+Potential energy:          7.91047611814107
+Potential energy variance: 2.08708168271893e-07
+Energy:                    8.09310429131238
+Energy variance:           2.08740848896238e-07
+Acceptance rate:           92.4671833333333 %
+Run complete. Time used: 3521.70114
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     0.05
+Alpha:                     0.84
+Beta:                      0.15
+Jastrov                    TRUE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+
+SD iteration =   200 Alpha = 0.827120902945116 Beta = 0.26278331264436
+
+Warning! No convergence found after 200 iterations
+Kinetic energy:            0.445296385506801
+Kinetic energy variance:   7.79843202888738e-09
+Potential energy:          7.4704306666983
+Potential energy variance: 1.15253178527752e-08
+Energy:                    7.91572705220508
+Energy variance:           4.87671433533379e-09
+Acceptance rate:           87.6730991666667 %
+Run complete. Time used: 3966.698179
+====================================================================================================
+N electrons                12
+MC-cycles:                 80000000
+Omega:                     0.01
+Alpha:                     0.22
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       TRUE
+RESULTS:
+====================================================================================================
+ERROR
+Particle k0
+Spin down positions: 
+1.01606492119724 -0.782919436879267 
+-0.610778930887708 -0.795138112030799 
+-0.268636243075765 0.246429730493536 
+0.977457256281494 -0.239590970615076 
+0.424296291850948 -0.882701912413556 
+0.80344088122984 -0.0353477926215457 
+
+Spin up positions: 
+-0.537962173434921 -0.745994264810531 
+0.12013452793815 -0.615307428363749 
+0.812676330849144 -0.468862982463228 
+0.684311563939347 -0.0437378881142008 
+0.899659137805806 -0.452293978964154 
+0.78759931234382 -0.474143962572985 
+
+Variational parameters: 
+Alpha = 0.150984434080015
+Wave functions: 
+WFSlater= 5.12048770387085e-27
+WFSlaterOld = 3.0500008169651e-27
+
+( 0,  0) Spin down:   0.9987586593281312 ( 0,  1) Spin down:  -0.0607678283317230 ( 0,  2) Spin down:   0.0788638725732916 ( 0,  3) Spin down:  -1.9938200000641635 ( 0,  4) Spin down:  -0.0047983426479952 ( 0,  5) Spin down:  -1.9912900781320699 
+( 1,  0) Spin down:   0.9992413680312863 ( 1,  1) Spin down:  -0.0617460327548492 ( 1,  2) Spin down:  -0.0474297173056439 ( 1,  3) Spin down:  -1.9946672689662948 ( 1,  4) Spin down:   0.0029308202922758 ( 1,  5) Spin down:  -1.9962314500813632 
+( 2,  0) Spin down:   0.9998996811276974 ( 2,  1) Spin down:   0.0191489786689556 ( 2,  2) Spin down:  -0.0208745498283177 ( 2,  3) Spin down:  -1.9994326420823765 ( 2,  4) Spin down:  -0.0003997664135023 ( 2,  5) Spin down:  -1.9993635717068436 
+( 3,  0) Spin down:   0.9992356870405504 ( 3,  1) Spin down:  -0.0186052052949392 ( 3,  2) Spin down:   0.0759034986730040 ( 3,  3) Spin down:  -1.9981249556449341 ( 3,  4) Spin down:  -0.0014132803639129 ( 3,  5) Spin down:  -1.9927056261344216 
+( 4,  0) Spin down:   0.9992761483033661 ( 4,  1) Spin down:  -0.0685481395649238 ( 4,  2) Spin down:   0.0329496526762388 ( 4,  3) Spin down:  -1.9938500454364323 ( 4,  4) Spin down:  -0.0022602734930694 ( 4,  5) Spin down:  -1.9974658305549524 
+( 5,  0) Spin down:   0.9995118606457585 ( 5,  1) Spin down:  -0.0027456573261779 ( 5,  2) Spin down:   0.0624076689969866 ( 5,  3) Spin down:  -1.9990161789756631 ( 5,  4) Spin down:  -0.0001714337571548 ( 5,  5) Spin down:  -1.9951271020486787 
+
+( 0,  0)   Spin up:   0.9993616070853191 ( 0,  1)   Spin up:  -0.0579367638042459 ( 0,  2)   Spin up:  -0.0417801970445897 ( 0,  3)   Spin up:  -1.9953644013282088 ( 0,  4)   Spin up:   0.0024221556949011 ( 0,  5)   Spin up:  -1.9969765142246838 
+( 1,  0)   Spin up:   0.9997033327743923 ( 1,  1)   Spin up:  -0.0478034654693706 ( 1,  2)   Spin up:   0.0093332966469170 ( 1,  3)   Spin up:  -1.9971208161012894 ( 1,  4)   Spin up:  -0.0004462963254690 ( 1,  5)   Spin up:  -1.9993195292720076 
+( 2,  0)   Spin up:   0.9993356814059867 ( 2,  1)   Spin up:  -0.0364127453083334 ( 2,  2)   Spin up:   0.0631139103749604 ( 2,  3)   Spin up:  -1.9973445933934892 ( 2,  4)   Spin up:  -0.0022996784630597 ( 2,  5)   Spin up:  -1.9946853491461607 
+( 3,  0)   Spin up:   0.9996451021201249 ( 3,  1)   Spin up:  -0.0033978150460994 ( 3,  2)   Spin up:   0.0531613259904519 ( 3,  3)   Spin up:  -1.9992786549943595 ( 3,  4)   Spin up:  -0.0001806964821194 ( 3,  5)   Spin up:  -1.9964630743167706 
+( 4,  0)   Spin up:   0.9992348347164203 ( 4,  1)   Spin up:  -0.0351224219046207 ( 4,  2)   Spin up:   0.0698621013720528 ( 4,  3)   Spin up:  -1.9972351402935553 ( 4,  4)   Spin up:  -0.0024556051433385 ( 4,  5)   Spin up:  -1.9935852188126777 
+( 5,  0)   Spin up:   0.9993621997504513 ( 5,  1)   Spin up:  -0.0368238528843193 ( 5,  2)   Spin up:   0.0611680069744124 ( 5,  3)   Spin up:  -1.9973675379530229 ( 5,  4)   Spin up:  -0.0022538792147784 ( 5,  5)   Spin up:  -1.9949804865550695 
+
+DSpinDown: 
+   0.9988  -0.0608   0.0789  -1.9938  -0.0048  -1.9913
+   0.9992  -0.0617  -0.0474  -1.9947   0.0029  -1.9962
+   0.9999   0.0191  -0.0209  -1.9994  -0.0004  -1.9994
+   0.9992  -0.0186   0.0759  -1.9981  -0.0014  -1.9927
+   0.9993  -0.0685   0.0329  -1.9939  -0.0023  -1.9975
+   0.9995  -0.0027   0.0624  -1.9990  -0.0002  -1.9951
+
+DSpinUp: 
+   0.9994  -0.0579  -0.0418  -1.9954   0.0024  -1.9970
+   0.9997  -0.0478   0.0093  -1.9971  -0.0004  -1.9993
+   0.9993  -0.0364   0.0631  -1.9973  -0.0023  -1.9947
+   0.9996  -0.0034   0.0532  -1.9993  -0.0002  -1.9965
+   0.9992  -0.0351   0.0699  -1.9972  -0.0025  -1.9936
+   0.9994  -0.0368   0.0612  -1.9974  -0.0023  -1.9950
+
+DSpinDownInverse: 
+   2.8748e+03   6.4295e+02  -5.5252e+02  -5.8200e+03  -1.8925e+03   4.7489e+03
+   5.7922e+01   5.5449e+00  -3.3810e+00  -1.3389e+02  -4.0098e+01   1.1390e+02
+   5.7618e+00  -3.3864e+00  -1.1701e+01  -2.9917e+01   1.2729e+00   3.7969e+01
+   1.1043e+03   1.9399e+02  -2.3715e+02  -2.5615e+03  -6.0921e+02   2.1097e+03
+   1.2704e+02   1.3744e+02  -2.0838e+02  -6.4682e+02  -1.4870e+02   7.3942e+02
+   3.3384e+02   1.2761e+02  -3.9533e+01  -3.4995e+02  -3.3760e+02   2.6576e+02
+
+DSpinUpInverse: 
+  -7.9498e+03   2.3109e+04  -1.5661e+06   1.6903e+03   3.9572e+05   1.1536e+06
+   2.9345e+02  -1.4574e+03  -9.0575e+04   8.0292e+01   1.5132e+04   7.6527e+04
+  -7.3168e+02   2.9328e+03   7.0372e+04  -1.6684e+01  -6.8294e+03  -6.5727e+04
+  -6.5430e+03   2.1631e+04  -5.4654e+05   8.0924e+02   1.7456e+05   3.5609e+05
+  -1.0678e+04   4.4450e+04   1.2740e+06  -3.3633e+02  -1.4688e+05  -1.1606e+06
+   2.5526e+03  -1.0014e+04  -2.3496e+05   3.4937e+01   2.3142e+04   2.1924e+05
+
+
+DSpinDownOld: 
+   0.9995   0.0054   0.0631  -1.9990   0.0003  -1.9950
+   0.9992  -0.0617  -0.0474  -1.9947   0.0029  -1.9962
+   0.9999   0.0191  -0.0209  -1.9994  -0.0004  -1.9994
+   0.9992  -0.0186   0.0759  -1.9981  -0.0014  -1.9927
+   0.9993  -0.0685   0.0329  -1.9939  -0.0023  -1.9975
+   0.9995  -0.0027   0.0624  -1.9990  -0.0002  -1.9951
+
+DSpinUpOld: 
+   0.9994  -0.0579  -0.0418  -1.9954   0.0024  -1.9970
+   0.9997  -0.0478   0.0093  -1.9971  -0.0004  -1.9993
+   0.9993  -0.0364   0.0631  -1.9973  -0.0023  -1.9947
+   0.9996  -0.0034   0.0532  -1.9993  -0.0002  -1.9965
+   0.9992  -0.0351   0.0699  -1.9972  -0.0025  -1.9936
+   0.9994  -0.0368   0.0612  -1.9974  -0.0023  -1.9950
+
+DSpinDownInverseOld: 
+   4.8263e+03   2.0788e+01   1.7826e+02   1.5806e+03   2.5890e+02  -6.8634e+03
+   9.7242e+01  -6.9907e+00   1.1343e+01   1.5224e+01   3.2499e+00  -1.2007e+02
+   9.6732e+00  -4.6334e+00  -1.0236e+01  -1.5084e+01   5.5850e+00   1.4695e+01
+   1.8539e+03  -4.4999e+01   4.3566e+01   2.8137e+02   2.1721e+02  -2.3510e+03
+   2.1328e+02   1.0995e+02  -1.7609e+02  -3.1977e+02  -5.3620e+01   2.2625e+02
+   5.6047e+02   5.5356e+01   4.5331e+01   5.0947e+02  -8.7758e+01  -1.0827e+03
+
+DSpinUpInverseOld: 
+  -7.9498e+03   2.3109e+04  -1.5661e+06   1.6903e+03   3.9572e+05   1.1536e+06
+   2.9345e+02  -1.4574e+03  -9.0575e+04   8.0292e+01   1.5132e+04   7.6527e+04
+  -7.3168e+02   2.9328e+03   7.0372e+04  -1.6684e+01  -6.8294e+03  -6.5727e+04
+  -6.5430e+03   2.1631e+04  -5.4654e+05   8.0924e+02   1.7456e+05   3.5609e+05
+  -1.0678e+04   4.4450e+04   1.2740e+06  -3.3633e+02  -1.4688e+05  -1.1606e+06
+   2.5526e+03  -1.0014e+04  -2.3496e+05   3.4937e+01   2.3142e+04   2.1924e+05
+
+
+====================================================================================================-------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code.. Per user-direction, the job has been aborted.
+-------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun detected that one or more processes exited with non-zero status, thus causing
+the job to be terminated. The first process to do so was:
+
+  Process name: [[9900,1],0]
+  Exit code:    1
+--------------------------------------------------------------------------
+                   
