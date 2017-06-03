@@ -9,12 +9,14 @@ class MetropolisSampler
 protected:
     int nParticles;
     int nDimensions;
+    int numprocs;
+    int processRank;
     double seed;
     std::mt19937_64 generator;
     std::uniform_real_distribution<double> acceptance_dist; // For choosing to accept a new Metropolis move or not
     WaveFunctions *WF = nullptr; // Will this create a double instance of the wavefunction, as we have one stored in the vmc?
 public:
-    MetropolisSampler(int new_nParticles, int new_nDimensions);
+    MetropolisSampler(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank);
     virtual ~MetropolisSampler();
     virtual bool move(double **rOld, double **rNew, int i, double newWF, double oldWF);
     virtual double Ratio(double ** rOld, double ** rNew, int i, double newWF, double oldWF);

@@ -3,7 +3,7 @@
 
 #include "iostream"
 
-UniformSampling::UniformSampling(int new_nParticles, int new_nDimensions) : MetropolisSampler(new_nParticles, new_nDimensions)
+UniformSampling::UniformSampling(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank) : MetropolisSampler(new_nParticles, new_nDimensions, new_numprocs, new_processRank)
 {
 
 }

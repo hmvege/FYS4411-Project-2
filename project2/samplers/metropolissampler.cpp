@@ -6,7 +6,7 @@
 using std::cout;
 using std::endl;
 
-MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions)
+MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions, int new_numprocs, int new_processRank)
 {
     /*
      * Base constructor of any of the sampling classes.
@@ -17,6 +17,8 @@ MetropolisSampler::MetropolisSampler(int new_nParticles, int new_nDimensions)
      */
     nParticles = new_nParticles;
     nDimensions = new_nDimensions;
+    numprocs = new_numprocs;
+    processRank = new_processRank;
 }
 
 MetropolisSampler::~MetropolisSampler()

@@ -55,12 +55,12 @@ void VMC::updateParticle(int i)
     newWF = WF->calculate(rNew, i);
     if (R->move(rOld, rNew, i, newWF, oldWF))
     {
+        oldWF = newWF;
         WF->updateWF();
         for (int j = 0; j < nDimensions; j++)
         {
             rOld[i][j] = rNew[i][j];
         }
-        oldWF = newWF;
         acceptanceCounter++;
     }
     else
@@ -112,6 +112,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
 //    double EOld = 0; // For checking convergence
     while (SDCounter < maxSteepestDescentIterations) // add SD convergence criteria
     {
+        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         R->initializePositions(rOld, rNew);
         oldWF = WF->initializeWaveFunction(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
@@ -123,7 +124,6 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         }
         statisticsSD(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
-        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         SDCounter++;
 //        if (std::fabs(EOld - ESum) < 1e-9)
 //        {
@@ -153,7 +153,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     {
 //        if ((processRank == 0) && (cycle % 10000 == 0)) cout << cycle << endl;
         runMetropolisStep(cycle);
-//        if (cycle == 100)
+//        if (cycle == 5)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n");
 //            exit(1);

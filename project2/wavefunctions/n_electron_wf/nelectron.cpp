@@ -195,8 +195,12 @@ void NElectron::localEnergy(double **r, double &ETotal, double &EKinetic, double
     for (int i = 0; i < nParticles; i++)
     {
         kineticEnergy += -0.5*laplacian(r,i);
-        potentialEnergy += 0.5*omega*omega*(r[i][0]*r[i][0] + r[i][1]*r[i][1]);
+        for (int j = 0; j < nDimensions; j++)
+        {
+            potentialEnergy += r[i][j]*r[i][j];
+        }
     }
+    potentialEnergy *= 0.5*omega*omega;
     if (coulombInteraction)
     {
         potentialEnergy += coulomb(r);
@@ -466,12 +470,12 @@ void NElectron::updateSlater(double **rNew, int k)
     DSpinUpInverse = arma::inv(DSpinUp);
     WFSlater = psiSlater();
 
-    if (((arma::accu(DSpinDownInverse*DSpinDown)/3.0 - 1) > 1e-10) || ((arma::accu(DSpinUpInverse*DSpinUp)/3.0 - 1) > 1e-10))
-    {
-        cout << "ACCU ERROR: " << arma::accu(DSpinDownInverse*DSpinDown)/3.0 << endl;
-        printDiagnostics(rNew, k);
-        exit(1);
-    }
+//    if ((fabs(arma::accu(DSpinDownInverse*DSpinDown)/(double(nParticles)/2) - 1) > 1e-16) || (fabs(arma::accu(DSpinUpInverse*DSpinUp)/(double(nParticles)/2) - 1) > 1e-16))
+//    {
+//        cout << "ACCU ERROR: " << std::setw(15) <<arma::accu(DSpinDownInverse*DSpinDown)/(double(nParticles)/2) << endl;
+//        printDiagnostics(rNew, k);
+//        exit(1);
+//    }
 
     if ((fabs(det(DSpinDown)) < 1e-16) || (fabs(det(DSpinUp)) < 1e-16))
     {
@@ -589,6 +593,7 @@ void NElectron::gradientSlater(double * grad, double **r, int k)
             wfGrad[j] = 0;
         }
     }
+//    cout << "SL GRAD = " << grad[0] << " " << grad[1] << endl;
     delete [] wfGrad;
 }
 
