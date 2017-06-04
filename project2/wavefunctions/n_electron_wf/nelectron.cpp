@@ -95,16 +95,16 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, 
 //            cout << endl;
         }
     }
-
+    wfGrad = new double[nDimensions];
     // Initializing spin matrices
-    DSpinDown           = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
-    DSpinUp             = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
-    DSpinDownInverse    = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
-    DSpinUpInverse      = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
-    DSpinDownOld        = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
-    DSpinUpOld          = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
-    DSpinDownInverseOld = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
-    DSpinUpInverseOld   = arma::mat(nParticles/2,nParticles/2, arma::fill::zeros);
+    DSpinDown           = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
+    DSpinUp             = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
+    DSpinDownInverse    = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
+    DSpinUpInverse      = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
+    DSpinDownOld        = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
+    DSpinUpOld          = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
+    DSpinDownInverseOld = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
+    DSpinUpInverseOld   = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
 //    DSpinDown.zeros();
 //    DSpinDownOld.zeros();
 //    DSpinUp.zeros();
@@ -124,6 +124,7 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, 
 
 NElectron::~NElectron()
 {
+    delete [] wfGrad;
     for (int i = 0; i < nParticles; i++)
     {
         delete [] a[i];
@@ -442,30 +443,32 @@ void NElectron::updateSlater(double **rNew, int k)
      *  r   : particle positions
      *  k   : particle being moved
      */
-    for (int i = 0; i < nParticles/2; i++) // Particles
-    {
+//    for (int i = 0; i < nParticles/2; i++) // Particles
+//    {
+//        for (int j = 0; j < nParticles/2; j++) // States
+//        {
+//            DSpinDown(i,j)  = states[2*j]->wf(rNew[2*i], alpha, omega);
+//            DSpinUp(i,j)    = states[2*j+1]->wf(rNew[2*i+1], alpha, omega);
+//        }
+//    }
+//    DSpinDownInverse = arma::inv(DSpinDown);
+//    DSpinUpInverse = arma::inv(DSpinUp);
+
+    if (k%2==0) {
         for (int j = 0; j < nParticles/2; j++) // States
         {
-            DSpinDown(i,j)  = states[2*j]->wf(rNew[2*i], alpha, omega);
-            DSpinUp(i,j)    = states[2*j+1]->wf(rNew[2*i+1], alpha, omega);
+            DSpinDown(k/2,j) = states[2*j]->wf(rNew[k], alpha, omega);
         }
+        DSpinDownInverse = arma::inv(DSpinDown);
+//        arma::inv(DSpinDownInverse,DSpinDown);
+    } else {
+        for (int j = 0; j < nParticles/2; j++) // States
+        {
+            DSpinUp((k-1)/2,j) = states[2*j+1]->wf(rNew[k], alpha, omega);
+        }
+        DSpinUpInverse = arma::inv(DSpinUp);
+//        arma::inv(DSpinUpInverse,DSpinUp);
     }
-    DSpinDownInverse = arma::inv(DSpinDown);
-    DSpinUpInverse = arma::inv(DSpinUp);
-
-//    if (k%2==0) {
-//        for (int j = 0; j < nParticles/2; j++) // States
-//        {
-//            DSpinDown(k/2,j)  = states[2*j]->wf(rNew[k/2], alpha, omega);
-//        }
-//        DSpinDownInverse = arma::inv(DSpinDown);
-//    } else {
-//        for (int j = 0; j < nParticles/2; j++) // States
-//        {
-//            DSpinUp((k-1)/2,j)    = states[2*j+1]->wf(rNew[(k-1)/2], alpha, omega);
-//        }
-//        DSpinUpInverse = arma::inv(DSpinUp);
-//    }
     WFSlater = psiSlater();
 
 //    if ((fabs(arma::accu(DSpinDownInverse*DSpinDown)/(double(nParticles)/2) - 1) > 1e-16) || (fabs(arma::accu(DSpinUpInverse*DSpinUp)/(double(nParticles)/2) - 1) > 1e-16))
@@ -475,15 +478,12 @@ void NElectron::updateSlater(double **rNew, int k)
 //        exit(1);
 //    }
 
-    if ((fabs(det(DSpinDown)) < 1e-15) || (fabs(det(DSpinUp)) < 1e-15))
-    {
-        printDiagnostics(rNew, k);
-        exit(1);
-    }
+//    if ((fabs(det(DSpinDown)) < 1e-15) || (fabs(det(DSpinUp)) < 1e-15))
+//    {
+//        printDiagnostics(rNew, k);
+//        exit(1);
+//    }
 //    WFSlaterOld = WFSlater;
-//    arma::inv(DSpinDownInverse,DSpinDown);
-//    arma::inv(DSpinUpInverse,DSpinUp);
-
 
 //    for (int i = 0; i < nParticles/2; i++)
 //    {
@@ -553,7 +553,6 @@ void NElectron::gradientSlater(double * grad, double **r, int k)
      *  r       : positions of the particles
      *  k       : particle we are getting the gradient for
      */
-    double *wfGrad = new double[nDimensions];
     for (int j = 0; j < nDimensions; j++)
     {
         wfGrad[j] = 0;
@@ -567,10 +566,6 @@ void NElectron::gradientSlater(double * grad, double **r, int k)
             {
                 grad[j] += wfGrad[j]*DSpinDownInverse(i,k/2);
             }
-//            for (int j = 0; j < nDimensions; j++)
-//            {
-//                wfGrad[j] = 0;
-//            }
         }
     }
     else
@@ -582,13 +577,8 @@ void NElectron::gradientSlater(double * grad, double **r, int k)
             {
                 grad[j] += wfGrad[j]*DSpinUpInverse(i,(k-1)/2);
             }
-//            for (int j = 0; j < nDimensions; j++)
-//            {
-//                wfGrad[j] = 0;
-//            }
         }
     }
-    delete [] wfGrad;
 }
 
 double NElectron::laplacianSlater(double **r, int k)

@@ -23,7 +23,7 @@ def block(x, n, b_size):
 	for i in xrange(num_blocks-1):
 		block_values[i] = np.mean(x[i*b_size:(i+1)*b_size])
 	block_average = np.mean(block_values)
-	block_variance = np.var(block_values)
+	block_variance = np.var(block_values)/float(len(block_values))
 	return block_average, block_variance
 
 average_values = np.zeros(N_blocks)

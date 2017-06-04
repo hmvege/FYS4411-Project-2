@@ -22,6 +22,7 @@ private:
     // Functions used internally
     void initializeSlater(double **r);
     void updateSlater(double **rNew, int k);
+    double *wfGrad;
     double updateInverseSlaterElement(arma::mat DNew, arma::mat DOld, arma::mat DInverseOld, int k, int j, int i);
     double psiJastrow(double **r);
     double psiSlater();

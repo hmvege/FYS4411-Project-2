@@ -121,6 +121,7 @@ bool WaveFunctions::SDConvergenceCriteria()
 
 void WaveFunctions::updateWF()
 {
+    cout << "Update: Seeing this might be an error"<<endl;
     /*
      * Function used when a move is accepted. Used by the n-electron case.
      */
@@ -128,6 +129,7 @@ void WaveFunctions::updateWF()
 
 void WaveFunctions::revert()
 {
+    cout << "Revert: Seeing this might be an error"<<endl;
    /*
     * Function used when reverting certain class-contained variables. Needed by the n-electron case.
     */
@@ -135,6 +137,7 @@ void WaveFunctions::revert()
 
 void WaveFunctions::reset()
 {
+    cout << "Reset: Seeing this might be an error"<<endl;
     /*
      * Function used when resetting certain class-contained variables. Needed by the n-electron case.
      */

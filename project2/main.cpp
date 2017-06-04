@@ -45,7 +45,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     unsigned int MCCycles   = 1e5;
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 200; // 0 turns it completely off, 200 is default
+    int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
