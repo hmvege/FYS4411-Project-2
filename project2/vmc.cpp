@@ -109,10 +109,9 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     EArr = new double[MCSamplingFrequency];
     int SDCounter = 0; // Counter for the Steepest Descent algorithm
     // Finding the optimal values for alpha and beta ==============================================
-//    double EOld = 0; // For checking convergence
     while (SDCounter < maxSteepestDescentIterations) // add SD convergence criteria
     {
-        if (processRank == 0) WF->printVariationalParameters(SDCounter);
+//        if (processRank == 0) WF->printVariationalParameters(SDCounter);
         R->initializePositions(rOld, rNew);
         oldWF = WF->initializeWaveFunction(rOld);
         for (unsigned int i = 0; i < optimizationCycles; i++)
@@ -125,27 +124,21 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         statisticsSD(optimizationCycles);
         WF->steepestDescent(ESum, optimizationCycles);
         SDCounter++;
-//        if (std::fabs(EOld - ESum) < 1e-9)
-//        {
-//            cout << "ok" << endl;
-//            break;
-//        } // INSERT CONVERGENCE CRITERIA FUNCTION THAT CAN ADJUST STEP-SIZE!!
-//        EOld = ESum;
         resetVariables();
     }
     if (maxSteepestDescentIterations != 0) { WF->finalizeSD(); } // Takes the average of the WF parmaters
     if (processRank == 0) WF->printVariationalParameters(SDCounter);
-    if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
-    {
-        if (SDCounter==maxSteepestDescentIterations)
-        {
-            if (processRank == 0) cout << "Warning! No convergence found after " << SDCounter << " iterations" << endl;
-        }
-        else
-        {
-            if (processRank == 0) cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
-        }
-    }
+//    if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
+//    {
+//        if (SDCounter==maxSteepestDescentIterations)
+//        {
+//            if (processRank == 0) cout << "Warning! No convergence found after " << SDCounter << " iterations" << endl;
+//        }
+//        else
+//        {
+//            if (processRank == 0) cout << "Convergence after " << SDCounter << " steepest descent iterations" << endl;
+//        }
+//    }
     // Main part of Metropolis ====================================================================
     R->initializePositions(rOld, rNew);
     oldWF = WF->initializeWaveFunction(rOld);
@@ -153,7 +146,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     {
 //        if ((processRank == 0) && (cycle % 10000 == 0)) cout << cycle << endl;
         runMetropolisStep(cycle);
-//        if (cycle == 5)
+//        if (cycle == 4)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n");
 //            exit(1);

@@ -63,7 +63,6 @@ void State::wfGradient(double * wfGrad, double *r_i, double alpha, double omega)
     double expFactor = exp(-alpha*omega*0.5*(r_i[0]*r_i[0] + r_i[1]*r_i[1]));
     wfGrad[0] = (HermXDerivative - omega*alpha*r_i[0]*HermX)*HermY*expFactor;
     wfGrad[1] = (HermYDerivative - omega*alpha*r_i[1]*HermY)*HermX*expFactor;
-//    std::cout << "WF GRADIENT = " << wfGrad[0] << " " << wfGrad[1] << std::endl;
 }
 
 double State::wfLaplacian(double *r_i, double alpha, double omega)

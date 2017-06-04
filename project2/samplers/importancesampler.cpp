@@ -96,22 +96,12 @@ void ImportanceSampler::updatePositions(double **rOld, double **rNew, int k)
      */
     for (int i = 0; i < nDimensions; i++)
     {
-//        rNew[k][i] = rOld[k][i] + deltatD*FOld[k][i] + sqrtDeltat*gaussian_dist(generator);
-        double rnd = sqrtDeltat*gaussian_dist(generator);
-        rNew[k][i] = rOld[k][i] + deltatD*FOld[k][i] + rnd;//sqrtDeltat*gaussian_dist(generator);
-//        if (processRank==0)
-//        {
-//            cout << "Rand = " << rnd << endl;
-//            cout << "deltatD = " << deltatD << endl;
-//            cout << "rNew[" <<k << "]["<< i<<"] = "<< rNew[k][i] << endl;
-//            cout << "rOld[" <<k << "]["<< i<<"] = "<< rOld[k][i] << endl;
-//            cout << "FOld[" <<k << "]["<< i<<"] = "<< FOld[k][i] << endl;
-//        }
+        rNew[k][i] = rOld[k][i] + deltatD*FOld[k][i] + sqrtDeltat*gaussian_dist(generator);
     }
 
 }
 
-bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, double oldWF)
+bool ImportanceSampler::move(double **rOld, double **rNew, int k, double newWF, double oldWF)
 {
     /*
      * Comparing if move should be accepted against an uniform distribution. If accepted, stores the new quantum force as the old.
@@ -124,31 +114,31 @@ bool ImportanceSampler::move(double **rOld, double **rNew, int i, double newWF, 
      */
 //    double rat = Ratio(rOld, rNew, i, newWF, oldWF);
 //    if ((acceptance_dist(generator) <= rat) || (rat > 1)) // Testing alternative ratio test
-    if (acceptance_dist(generator) <= Ratio(rOld, rNew, i, newWF, oldWF))
+    if (acceptance_dist(generator) <= Ratio(rOld, rNew, k, newWF, oldWF))
     {
-        for (int k = 0; k < nParticles; k++)
+        for (int j = 0; j < nDimensions; j ++)
         {
-            for (int j = 0; j < nDimensions; j ++)
-            {
-                FOld[k][j] = FNew[k][j];
-            }
+            FOld[k][j] = FNew[k][j];
         }
+//        for (int k = 0; k < nParticles; k++)
+//        {
+//        }
         return true;
     }
     else
     {
-        for (int k = 0; k < nParticles; k++)
+        for (int j = 0; j < nDimensions; j ++)
         {
-            for (int j = 0; j < nDimensions; j ++)
-            {
-                FNew[k][j] = FOld[k][j];
-            }
+            FNew[k][j] = FOld[k][j];
         }
+//        for (int k = 0; k < nParticles; k++)
+//        {
+//        }
         return false;
     }
 }
 
-double ImportanceSampler::Ratio(double **rOld, double **rNew, int i, double newWF, double oldWF)
+double ImportanceSampler::Ratio(double **rOld, double **rNew, int k, double newWF, double oldWF)
 {
     /*
      * Calculates the ratio used for comparing of a move should be accepted or not.
@@ -159,7 +149,7 @@ double ImportanceSampler::Ratio(double **rOld, double **rNew, int i, double newW
      *  newWF       : updated wave function
      *  oldWF       : old wave function
      */
-    return GreensRatio(rNew, rOld, i)*newWF*newWF/(oldWF*oldWF); // Put the G's together!
+    return GreensRatio(rNew, rOld, k)*newWF*newWF/(oldWF*oldWF); // Put the G's together!
 }
 
 double ImportanceSampler::GreensRatio(double **rNew, double **rOld, int k)
@@ -169,16 +159,21 @@ double ImportanceSampler::GreensRatio(double **rNew, double **rOld, int k)
      * Arguments:
      *  y : new positions
      *  x : old positions
-     *  k : particle number
+     *  k : particle being moved
      */
     WF->quantumForce(rNew,FNew,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
+//    if ((fabs(FOld[k][0]-FNew[k][0]) < 1e-16) || (fabs(FOld[k][1]-FNew[k][1]) < 1e-16) ) {
+//        cout << "ERROR!" << endl;
+//        exit(1);
+//    }
+//    WF->quantumForce(rOld,FOld,k);
     double GreensFunction = 0;
-    for (int j = 0; j < nDimensions; j++)
-    {
-        GreensFunction += 0.5*(FOld[k][j] + FNew[k][j])*(deltatD*0.5*(FOld[k][j] - FNew[k][j]) - rNew[k][j] + rOld[k][j]);
-    }
-    GreensFunction = exp(GreensFunction);
-//    GreensFunction = exp( 0.5*(x[k][0] - y[k][0])*(FOld[k][0] + FNew[k][0]) + 0.5*(x[k][1] - y[k][1])*(FOld[k][1] + FNew[k][1]) - deltatD*0.25*(FNew[k][0]*FNew[k][0] - FOld[k][0]*FOld[k][0] + FNew[k][1]*FNew[k][1] - FOld[k][1]*FOld[k][1]) );
+//    for (int j = 0; j < nDimensions; j++)
+//    {
+//        GreensFunction += 0.5*(FOld[k][j] + FNew[k][j])*(deltatD*0.5*(FOld[k][j] - FNew[k][j]) - rNew[k][j] + rOld[k][j]);
+//    }
+//    GreensFunction = exp(GreensFunction);
+    GreensFunction = exp( 0.5*(rOld[k][0] - rNew[k][0])*(FOld[k][0] + FNew[k][0]) + 0.5*(rOld[k][1] - rNew[k][1])*(FOld[k][1] + FNew[k][1]) - deltatD*0.25*(FNew[k][0]*FNew[k][0] - FOld[k][0]*FOld[k][0] + FNew[k][1]*FNew[k][1] - FOld[k][1]*FOld[k][1]) );
     return GreensFunction;
 }
 

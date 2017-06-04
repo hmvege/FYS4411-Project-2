@@ -1,14 +1,14 @@
 import numpy as np, matplotlib.pyplot as plt, os
 
-file_list = os.listdir("output/")
+file_list = os.listdir("output_2el_run2/")
 data_files = []
 for file in file_list:
-	data_files.append(np.fromfile("output/" + file))
+	data_files.append(np.fromfile("output_2el_run2/" + file))
 
 data = np.concatenate(data_files)
 
 N = len(data)
-
+print N
 N_blocks = 200
 min_block_size = 100
 max_block_size = len(data)/100

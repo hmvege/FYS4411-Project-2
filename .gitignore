@@ -5,6 +5,7 @@ bin/*
 output/*
 output_run1/*
 output_run2/*
+output*/*
 
 #OS junk
 *.DS_Store

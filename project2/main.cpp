@@ -42,25 +42,25 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 1e7;
+    unsigned int MCCycles   = 1e5;
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
+    int maxSDIterations     = 200; // 0 turns it completely off, 200 is default
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
     double omega[5]         = {1.0, 0.5, 0.1, 0.05, 0.01};
     double alpha[4][5][2]   = {
-        {{1.0,0.7}, {0.95,0.66}, {0.95,0.66}, {0.91,0.5}, {0.91,0.5}},
-        {{1.03,0.6}, {0.93,0.6}, {0.83,0.6}, {0.84,0.6}, {0.84,0.6}},
-        {{1.10,0.56}, {0.93,0.5}, {0.83,0.4}, {0.84,0.3}, {0.84,0.22}},
-        {{1.06,0.5}, {0.94,0.43}, {0.83,0.3}, {0.84,0.22}, {0.84,0.13}}
+        {{1.0,0.7}, {0.95,0.66}, {0.95,0.66}, {0.91,0.5}, {0.91,0.5}},  // N=2
+        {{1.03,0.6}, {0.93,0.6}, {0.83,0.6}, {0.84,0.6}, {0.84,0.6}},   // N=6
+        {{1.10,0.56}, {0.93,0.5}, {0.83,0.4}, {0.84,0.3}, {0.84,0.22}}, // N=12
+        {{1.06,0.5}, {0.94,0.43}, {0.83,0.3}, {0.84,0.22}, {0.84,0.13}} // N=20
     };
     double beta[4][5]       = {
-        {0.4, 0.36, 0.23, 0.2, 0.2},
-        {0.47, 0.41, 0.2, 0.15, 0.1},
-        {0.47, 0.41, 0.2, 0.15, 0.1},
-        {0.47, 0.41, 0.2, 0.15, 0.1}
+        {0.4, 0.36, 0.23, 0.2, 0.2},    // N=2
+        {0.47, 0.41, 0.2, 0.15, 0.1},   // N=6
+        {0.47, 0.41, 0.2, 0.15, 0.1},   // N=12
+        {0.47, 0.41, 0.2, 0.15, 0.1}    // N=20
     };
     // For testing on 2 particles
 //    int nParticles_2        = 2;
@@ -70,11 +70,11 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    double beta_2jas        = 0.4;//0.398665; // 2 electrons
     // Global setings
     double D                = 0.5; // equals 0.5 in atomic units
-    double deltat           = 0.0045; // should be either 0.01-0.001
+    double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
 //    double seed             = -1-processRank;//std::time(nullptr)-processRank;
     double seed             = std::time(nullptr)-processRank;
-    bool importanceSampling = false;
+    bool importanceSampling = true;
     bool coulombInteraction = true;
     // Timers
     clock_t programStart, programEnd;
@@ -89,7 +89,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     {
         for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
         {
-            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
+            for (int k = 0; k < 1; k++) // Jastrow factor, jastrow on/off, default is k=0; k < 2
             {
                 runStart = clock();
                 runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
