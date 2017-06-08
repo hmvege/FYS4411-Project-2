@@ -12,7 +12,7 @@ print N
 N_blocks = 200
 min_block_size = 100
 max_block_size = len(data)/100
-block_step = int((max_block_size-min_block_size + 1)/N_blocks)
+block_step = int((max_block_size - min_block_size + 1.0)/N_blocks)
 
 def block_mean(x, n_start, n_stop):
 	return np.mean(x[n_start:n_stop])
@@ -23,7 +23,7 @@ def block(x, n, b_size):
 	for i in xrange(num_blocks-1):
 		block_values[i] = np.mean(x[i*b_size:(i+1)*b_size])
 	block_average = np.mean(block_values)
-	block_variance = np.var(block_values)/float(len(block_values))
+	block_variance = np.var(block_values)
 	return block_average, block_variance
 
 average_values = np.zeros(N_blocks)

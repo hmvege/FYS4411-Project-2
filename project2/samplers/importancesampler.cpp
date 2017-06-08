@@ -94,11 +94,13 @@ void ImportanceSampler::updatePositions(double **rOld, double **rNew, int k)
      * rNew    : New positions of the electrons to be determined
      * k       : Particle to be updated
      */
+//    WF->quantumForce(rOld,FOld,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
+
     for (int i = 0; i < nDimensions; i++)
     {
         rNew[k][i] = rOld[k][i] + deltatD*FOld[k][i] + sqrtDeltat*gaussian_dist(generator);
     }
-
+//    WF->quantumForce(rNew,FNew,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
 }
 
 bool ImportanceSampler::move(double **rOld, double **rNew, int k, double newWF, double oldWF)
