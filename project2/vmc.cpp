@@ -146,7 +146,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
     {
 //        if ((processRank == 0) && (cycle % 10000 == 0)) cout << cycle << endl;
         runMetropolisStep(cycle);
-//        if (cycle == 4)
+//        if (cycle == 0)
 //        {
 //            printf("Planned number of cycles reached in vmc.cpp... exiting\n");
 //            exit(1);

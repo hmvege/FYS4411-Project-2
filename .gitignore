@@ -1,6 +1,9 @@
 #Ignoring all build files that go into the binary folder
 bin/*
 
+# Python junk
+*.pyc
+
 # Ignoring all data files
 output/*
 output_run1/*

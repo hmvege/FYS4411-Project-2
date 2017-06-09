@@ -96,6 +96,10 @@ NElectron::NElectron(int new_nParticles, int new_nDimensions, int new_numprocs, 
         }
     }
     wfGrad = new double[nDimensions];
+    for (int j = 0; j < nDimensions; j++)
+    {
+        wfGrad[j] = 0;
+    }
     // Initializing spin matrices
     DSpinDown           = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
     DSpinUp             = arma::mat(nParticles/2 ,nParticles/2, arma::fill::zeros);
@@ -469,7 +473,6 @@ void NElectron::updateSlater(double **rNew, int k)
         DSpinUpInverse = arma::inv(DSpinUp);
 //        arma::inv(DSpinUpInverse,DSpinUp);
     }
-    WFSlater = psiSlater();
 
 //    if ((fabs(arma::accu(DSpinDownInverse*DSpinDown)/(double(nParticles)/2) - 1) > 1e-16) || (fabs(arma::accu(DSpinUpInverse*DSpinUp)/(double(nParticles)/2) - 1) > 1e-16))
 //    {
@@ -499,6 +502,8 @@ void NElectron::updateSlater(double **rNew, int k)
 //            }
 //        }
 //    }
+
+    WFSlater = psiSlater();
 }
 
 double NElectron::updateInverseSlaterElement(arma::mat DNew,
@@ -541,7 +546,7 @@ double NElectron::psiSlater()
      * Arguments:
      *  r   : position
      */
-    return det(DSpinUp)*det(DSpinDown); // Since we divide wavefunctions on each other, we do not need factorial
+    return det(DSpinDown)*det(DSpinUp); // Since we divide wavefunctions on each other, we do not need factorial
 }
 
 void NElectron::gradientSlater(double * grad, double **r, int k)

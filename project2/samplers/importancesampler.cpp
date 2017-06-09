@@ -65,7 +65,6 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
      * rOld    : Old positions of the electrons
      * rNew    : New positions of the electrons
      */
-
     for (int i = 0; i < nParticles; i++)
     {
         for (int j = 0; j < nDimensions; j ++)
@@ -74,7 +73,7 @@ void ImportanceSampler::initializePositions(double **rOld, double **rNew)
             rNew[i][j] = rOld[i][j];
         }
     }
-    WF->reset();
+//    WF->reset();
     WF->initializeWFSampling(rOld);
     for (int i = 0; i < nParticles; i++)
     {
@@ -116,15 +115,14 @@ bool ImportanceSampler::move(double **rOld, double **rNew, int k, double newWF, 
      */
 //    double rat = Ratio(rOld, rNew, i, newWF, oldWF);
 //    if ((acceptance_dist(generator) <= rat) || (rat > 1)) // Testing alternative ratio test
+    WF->quantumForce(rNew,FNew,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
     if (acceptance_dist(generator) <= Ratio(rOld, rNew, k, newWF, oldWF))
+//    if (acceptance_dist(generator) <= GreensRatio(rNew, rOld, k)*newWF*newWF/(oldWF*oldWF))
     {
         for (int j = 0; j < nDimensions; j ++)
         {
             FOld[k][j] = FNew[k][j];
         }
-//        for (int k = 0; k < nParticles; k++)
-//        {
-//        }
         return true;
     }
     else
@@ -133,9 +131,6 @@ bool ImportanceSampler::move(double **rOld, double **rNew, int k, double newWF, 
         {
             FNew[k][j] = FOld[k][j];
         }
-//        for (int k = 0; k < nParticles; k++)
-//        {
-//        }
         return false;
     }
 }
@@ -163,7 +158,6 @@ double ImportanceSampler::GreensRatio(double **rNew, double **rOld, int k)
      *  x : old positions
      *  k : particle being moved
      */
-    WF->quantumForce(rNew,FNew,k); // FOld[0] = Fx(x), FOld[1] = Fy[x]
     double GreensFunction = 0;
     for (int j = 0; j < nDimensions; j++)
     {
