@@ -1,5 +1,4 @@
 \documentclass[11pt]{article}
-% \documentclass[11pt,twocolumn]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
@@ -283,7 +282,7 @@ Applied to our VMC problem, where we will have one or two variational parameters
 \end{align}
 Where the $\langle E_L \rangle$ is the expectation value of the local energy and $\delta t$ is the step size of the method. The expectation value of the local energy is found by
 \begin{align}
-	\frac{d\expect{E_L[\alpha_i]}}{d\alpha_i} &= 2 \left( \expect{ \frac{\bar{\psi_{\alpha_i}}}{\psi_T[\alpha_i]}E_L[\alpha_i] } - \expect{\frac{\bar{\psi_{\alpha_i}}}{\psi[\alpha_i]}}\expect{E_L[\alpha_i]} \right)
+	\frac{d\expect{E_L[\alpha_i]}}{d\alpha_i} &= 2 \left( \expect{ \frac{\bar{\psi}_{\alpha_i}}{\psi_T[\alpha_i]}E_L[\alpha_i] } - \expect{\frac{\bar{\psi}_{\alpha_i}}{\psi[\alpha_i]}}\expect{E_L[\alpha_i]} \right)
 	\label{eq:local-energy-variational-derivative}
 \end{align}
 with the derivative of $\psi$ with respect to the variational parameter is defined as
@@ -305,6 +304,7 @@ Our wave function will consist of two parts: one that comes from the harmonic os
 The wave function for an electron in a two dimensional harmonic oscillator potential can be written as a Hermite polynomial,
 \begin{align}
 	\phi_{n_x,n_y}(x,y) = AH_{n_x} (\sqrt{\omega\alpha}x) H_{n_y} (\sqrt{\omega\alpha} y) \exp{\left(-\frac{\omega\alpha}{2}\left( x^2 + y^2 \right)\right)}
+	\label{eq:sp-wf}
 \end{align}
 The details surrounding the mysterious variational parameter $\alpha$ will be explained further on. For now, we will place these $\phi$'s into a Slater determinant. The Slater determinant is a creature that describes the wave function of a fermionic system, while also enforcing anti-symmetrization and thus the Pauli principle. Our Slater determinant will take the following form, when we describe the specific state of a system by $n_x, n_y$ and a specific particle $\mathbf{r}_i = x_i\mathbf{i} + y_i\mathbf{j}$,
 \begin{align}
@@ -327,7 +327,7 @@ Note that we have defined $\mathbf{r} \equiv (\mathbf{r_1},\mathbf{r_2},\dots,\m
 	\psi_{SD}(\mathbf{r}) = \det(\Phi(\mathbf{r})) = D
 	\label{eq:WF_onebody}
 \end{align}
-Where the $OB$ stands for one body, as in one body wave function. We now need to look into the part that accounts for many body effects, the Jastrow factor.
+Where the $OB$ stands for one body, as in one body wave function. We define an element of the Slater matrix as $d_{ij}$. We now need to look into the part that accounts for many body effects, the Jastrow factor.
 
 \subsubsection{The Jastrow factor}
 The correlation term is called a \textit{Jastrow factor} is as mentioned here to take into account many-body effects of our system. The general shape of it is
@@ -472,9 +472,10 @@ Which gives the total local energy by adding the harmonic oscillator term and co
 
 \subsubsection{Quantum force}
 We also have to find the quantum force given by equation \eqref{eq:quantum-force}, which involves taking the gradient of the wave function. As we already know the first derivatives from taking the gradient\eqref{eq:two-electron-first-derivative}, the process is trivial.
-\begin{align*}
+\begin{align}
 	\mathbf{F} = \left(-\omega\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{i} + \left(-\omega\alpha y_1 + \frac{a(y_1-y_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{j}
-\end{align*}
+	\label{eq:two-electron-quantum-force}
+\end{align}
 For $r_2$ do we get a minus in front of the last term.
 
 \subsubsection{\texorpdfstring{$\alpha$}{a} and \texorpdfstring{$\beta$}{b} derivatives in the steepest descent algorithm}
@@ -493,23 +494,56 @@ For $\beta$ we get,
 Which is what is need in order to apply steepest descent to the two-body Jastrow factor case.
 
 \subsection{\texorpdfstring{$N$}{N} electron case}
-For the $N$-electron case, we apply the Hamiltonian as states in equation \eqref{eq:hamiltonian} at the beginning of the theory section on the trial wave function as stated in \eqref{eq:WF_trial}.
-The $N$ electron energy is once more given as the local energy \eqref{eq:local-energy}. From looking at the general Hamiltonian \eqref{eq:hamiltonian}, we see that a major task will be to once more find the laplacian of our trial wave function \eqref{eq:WF_trial}.
+For the $N$-electron case, we apply the Hamiltonian as states in equation \eqref{eq:hamiltonian} at the beginning of the theory section on the trial wave function as stated in \eqref{eq:WF_trial}. The $N$ electron energy is once more given as the local energy \eqref{eq:local-energy}. From looking at the general Hamiltonian \eqref{eq:hamiltonian}, we see that a major task will be to once more find the laplacian of our trial wave function \eqref{eq:WF_trial}.
 \begin{align}
 	\nabla_i^2\psi_T = \frac{\nabla^2_i\psi_{SD}}{\psi_{SD}} + \frac{\nabla^2_i\psi_J}{\psi_J} + 2\frac{\bm{\nabla}_i\psi_{SD}}{\psi_{SD}}\cdot\frac{\bm{\nabla}_i\psi_{J}}{\psi_J}
 	\label{eq:laplacian-n-electron}
 \end{align}
-We begin by finding the Jastrow terms. The full derivation can be found in the lecture notes for Computational Physics 2 \husk{CITE KOMPENDIEM}. $k$ is here used instead of $i$as in the equation to the Hamiltonian \eqref{eq:hamiltonian}. \husk{HA MED GENERELL FORM OG VIS LITT MER FRAMGANGSMETODE?}
+Since we are calculating the ground state energy, all the lowest lying levels will be filled up according to the Pauli exclusion principle, and the total spin should be zero.
+
+\subsubsection{Jastrow factor derivatives}
+We begin by finding the Jastrow terms. The full derivation can be found in the lecture notes for Computational Physics 2 \husk{CITE KOMPENDIEM}. $k$ is here used instead of $i$ as in the equation to the Hamiltonian \eqref{eq:hamiltonian}. Since the Pade-Jastrow factor is an exponential as given in \eqref{eq:WF_jastrow}, we make following definitions,
+\begin{align}
+	g_{ij} \equiv g(r_{ij}) = e^{f(r_{ij})} = e^{f_{ij}}
+	\label{eq:pade-jastrow-eq}
+\end{align}
+This yields a general equation for the gradient of the Jastrow factor,
+\begin{align}
+	\frac{1}{\psi_J}\bm{\nabla}_k\psi_J = \sum^{N}_{i\neq k} \frac{1}{g_{ik}} \frac{\mathbf{r}_{ik}}{r_{ik}}\frac{\partial g_{ik}}{\partial r_{ik}} = \sum^N_{i\neq k} \frac{\mathbf{r}_{ik}}{r_{ik}}\frac{\partial f_{ik}}{\partial r_{ik}}
+	\label{eq:general-gradient-jastrow}
+\end{align}
+the $\mathbf{r}_{ik}$ is defined analogues to the electron distance \eqref{eq:electron_distance}, but as
+\begin{align}
+	\mathbf{r}_{ik} = \mathbf{r}_k - \mathbf{r}_i
+	\label{eq:electron-distance-vector}
+\end{align}
+By taking the first derivative of exponential content in \eqref{eq:WF_jastrow}, we find the derivative of $f_{ij}$ as
+\begin{align}
+	\frac{\partial f_{ik}}{\partial r_{ik}} = \frac{a_{ik}}{(1+\beta r_{ik})^2}
+	\label{eq:jastrow-f-derivative}
+\end{align}
+By using our previous equation \eqref{eq:general-gradient-jastrow}, we get
 \begin{align}
 	\frac{1}{\psi_J}\bm{\nabla}_k\psi_J = \sum_{i\neq k}^N \frac{\mathbf{r}_{ik}}{r_{ik}}\frac{a_{ik}}{(1+\beta r_{ik})^2}
 	\label{eq:n-body-jastrow-grad}
 \end{align}
-The laplacian of the Jastrow factor is given as
+We can now look for the Laplacian. The general formula for this is one is given by taking the gradient once more,
+\begin{align}
+	\frac{\bm{\nabla}_k^2\psi_J}{\psi_J} = \left( \frac{\bm{\nabla}_k\psi_J}{\psi_J} \right)^2 + \sum^N_{i\neq k} \left[\left( \frac{d-1}{r_{ik}} \frac{\partial f_{ik}}{\partial r_{ik}} + \frac{\partial^2f_{ik}}{\partial r_{ik}^2} \right)  \right]
+	\label{eq:general-laplacian-jastrow}
+\end{align}
+The $d$ stands for the dimension. The second derivative of $f_{ik}$ is given by
+\begin{align}
+	\frac{\partial^2f_{ik}}{\partial r_{ik}^2} = -\frac{2a_{ik}\beta}{(1 + \beta r_{ik})^3}
+	\label{eq:jastrow-f-second-derivative}
+\end{align}
+By setting $d=2$(as we only are working in two dimensions), and inserting the partial derivative into the general formula for the Laplacian, we get,
 \begin{align}
 	\frac{1}{\psi_J}\nabla_k^2 \psi_k = \left( \frac{\bm{\nabla}_k \psi_J}{\psi_J} \right)^2 + \sum_{i\neq k}^N \frac{a_{ik}(1-\beta r_{ik})}{r_{ik}(1+\beta r_{ik})^3}
 	\label{eq:n-body-jastrow-lap}
 \end{align}
 
+\subsubsection{Slater determinant derivatives}
 We can now look at the Slater determinant. As shown in http://onlinelibrary.wiley.com/doi/10.1002/qua.560200508/abstract, we can split the spin parts into two Slater determinants, one for spin up and one for spin down since our Hamiltonian is spin independent. If we do not do this the determinant will be zero. By using the definition we presented in \eqref{eq:WF_onebody}, we get
 \begin{align}
 	\psi_{SD} = D = D_{\uparrow}D_{\downarrow}
@@ -518,30 +552,152 @@ We can now look at the Slater determinant. As shown in http://onlinelibrary.wile
 This gives following expressions for the gradient,
 \begin{align}
 	\frac{\bm{\nabla}\psi_{SD}}{\psi_{SD}} = \frac{\bm{\nabla}D_{\downarrow}}{D_{\downarrow}} + \frac{\bm{\nabla}D_{\uparrow}}{D_{\uparrow}}
-	\label{eq:slater-spin-down-up-grad}
+	\label{eq:slater-gradient-spin-down-up-grad}
 \end{align}
 and the laplacian
 \begin{align}
 	\frac{{\nabla}^2\psi_{SD}}{\psi_{SD}} = \frac{{\nabla}^2D_{\downarrow}}{D_{\downarrow}} + \frac{{\nabla}^2D_{\uparrow}}{D_{\uparrow}}
-	\label{eq:slater-spin-down-up-lap}
+	\label{eq:slater-laplacian-spin-down-up-lap}
 \end{align}
-Now, for the derivative of the Slater determinant, we get by the definition given in 
+The gradient of the Slater determinant is given in the \husk{lecture notes 2015} as
+\begin{align}
+	\frac{\bm{\nabla}_k\psi_{SD}}{\psi_{SD}} = \sum_{i\neq k}^N\bm{\nabla}_k d_{ik}(\mathbf{r})d_{ki}^{-1}(\mathbf{r})
+	\label{eq:gradient-slater}
+\end{align}
+Since $d_{ik}=\phi_k (\mathbf{r}_i)$, we must find the derivative of the single particle wave function\eqref{eq:sp-wf}. The gradient of this is given as,
+\begin{align*}
+	\bm{\nabla}_i \phi_j(\mathbf{r}_i) &= \left( \frac{\partial}{\partial x_i} \mathbf{i} + \frac{\partial}{\partial y_i} \mathbf{j} \right) AH_{n_x} (\sqrt{\omega\alpha}x) H_{n_y} (\sqrt{\omega\alpha} y) \exp{\left(-\frac{\omega\alpha}{2}\left( x^2 + y^2 \right)\right)} \\
+\end{align*}
+Only looking at the $x$-derivative and ignoring the constant $A$ gives us,
+\begin{align*}
+	\frac{\partial}{\partial x_i} \phi_j(\mathbf{r}_i) &= \frac{\partial}{\partial x_i} \left(H_{j_x} (\sqrt{\omega\alpha}x_i) H_{j_y} (\sqrt{\omega\alpha} y_i) \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)} \right) \\
+	&= \bigg[ H_{j_y} (\sqrt{\omega\alpha} y_i) \exp{\left(-\frac{\omega\alpha}{2}\left( x^2 + y^2 \right)\right)}\frac{\partial}{\partial x_i}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) \\
+	&+ H_{j_x} (\sqrt{\omega\alpha}x_i) H_{j_y} (\sqrt{\omega\alpha} y_i) (-\omega\alpha x_i) \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)} \bigg] \\
+	&= \left[ \frac{\partial}{\partial x_i}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) - \omega\alpha x_i H_{j_x} (\sqrt{\omega\alpha}x_k) \right] \\
+	&\times H_{j_y} (\sqrt{\omega\alpha} y_i)\exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)}
+\end{align*}
+Adding this together with the $y$-derivative, and we get the gradient of the single particle wave function,
+\begin{align}
+	\begin{split}
+		\bm{\nabla}_i \phi_j (\mathbf{r}_i) &= \bigg[ \left( \frac{\partial}{\partial x_i}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) - \omega\alpha x_i H_{j_x} (\sqrt{\omega\alpha}x_i) \right) H_{j_y} (\sqrt{\omega\alpha} y_i) \mathbf{i} \\
+		&+ \left( \frac{\partial}{\partial y_i}\left( H_{j_y} (\sqrt{\omega\alpha}y_i) \right) - \omega\alpha y_i H_{j_y} (\sqrt{\omega\alpha}y_i) \right) H_{j_x} (\sqrt{\omega\alpha} x_i) \mathbf{j}	\bigg] \\
+		& \times \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)}
+	\end{split}
+	\label{eq:wf-sp-gradient}
+\end{align}
+We can now find the Laplacian of the Slater determinant. 
+\begin{align}
+	\frac{\nabla^2_k\psi_{SD}}{\psi_{SD}} = \sum_{i\neq k}^N\bm{\nabla}^2_k d_{ik}(\mathbf{r})d_{ki}^{-1}(\mathbf{r})
+	\label{eq:laplacian-slater}
+\end{align}
+We now need to find the Laplacian of the single particle function.
+\begin{align*}
+	\frac{\partial^2}{\partial x_i^2} \phi_j(\mathbf{r}_i) &= \frac{\partial}{\partial x_i} \bigg(\left[ \frac{\partial}{\partial x_i}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) - \omega\alpha x_i H_{j_x} (\sqrt{\omega\alpha}x_k) \right] \\
+	&\times H_{j_y} (\sqrt{\omega\alpha} y_i)\exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)} \bigg) \\
+	&= \bigg( \frac{\partial^2}{\partial x_i^2} \left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) - 2\omega\alpha x_i \frac{\partial}{\partial x_i}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) \\ 
+	&- \omega \alpha H_{j_x} (\sqrt{\omega\alpha}x_i) + \omega^2 \alpha^2 x_i^2 H_{j_x} (\sqrt{\omega\alpha}x_i) \bigg) \\
+	&\times H_{j_y} (\sqrt{\omega\alpha} y_i) \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)}
+\end{align*}
+Combinging the second derivatives of respectively $x_i$ and $y_i$, we get
+\begin{align}
+	\begin{split}
+		\nabla_i^2 \phi_j(\mathbf{r}_i) &= \bigg(
+			H_{j_y} (\sqrt{\omega\alpha} y_i) \frac{\partial^2}{\partial x_i^2} \left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) \\
+			&+ H_{j_x} (\sqrt{\omega\alpha}x_i) \frac{\partial^2}{\partial y_i^2} \left( H_{j_y} (\sqrt{\omega\alpha}y_i) \right) \\
+			&- 2\omega\alpha \bigg[ x_i H_{j_y} (\sqrt{\omega\alpha} y_i) \frac{\partial}{\partial x_i}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) \\
+			&+ y_i H_{j_x} (\sqrt{\omega\alpha}x_i) \frac{\partial}{\partial y_i}\left( H_{j_y} (\sqrt{\omega\alpha}y_i) \right) \bigg] \\
+			&- 2\omega\alpha H_{j_x} (\sqrt{\omega\alpha}x_i) H_{j_y} (\sqrt{\omega\alpha} y_i) \\
+			&+ \omega^2 \alpha^2(x_i^2+y_i^2) H_{j_x} (\sqrt{\omega\alpha}x_i) H_{j_y} (\sqrt{\omega\alpha} y_i)
+		\bigg) \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)}
+	\end{split}
+	\label{eq:wf-sp-laplacian}
+\end{align}
+We now have all the ingredients to find the local energy as given by equation \eqref{eq:local-energy}.
+
+% H_{j_x} (\sqrt{\omega\alpha}x_i)
+% \frac{\partial}{\partial x_i}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right)
+% \frac{\partial^2}{\partial x_i^2} \left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right)
+
+% H_{j_y} (\sqrt{\omega\alpha} y_i)
+% \frac{\partial}{\partial y_i}\left( H_{j_y} (\sqrt{\omega\alpha}y_i) \right)
+% \frac{\partial^2}{\partial y_i^2} \left( H_{j_y} (\sqrt{\omega\alpha}y_i) \right)
+
+% \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)}
+
+% \frac{\partial}{\partial x_i}\left(  \right)
+
 
 
 
 \subsubsection{Local energy}
+The local energy is given by
+\begin{align}
+	E_L = \frac{1}{\psi_T}\left( -\frac{1}{2}\sum^N_{i=1}\nabla_i^2 + \frac{1}{2}\omega^2\sum^N_{i=1}r^2_i + \sum^N_{i\leq j}r_{ij} \right)\psi_T
+	\label{eq:n-electron-local-energy}
+\end{align}
+Where the Laplacian is defined as \eqref{eq:laplacian-n-electron}. By using the gradients and Laplacians we found for the Jastrow(\eqref{eq:general-gradient-jastrow},\eqref{eq:general-laplacian-jastrow}), Slater determinant(\eqref{eq:gradient-slater},\eqref{eq:laplacian-slater}) and the single particle wave functions(\eqref{eq:wf-sp-gradient},\eqref{eq:wf-sp-laplacian}), we will have the full local energy for $N$ electrons. This equation is a beast in the true meaning of the word, and we will therefore not write it in its full length. 
 
 \subsubsection{Quantum force}
+Finding the quantum force as stated in equation \eqref{eq:quantum-force} is now a simple task, as we already know all the gradients needed, $\bm{\nabla_i}\psi_T = \bm{\nabla}_i\psi_{SD} + \bm{\nabla}_i\psi_J$.
+\begin{align}
+	\mathbf{F_k} = 2 \left( \sum^N_{i\neq k} \frac{\mathbf{r}_{ik}}{r_{ik}}\frac{\partial f_{ik}}{\partial r_{ik}} + \sum_{i\neq k}^N\bm{\nabla}_k d_{ik}(\mathbf{r})d_{ki}^{-1}(\mathbf{r}) \right)
+\end{align}
+where depending on particle $k$, we will either have the gradient of the Slater determinant to be for spin up or down.
 
 \subsubsection{\texorpdfstring{$\alpha$}{a} and \texorpdfstring{$\beta$}{b} derivatives in the steepest descent algorithm}
-\husk{Kanskje ikke ha med noe her?}
-
+From the lecture notes \husk{CITE COMPENDIUM}, we have that the derivative of a variational parameter is given by
+\begin{align*}
+	\frac{\partial E_L[c_m]}{\partial c_m} = 2 \left[ \left\langle E_L[c_m] \frac{\partial \ln \psi_L}{\partial c_m} \right\rangle - \langle E_L[c_m] \rangle \left\langle \frac{\partial \ln \psi_L}{\partial c_m} \right\rangle
+	\right]
+\end{align*}
+where $c_m$ is the variational parameter we are studying. As for the two electron case, the brackets are indicating expectation values. The $\psi_L$ is given as,
+\begin{align}
+	\frac{\partial\ln \psi_L}{\partial c_m} = \frac{\partial\ln (\psi_{SD\uparrow})}{\partial c_m} + \frac{\partial\ln (\psi_{SD\downarrow})}{\partial c_m} + \frac{\partial\ln (\psi_{J})}{\partial c_m}
+\end{align}
+Since $\frac{\partial\ln\psi}{\partial c_m} = \frac{1}{\psi}\frac{\partial \psi}{\partial c_m}$, we have to find the partial derivatives of the wave functions with respect to the variational parameters. We begin by looking at the Jastrow factor.
+\begin{align*}
+	\frac{1}{\psi_J}\frac{\partial\psi_J}{\partial \beta} &= \frac{1}{\psi_J} \exp\left(\sum^N_{i<j}\frac{a_{ij}r_{ij}}{1+\beta r_{ij}}\right) \\
+	&= \frac{1}{\psi_J}\left( - \sum_{i\neq j}^N \frac{a_{ij}r_ij^2}{(1+\beta r_{ij})^2} \right) \psi_J
+\end{align*}
+Which leads to,
+\begin{align}
+	\frac{1}{\psi_J}\frac{\partial\psi_J}{\partial \beta} = - \sum_{i\neq j}^N \frac{a_{ij}r_ij^2}{(1+\beta r_{ij})^2}
+	\label{eq:jastrow-beta-derivative-n-particle}
+\end{align}
+Now, for the Slater determinant. Since the derivative is the same for either spin up or spin down, we will drop specifying the spin value. In finding this formula, the Jacobi's formula has been used.
+\begin{align}
+	\frac{\partial \psi_{SD}}{\partial\alpha} &= \sum^N_{i=1}\sum^N_{j=1} \frac{\partial\phi_j(\mathbf{r}_i)}{\partial \alpha} D^{-1}_{ji} \\
+	\label{eq:slater-determinant-alpha-derivative}
+\end{align}
+Thus, we find the derivative of the single particle function as
+\begin{align}
+	\begin{split}
+		\frac{\partial \phi_j(\mathbf{r}_i)}{\partial \alpha} &= \bigg[ \frac{1}{2}\sqrt{\frac{\omega}{\alpha}}\bigg( x_i H_{j_y} (\sqrt{\omega\alpha} y_i) \frac{\partial}{\partial \alpha}\left( H_{j_x} (\sqrt{\omega\alpha}x_i) \right) \\
+		&- y_i H_{j_x} (\sqrt{\omega\alpha}x_i) \frac{\partial}{\partial \alpha}\left( H_{j_y} (\sqrt{\omega\alpha}y_i) \right)\bigg) \\
+		&- \frac{\omega}{2}(x_i^2 + y_i^2) H_{j_x} (\sqrt{\omega\alpha}x_i) H_{j_y} (\sqrt{\omega\alpha} y_i) \bigg] \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)}
+	\end{split}
+	\label{eq:wf-sp-alpha-derivative}
+\end{align}
+The derivatives of the Hermite polynomials with respect to $\alpha$ are given by the Hermite derivative recursion relation seen in the appendix\eqref{eq:hermite-recursive-relation}, as
+\begin{align}
+	\frac{\partial}{\partial\alpha} \left(H_n(\sqrt{\omega\alpha}x)\right) = nx\sqrt{\frac{\omega}{\alpha}} H_{n-1}(\sqrt{\omega\alpha}x)
+	\label{eq:hermite-alpha-derivative}
+\end{align}
 
 \subsection{Blocking}
-When dealing with large Monte Carlo generated datasets, we will discover that they often are correlated. To remedy this, we introduce a statistical technique called \textit{blocking}. This \husk{fiksefikse}
+When dealing with large Monte Carlo generated datasets, we will discover that they often are correlated. To remedy this, we introduce a statistical technique called \textit{blocking}. The idea behind this, can be summarized as following:
+\begin{itemize}
+	\item Define a set of different block sizes $\{N_b\}$, in which we will divide our data set into $n_b$ such blocks.
+	\item Calculate the mean of each block with size $N_b$, such that the size of the data set is reduced the number of blocks $N_b$ which 
+\end{itemize}
+\husk{fiksefikse}
 
+
+\subsection{Parallelization}
+Using the MPIMPIMPIMPI?
 
 \section{Implementation}
+
 
 \subsection{TESTS}
 \husk{2 electron case}
@@ -569,9 +725,63 @@ D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
 
 \section{Appendix}
 \subsection{Hermite polynomials}
+The first few Hermite polynomials in the physicists definition that will be used are given as,
+\begin{align*}
+	H_0(x) = 1
+\end{align*}
+\begin{align*}
+	H_1(x) = 2x
+\end{align*}
+\begin{align*}
+	H_2(x) = 4x^2 - 2
+\end{align*}
+\begin{align*}
+	H_3(x) = 8x^3 - 12x
+\end{align*}
+\begin{align*}
+	H_4(x) = 16x^4 - 48x^2 + 12
+\end{align*}
+Their derivatives is given as
+\begin{align*}
+	\frac{\partial H_0(x)}{\partial x} = 0
+\end{align*}
+\begin{align*}
+	\frac{\partial H_1(x)}{\partial x} = 2
+\end{align*}
+\begin{align*}
+	\frac{\partial H_2(x)}{\partial x} = 8x
+\end{align*}
+\begin{align*}
+	\frac{\partial H_3(x)}{\partial x} = 24x^2 - 12
+\end{align*}
+\begin{align*}
+	\frac{\partial H_4(x)}{\partial x} = 64x^3 - 96x
+\end{align*}
+Their second derivatives goes as
+\begin{align*}
+	\frac{\partial^2 H_0(x)}{\partial x^2} = 0
+\end{align*}
+\begin{align*}
+	\frac{\partial^2 H_1(x)}{\partial x^2} = 0
+\end{align*}
+\begin{align*}
+	\frac{\partial^2 H_2(x)}{\partial x^2} = 8
+\end{align*}
+\begin{align*}
+	\frac{\partial^2 H_3(x)}{\partial x^2} = 48x
+\end{align*}
+\begin{align*}
+	\frac{\partial^2 H_4(x)}{\partial x^2} = 192x^2 - 96
+\end{align*}
+For finding the $\alpha$ derivative, we can use the recursive derivative relation,
+\begin{align}
+	H'_n(x) = 2nH_{n-1}(x)
+	\label{eq:hermite-recursive-relation}
+\end{align}
+
 \husk{Ha med polynomene som brukes}
 
-\subsection{Useful formulas}
+\subsection{Integral formulas}
 Solution to a Gaussian integral is given as,
 \begin{align}
 	\int \exp\left( - \omega x^2 \right) d x = \sqrt{\frac{\pi}{\omega}} = \sqrt{\pi}\omega^{-\frac{1}{2}}
@@ -581,6 +791,12 @@ Another symmetric Gaussian integral is given as,
 \begin{align}
 	\int x^2 \exp\left( - \omega x^2 \right) d x = \frac{\sqrt{\pi}}{2}\omega^{-\frac{3}{2}}
 	\label{eq:gaussian-integral-x-squared}
+\end{align}
+\subsection{Jacobi's formula}
+When finding the derivative of the Slater determinant, we will need the Jacobi formula,
+\begin{align}
+	\frac{d}{dt}\det A(t) = \mathrm{tr} \left( \mathrm{adj}(A(t))\frac{dA(t)}{dt} \right)
+	\label{eq:jacobi-formula}
 \end{align}
 
 \husk{REFERANSER!!}

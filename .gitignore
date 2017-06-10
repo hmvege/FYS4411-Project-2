@@ -21,3 +21,8 @@ output*/*
 *.out
 *.gz
 *.toc
+*.bbl
+*.blg
+
+#Datarun folder on the mac
+output_2e_MC1e7/
