@@ -10,6 +10,11 @@ class twoElectronPlain : public WaveFunctions
 private:
     double omega;
     double alpha;
+    // For steepest descent
+    double dPsiAlpha = 0;
+    double dPsiAlphaSum = 0;
+    double dPsiEAlphaSum = 0;
+    void SDStatistics(int NCycles);
 public:
     using WaveFunctions::localEnergy;
 
@@ -17,9 +22,14 @@ public:
     void initializeWFSampling(double **r);
     double initializeWaveFunction(double **r);
     double calculate(double **r, int k);
-    virtual double localEnergy(double **r);
+    virtual void localEnergy(double **r, double &ETotal, double &EKinetic, double &EPotential);
     void quantumForce(double **r, double **F, int k);
     void finalizeSD();
+    void sampleSD(double **r, double &E);
+    void steepestDescent(double &ESum, int NCycles);
+    void revert();
+    void updateWF();
+    void reset();
     std::string getParameterString();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }

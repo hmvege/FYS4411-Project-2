@@ -51,9 +51,8 @@ def block(N_block_size):
 	E = np.sum(temporary_average_values)/float(N_block_size)
 	ESquared = np.sum(temporary_average_values**2)/float(N_block_size)
 	del temporary_average_values # FOR RELEAVING MEMORY?
-	variance_value = (ESquared - E*E)/N_block_size
-	block_size_value = block_size
-	return variance_value, block_size_value, N_block_size
+	# variance_value = (ESquared - E*E)/N_block_size
+	return (ESquared - E*E)/N_block_size, block_size, N_block_size
 
 # Run parallelized blocking -------------------------------
 pool = multiprocessing.Pool(processes=num_processors)

@@ -1,5 +1,6 @@
 #include "twoelectronplain.h"
 #include <cmath>
+#include <mpi.h>
 //#include <iostream>
 //#include <iomanip>
 
@@ -50,7 +51,7 @@ double twoElectronPlain::calculate(double ** r, int k)
     return exp( - 0.5*omega*alpha*rr); // No Jastrov-factor
 }
 
-double twoElectronPlain::localEnergy(double ** r)
+void twoElectronPlain::localEnergy(double ** r, double &ETotal, double &EKinetic, double &EPotential)
 {
     /*
      * Calculates local energy of the two electron case without any Jastrov factor and no Coulomb interaction
@@ -58,14 +59,15 @@ double twoElectronPlain::localEnergy(double ** r)
      *  r   : particle positions
      */
     double rr = r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]; // x1^2 + y1^2 + x2^2 + y2^2
-    if (coulombInteraction) // TEMP?
+    double kineticEnergy = -0.5*omega*(omega*rr - 4);
+    double potentialEnergy = 0.5 * omega*omega*rr;
+    if (coulombInteraction)
     {
-        return -0.5*omega*(omega*(rr) - 4) + 0.5 * omega*omega*(rr) + coulomb(r);
+        potentialEnergy += coulomb(r);
     }
-    else
-    {
-        return -0.5*omega*(omega*(rr) - 4) + 0.5 * omega*omega*(rr); // No Jastrov-factor, no Coulomb interaction
-    }
+    EKinetic = kineticEnergy;
+    EPotential = potentialEnergy;
+    ETotal = kineticEnergy + potentialEnergy;
 }
 
 void twoElectronPlain::quantumForce(double **r, double **F, int k)
@@ -83,11 +85,56 @@ void twoElectronPlain::quantumForce(double **r, double **F, int k)
     }
 }
 
+void twoElectronPlain::steepestDescent(double &ESum, int NCycles)
+{
+    /*
+     * Using steepest descent to update the variational parameters of the wavefunction.
+     * Arguments:
+     *  ESum        : Local energy sum from running N MC cycles
+     *  NCyclces    : Number of MC cycles used
+     */
+    SDStatistics(NCycles);
+    double alphaDerivative = 2*(dPsiEAlphaSum - dPsiAlphaSum*ESum);
+    alpha -= SDStepLength*alphaDerivative; // Updating alpha and beta
+    dPsiEAlphaSum = 0; // Shouldn't these be reset?
+    dPsiAlphaSum = 0;
+}
+
+void twoElectronPlain::sampleSD(double **r, double &E)
+{
+    /*
+     * Sampling used by the steepest descent algorithm.
+     * Arguments:
+     *  r   : particle positions
+     *  E   : local energy of current positions
+     */
+    dPsiAlpha       = - 0.5*omega*(r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]); // x1^2 + y1^2 + x2^2 + y2^2
+    dPsiAlphaSum    += dPsiAlpha;
+    dPsiEAlphaSum   += dPsiAlpha*E;
+}
+
+void twoElectronPlain::SDStatistics(int NCycles)
+{
+    /*
+     * Function for retrieving Steepest Descent statistics.
+     * Arguments:
+     *  NCycles     : Monte Carlo cycles
+     */
+    dPsiAlphaSum    /= double(NCycles);
+    dPsiEAlphaSum   /= double(NCycles);
+}
+
 void twoElectronPlain::finalizeSD()
 {
     /*
-     * SD not implemented for the two electron WF.
+     * SD for the two electron WF, more or less a carbon copy of the Jastrow case..
      */
+    double temp_dPsiAlphaSum = 0;
+    double temp_dPsiEAlphaSum = 0;
+    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
+    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
 }
 
 void twoElectronPlain::printVariationalParameters(int i)
@@ -114,4 +161,25 @@ std::string twoElectronPlain::getParameterString()
      * Returns string to be used in filename.
      */
     return "_omega" + std::to_string(omega) + "_alpha" + std::to_string(alpha);
+}
+
+void twoElectronPlain::updateWF()
+{
+    /*
+     * Not needed by the two electron plain hardcoded case.
+     */
+}
+
+void twoElectronPlain::revert()
+{
+    /*
+     * Not needed by the two electron plain hardcoded case.
+     */
+}
+
+void twoElectronPlain::reset()
+{
+    /*
+     * Not needed by the two electron plain hardcoded case.
+     */
 }

@@ -25,11 +25,14 @@ public:
     void initializeWFSampling(double **r);
     double initializeWaveFunction(double **r);
     double calculate(double **r, int k);
-    virtual double localEnergy(double **r);
+    virtual void localEnergy(double **r, double &ETotal, double &EKinetic, double &EPotential);
     void quantumForce(double **r, double **F, int k);
     void steepestDescent(double &ESum, int NCycles);
     void sampleSD(double **r, double &E);
     void finalizeSD();
+    void revert();
+    void updateWF();
+    void reset();
     std::string getParameterString();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }

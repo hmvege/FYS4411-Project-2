@@ -473,7 +473,7 @@ Which gives the total local energy by adding the harmonic oscillator term and co
 \subsubsection{Quantum force}
 We also have to find the quantum force given by equation \eqref{eq:quantum-force}, which involves taking the gradient of the wave function. As we already know the first derivatives from taking the gradient\eqref{eq:two-electron-first-derivative}, the process is trivial.
 \begin{align}
-	\mathbf{F} = \left(-\omega\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{i} + \left(-\omega\alpha y_1 + \frac{a(y_1-y_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{j}
+	\mathbf{F} = 2\left(-\omega\alpha x_1 + \frac{a(x_1-x_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{i} + 2\left(-\omega\alpha y_1 + \frac{a(y_1-y_2)}{r_{12}(1+\beta r_{12})^2} \right)\mathbf{j}
 	\label{eq:two-electron-quantum-force}
 \end{align}
 For $r_2$ do we get a minus in front of the last term.
@@ -685,19 +685,34 @@ The derivatives of the Hermite polynomials with respect to $\alpha$ are given by
 \end{align}
 
 \subsection{Blocking}
-When dealing with large Monte Carlo generated datasets, we will discover that they often are correlated. To remedy this, we introduce a statistical technique called \textit{blocking}. The idea behind this, can be summarized as following:
+When dealing with large Monte Carlo generated datasets, we will discover that they often are correlated. That is, the random number generator is not entirely random. To remedy this, we introduce a statistical technique called \textit{blocking}. The idea behind this, can be summarized as following:
 \begin{itemize}
 	\item Define a set of different block sizes $\{N_b\}$, in which we will divide our data set into $n_b$ such blocks.
-	\item Calculate the mean of each block with size $N_b$, such that the size of the data set is reduced the number of blocks $N_b$ which 
+	\item Calculate the mean of each block with size $N_b$, such that the size of the data set $\{x_i\}$ is reduced the number of $n_b$ blocks of size $N_b$, thus creating a new dataset $\{x_i'\}$
+	\item From the new dataset, $\{x_i'\}$, we calculate the variance $\sigma_{N_b}$.
+	\item Repeat this procedure for all the different block sizes, and plot the resulting variance $\sigma_{N_b}$ as a function of the block size or number of blocks.
 \end{itemize}
-\husk{fiksefikse}
-
+The plot one ends up with, will show that the variance stabilizes for some block size, and thus that is where we expect to have an uncorrelated dataset. The full proof for this can be viewed in the article by\husk{reference to Flyvebjerg and Petersen}.
 
 \subsection{Parallelization}
-Using the MPIMPIMPIMPI?
+Using the parallelization package Open MPI (Message Passing Interface) for \CC, we can parallelize the programming. It is thus beneficial to look into the type of speedup one may get from parallelizing. Let us define the time taken to run the program by one processor to be $T_1$, and for $p$ processor $T_p$. We define the possible speed-up as
+\begin{align}
+	S(p) = \frac{T_1}{T_p}
+	\label{eq:parallel-speed-up}
+\end{align}
+In order to find the possible speedup $S(p)$ for $p$ processors, we have the following relation called \husk{reference!!!} Amdahl's law,
+\begin{align}
+	S(p) = \frac{1}{(1-f) + f/p}
+	\label{eq:amdahls-law}
+\end{align}
+We quickly observe, that if one can obtain a value for the speedup\eqref{eq:parallel-speed-up}, on can find the fraction $f$ of the program that is parallelizable by,
+\begin{align}
+	f = \frac{1-S(p)}{S(p)(1+1/p)}
+	\label{eq:f-parallelizable-fraction}
+\end{align}
 
 \section{Implementation}
-
+The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. 
 
 \subsection{TESTS}
 \husk{2 electron case}

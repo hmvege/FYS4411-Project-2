@@ -214,7 +214,6 @@ void NElectron::localEnergy(double **r, double &ETotal, double &EKinetic, double
     EKinetic = kineticEnergy;
     EPotential = potentialEnergy;
     ETotal = kineticEnergy + potentialEnergy;
-
 }
 
 void NElectron::quantumForce(double **r, double **F, int k)

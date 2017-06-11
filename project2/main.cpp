@@ -13,7 +13,7 @@
 
 using namespace std;
 
-void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha, double stepLength,
+void run2Electron(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions, double omega, double alpha, double D, double deltat, double stepLength,
                   double seed, bool impSampling, bool coulomb, string filename, int MCSamplingFrequency, int numprocs, int processRank);
 void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions,
                       double omega, double alpha, double a, double beta, double D, double deltat, double seed,
@@ -42,10 +42,10 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 1e8;
+    unsigned int MCCycles   = 1e6;
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 0; // 0 turns it completely off, 200 is default
+    int maxSDIterations     = 1000; // 0 turns it completely off, 200 is default
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
@@ -72,32 +72,32 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
-    double seed             = -10-processRank;//std::time(nullptr)-processRank;
-//    double seed             = std::time(nullptr)-processRank;
-    bool importanceSampling = true;
+//    double seed             = -10-processRank;//std::time(nullptr)-processRank;
+    double seed             = std::time(nullptr)-processRank;
+    bool importanceSampling = false;
     bool coulombInteraction = true;
     // Timers
     clock_t programStart, programEnd;
     clock_t runStart, runEnd;
     programStart = clock();
 
-    run2Electron(MCCycles, nParticles_2, nDimensions, omega_2, alpha_2plain, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
+//    run2Electron(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2plain, D, deltat, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
     run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
 //    runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles, nDimensions, omega, alpha, beta, D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, jastrowFactor, "NElectron", MCSamplingFrequency, numprocs, processRank);
-//    // Main loop for all different cases
-//    for (int i = 0; i < 1; i++) // Default is i=0, i < 4, particles
-//    {
-//        for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
-//        {
-//            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow off/on, default is k=0; k < 2
-//            {
-//                runStart = clock();
-//                runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
-//                runEnd= clock();
-//                if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
-//            }
-//        }
-//    }
+    // Main loop for all different cases
+    for (int i = 0; i < 1; i++) // Default is i=0, i < 4, particles
+    {
+        for (int j = 0; j < 1; j++) // Default is j=0; j < 5, omega values
+        {
+            for (int k = 1; k < 2; k++) // Jastrow factor, jastrow off/on, default is k=0; k < 2
+            {
+                runStart = clock();
+                runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", MCSamplingFrequency, numprocs, processRank);
+                runEnd= clock();
+                if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
+            }
+        }
+    }
 
     MPI_Finalize();
 
@@ -131,14 +131,14 @@ void printRunInfo(int MCCycles, int maxSDIterations, int nParticles, int importa
     cout << "RESULTS:" << endl;
 }
 
-void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double omega, double alpha,
-                  double stepLength, double seed, bool impSampling, bool coulomb, std::string filename,
-                  int MCSamplingFrequency, int numprocs, int processRank)
+void run2Electron(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions, double omega,
+                  double alpha, double D, double deltat, double stepLength, double seed, bool impSampling, bool coulomb,
+                  std::string filename, int MCSamplingFrequency, int numprocs, int processRank)
 {
     /*
      * Function for running the two electron case.
      */
-    if (processRank == 0) { printRunInfo(MCCycles, 0, nParticles, impSampling, coulomb, false, omega, alpha, 0, numprocs); }
+    if (processRank == 0) { printRunInfo(MCCycles, maxNSD, nParticles, impSampling, coulomb, false, omega, alpha, 0, numprocs); }
     twoElectronPlain WF_2Electron(nParticles, nDimensions, numprocs, processRank, omega, alpha);
     WF_2Electron.setCoulombInteraction(coulomb);
     VMC VMC_2Electron(nParticles, nDimensions, filename, numprocs, processRank);
@@ -147,17 +147,19 @@ void run2Electron(unsigned int MCCycles, int nParticles, int nDimensions, double
     if (impSampling)
     {
         ImportanceSampler importanceSampling(nParticles, nDimensions, numprocs, processRank);
-        importanceSampling.initializeSampling(0.001, seed, 0.5);
+        importanceSampling.initializeSampling(deltat, seed, D);
         VMC_2Electron.setMetropolisSampler(&importanceSampling);
+        VMC_2Electron.runVMC(MCCycles, optCycles, maxNSD, MCSamplingFrequency);
+        VMC_2Electron.printResults();
     }
     else
     {
         UniformSampling uniformSampling(nParticles, nDimensions, numprocs, processRank);
         uniformSampling.initializeSampling(stepLength, seed);
         VMC_2Electron.setMetropolisSampler(&uniformSampling);
+        VMC_2Electron.runVMC(MCCycles, optCycles, maxNSD, MCSamplingFrequency);
+        VMC_2Electron.printResults();
     }
-    VMC_2Electron.runVMC(MCCycles, 0, 0, MCSamplingFrequency);
-    VMC_2Electron.printResults();
 }
 
 void run2eImpSampling(unsigned int MCCycles, unsigned int optCycles, int maxNSD, int nParticles, int nDimensions,

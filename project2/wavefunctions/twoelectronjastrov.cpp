@@ -56,7 +56,7 @@ double twoElectronJastrov::calculate(double ** r, int k)
     return exp( - 0.5*omega*alpha*(r1+r2) + a/(1.0/r_ij(r[0],r[1]) + beta) );
 }
 
-double twoElectronJastrov::localEnergy(double ** r)
+void twoElectronJastrov::localEnergy(double ** r, double &ETotal, double &EKinetic, double &EPotential)
 {
     /*
      * Function for calculating the two electron local energy with Jastrov factor and Coulomb interaction.
@@ -67,14 +67,15 @@ double twoElectronJastrov::localEnergy(double ** r)
     double r12 = r_ij(r[0],r[1]);
     double r12Beta = 1 + beta*r12;
     double r12BetaSquared = r12Beta*r12Beta;
+    double kineticEnergy = - 0.5*( alpha*alpha*omega*omega*(rr) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta ));
+    double potentialEnergy = 0.5 * omega*omega*rr;
     if (coulombInteraction)
     {
-        return - 0.5*( (alpha*alpha - 1)*omega*omega*(rr) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta )) + coulomb(r);
+        potentialEnergy += coulomb(r);
     }
-    else
-    {
-        return - 0.5*( (alpha*alpha - 1)*omega*omega*(rr) - 4*alpha*omega + 2*a/r12BetaSquared*( a/r12BetaSquared - omega*alpha*r12 + 1/r12 - 2*beta/r12Beta ));
-    }
+    EKinetic = kineticEnergy;
+    EPotential = potentialEnergy;
+    ETotal = kineticEnergy + potentialEnergy;
 }
 
 void twoElectronJastrov::quantumForce(double **r, double **F, int k)
@@ -113,6 +114,10 @@ void twoElectronJastrov::steepestDescent(double &ESum, int NCycles)
     double betaDerivative = 2*(dPsiEBetaSum - dPsiBetaSum*ESum);
     alpha -= SDStepLength*alphaDerivative; // Updating alpha and beta
     beta  -= SDStepLength*betaDerivative;
+    dPsiEAlphaSum = 0; // Shouldn't these be reset?
+    dPsiAlphaSum = 0;
+    dPsiBetaSum = 0;
+    dPsiEBetaSum = 0;
 }
 
 void twoElectronJastrov::sampleSD(double **r, double &E)
@@ -190,4 +195,25 @@ std::string twoElectronJastrov::getParameterString()
      * Returns string to be used in filename.
      */
     return "_omega" + std::to_string(omega) + "_alpha" + std::to_string(alpha) + "_beta" + std::to_string(beta);
+}
+
+void twoElectronJastrov::updateWF()
+{
+    /*
+     * Not needed by the two electron jastrow hardcoded case.
+     */
+}
+
+void twoElectronJastrov::revert()
+{
+    /*
+     * Not needed by the two electron jastrow hardcoded case.
+     */
+}
+
+void twoElectronJastrov::reset()
+{
+    /*
+     * Not needed by the two electron jastrow hardcoded case.
+     */
 }
