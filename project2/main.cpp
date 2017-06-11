@@ -42,10 +42,10 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 1e7;
+    unsigned int MCCycles   = 1e8; // RUN THIS WITH 1 CORE!!
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 200; // 0 turns it completely off, 200 is default
+    int maxSDIterations     = 300; // 0 turns it completely off, 200 is default
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
@@ -75,7 +75,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double SDStepLength     = 0.001; // Steepest descent step length
 //    double seed             = -10-processRank;//std::time(nullptr)-processRank;
     double seed             = std::time(nullptr)-processRank;
-    bool importanceSampling = false;
+    bool importanceSampling = true;
     bool coulombInteraction = true;
     // Timers
     clock_t programStart, programEnd;
@@ -85,7 +85,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2Electron(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2plain, D, deltat, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
     // Main loop for all different cases
-    for (int i = 2; i < 4; i++) // Default is i=0, i < 4, particles
+    for (int i = 0; i < 1; i++) // Default is i=0, i < 4, particles
     {
         for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
         {
