@@ -10,7 +10,7 @@
 using std::cout;
 using std::endl;
 
-VMC::VMC(int new_nParticles, int new_nDimensions, std::string newFilename, int new_numprocs, int new_processRank)
+VMC::VMC(int new_nParticles, int new_nDimensions, std::string newOutputFolder, std::string newFilename, int new_numprocs, int new_processRank)
 {
     /*
      * Constructor for the Variational Metropolis class. Arguments:
@@ -19,6 +19,7 @@ VMC::VMC(int new_nParticles, int new_nDimensions, std::string newFilename, int n
      */
     numprocs = new_numprocs;
     processRank = new_processRank;
+    outputFolder = newOutputFolder;
     filename = newFilename + std::to_string(processRank);
     setNParticles(new_nParticles);
     setNDimensions(new_nDimensions);
@@ -127,7 +128,7 @@ void VMC::runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int 
         resetVariables();
     }
     if (maxSteepestDescentIterations != 0) { WF->finalizeSD(); } // Takes the average of the WF parmaters
-    if (processRank == 0) WF->printVariationalParameters(SDCounter);
+    if (processRank == 0) WF->printUpdatedVariationalParameters();
 //    if (maxSteepestDescentIterations != 0) // Only activates if steepest descent is used
 //    {
 //        if (SDCounter==maxSteepestDescentIterations)
@@ -180,7 +181,7 @@ void VMC::writeToFile()
     /*
      * Writing out to file every MCSamplingFrequency.
      */
-    std::ofstream file("output/" + filename + "_Particle" + std::to_string(nParticles) + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::binary | std::ofstream::app);
+    std::ofstream file(outputFolder + "/" + filename + "_Particle" + std::to_string(nParticles) + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::binary | std::ofstream::app);
     file.write(reinterpret_cast<const char*> (EArr), MCSamplingFrequency*sizeof(double));
     file.close();
 }

@@ -106,9 +106,6 @@ void WaveFunctions::printVariationalParameters(int i)
 
 void WaveFunctions::printUpdatedVariationalParameters()
 {
-    /*
-     * Prints updated variational parameters from steepest descent.
-     */
     cout << "Not implemented printUpdatedVariationalParameters for bare WF class" << endl;
     exit(1);
 }

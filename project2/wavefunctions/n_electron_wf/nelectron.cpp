@@ -309,24 +309,16 @@ void NElectron::SDStatistics(int NCycles)
 
 void NElectron::finalizeSD()
 {
-    double temp_dPsiAlphaSum = 0;
-    double temp_dPsiEAlphaSum = 0;
-    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
-    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
-    MPI_Bcast(&dPsiAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(&dPsiEAlphaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    double tempAlpha = 0;
+    MPI_Reduce(&alpha, &tempAlpha, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    alpha = tempAlpha/double(numprocs);
+    MPI_Bcast(&alpha, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     if (runJastrow)
     {
-        double temp_dPsiBetaSum = 0;
-        double temp_dPsiEBetaSum = 0;
-        MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-        MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-        dPsiBetaSum = temp_dPsiBetaSum/double(numprocs);
-        dPsiEBetaSum = temp_dPsiEBetaSum/double(numprocs);
-        MPI_Bcast(&dPsiBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-        MPI_Bcast(&dPsiEBetaSum, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        double tempBeta = 0;
+        MPI_Reduce(&beta, &tempBeta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        beta = tempBeta/double(numprocs);
+        MPI_Bcast(&beta, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     }
 }
 

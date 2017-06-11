@@ -45,13 +45,14 @@ private:
     void statisticsSD(int cycles);
 
     std::string filename;
+    std::string outputFolder;
     void writeToFile();
     int MCSamplingFrequency;
 
     WaveFunctions *WF = nullptr;
     MetropolisSampler *R = nullptr;
 public:
-    VMC(int new_nParticles, int new_nDimensions, std::string newFilename, int new_numprocs, int new_processRank);
+    VMC(int new_nParticles, int new_nDimensions, std::string newOutputFolder, std::string newFilename, int new_numprocs, int new_processRank);
     ~VMC();
     void runVMC(unsigned int newMCCycles, unsigned int optimizationCycles, int maxSteepestDescentIterations, int newMCSamplingFrequency);
     void printResults();

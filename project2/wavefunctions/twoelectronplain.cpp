@@ -129,12 +129,10 @@ void twoElectronPlain::finalizeSD()
     /*
      * SD for the two electron WF, more or less a carbon copy of the Jastrow case..
      */
-    double temp_dPsiAlphaSum = 0;
-    double temp_dPsiEAlphaSum = 0;
-    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
-    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
+    double tempAlpha = 0;
+    MPI_Reduce(&alpha, &tempAlpha, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    alpha = tempAlpha/double(numprocs);
+    MPI_Bcast(&alpha, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
 
 void twoElectronPlain::printVariationalParameters(int i)

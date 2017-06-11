@@ -155,18 +155,14 @@ void twoElectronJastrov::SDStatistics(int NCycles)
 
 void twoElectronJastrov::finalizeSD()
 {
-    double temp_dPsiAlphaSum = 0;
-    double temp_dPsiEAlphaSum = 0;
-    MPI_Reduce(&dPsiAlphaSum, &temp_dPsiAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&dPsiEAlphaSum, &temp_dPsiEAlphaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    dPsiAlphaSum = temp_dPsiAlphaSum/double(numprocs);
-    dPsiEAlphaSum = temp_dPsiEAlphaSum/double(numprocs);
-    double temp_dPsiBetaSum = 0;
-    double temp_dPsiEBetaSum = 0;
-    MPI_Reduce(&dPsiBetaSum, &temp_dPsiBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&dPsiEBetaSum, &temp_dPsiEBetaSum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
-    dPsiBetaSum = temp_dPsiBetaSum/double(numprocs);
-    dPsiEBetaSum = temp_dPsiEBetaSum/double(numprocs);
+    double tempAlpha = 0;
+    double tempBeta = 0;
+    MPI_Reduce(&alpha, &tempAlpha, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&beta, &tempBeta, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+    alpha = tempAlpha/double(numprocs);
+    beta = tempBeta/double(numprocs);
+    MPI_Bcast(&alpha, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(&beta, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 }
 
 void twoElectronJastrov::printVariationalParameters(int i)

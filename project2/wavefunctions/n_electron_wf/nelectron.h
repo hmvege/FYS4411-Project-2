@@ -49,9 +49,6 @@ private:
     State ** states;
     // For steepest descent
     void SDStatistics(int NCycles);
-    void finalizeSD();
-    void printVariationalParameters(int i);
-    void printUpdatedVariationalParameters();
     double alphaDerivative(double **r);
     double betaDerivative(double **r);
     double dPsiAlpha = 0;
@@ -77,13 +74,16 @@ public:
     void revert();
     void updateWF();
     void reset();
+    void finalizeSD();
     std::string getParameterString();
     // Setters
     void setOmega(double newOmega) { omega = newOmega; }
     void setAlpha(double newAlpha) { alpha = newAlpha; }
     void setBeta(double newBeta) { beta = newBeta; }
-
     void setJastrow(bool jastrow) { runJastrow = jastrow; }
+    // Printers
+    void printVariationalParameters(int i);
+    void printUpdatedVariationalParameters();
 
     // FOR BUG HUNTING
     void printDiagnostics(double **r, int k);
