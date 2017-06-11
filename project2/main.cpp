@@ -69,13 +69,13 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    double alpha_2jas       = 1.0;//0.988559; // 2 electrons
 //    double beta_2jas        = 0.4;//0.398665; // 2 electrons
     // Global setings
-    std::string outputFolder= "output_no_imp_run";
+    std::string outputFolder= "output_imp_run";
     double D                = 0.5; // equals 0.5 in atomic units
     double deltat           = 0.001; // should be either 0.01-0.001
     double SDStepLength     = 0.001; // Steepest descent step length
 //    double seed             = -10-processRank;//std::time(nullptr)-processRank;
     double seed             = std::time(nullptr)-processRank;
-    bool importanceSampling = true;
+    bool importanceSampling = false;
     bool coulombInteraction = true;
     // Timers
     clock_t programStart, programEnd;
@@ -85,7 +85,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2Electron(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2plain, D, deltat, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", MCSamplingFrequency, numprocs, processRank);
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", MCSamplingFrequency, numprocs, processRank);
     // Main loop for all different cases
-    for (int i = 0; i < 2; i++) // Default is i=0, i < 4, particles
+    for (int i = 2; i < 4; i++) // Default is i=0, i < 4, particles
     {
         for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
         {

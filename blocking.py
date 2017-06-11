@@ -19,12 +19,15 @@ def block(N_block_size):
 
 N_electron_values = [2, 6, 12, 20]
 omega_values = [1.0, 0.5, 0.1, 0.05, 0.01]
-folder_name = "output_no_imp_run"
+res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
+folder_name = "output_imp_run"
 beta_vals = [True, False]
 num_processors = 8
+# output_file = open("output_blocking/optimal_variance_output.txt","a")
+output_file = open("output_blocking_imp/optimal_variance_output.txt","a")
 
-for N_electron in N_electron_values:
-	for omega in omega_values:
+for N_electron in N_electron_values[:1]:
+	for omega, resulting_block_size in zip(omega_values, res_b_sizes):
 		for beta in beta_vals:
 			pre_time = time.clock()
 
@@ -33,6 +36,9 @@ for N_electron in N_electron_values:
 			data_files = []
 			getDigit = lambda s : float(re.findall(r"[\d]+",s)[0])
 			getFraction = lambda s : float(re.findall(r"[\d.]+",s)[0])
+			alpha_value = 0 # For writing to file
+			beta_value = 0 # For writing to file
+			N_MC = 0
 			for file in file_list:
 				file_beta = None
 				file_values = file.split('_')
@@ -45,13 +51,15 @@ for N_electron in N_electron_values:
 					file_beta = getFraction(file_values[5])
 				if ((N_electron == file_particles) and (file_omega == omega) and (((not beta) and (file_beta == None)) or (beta and (file_beta != None)))):
 					data_files.append(np.fromfile(folder_name + "/" + file))
+					alpha_value = file_alpha
 					N_MC = file_MC
 					print_string = "Data loaded from processor %2d: N = %2d MC Cycles = %10d Omega = %10.8f Alpha = %10.8f" % (file_processor, file_particles, file_MC, file_omega, file_alpha)
 					if (file_beta != None):
+						beta_value = file_beta
 						print_string += " Beta = %10.8f" % file_beta 
 					print print_string
 			data = np.concatenate(data_files)
-			print "Data loaded from %s" % folder_name
+			print "Data loaded from %s for %d electrons, omega = %.6f" % (folder_name, N_electron, omega)
 
 			# Setting up blocks ---------------------------------------
 			N = len(data)
@@ -73,8 +81,10 @@ for N_electron in N_electron_values:
 
 			# Finding the energy mean ---------------------------------
 			energy_mean = np.mean(data)
-			energy_variance = block(int(N/1e4))[0]
-			print "E = %.10f +/- %g" % (energy_mean, np.sqrt(energy_variance))
+			energy_variance = block(int(N/resulting_block_size))[0]
+			data_string = "N %4d N_MC %10d E %18.16f EVar %12.g EStd %12.g Omega %6.4f Alpha %12.10f" % (N_electron, N_MC, energy_mean, energy_variance, np.sqrt(energy_variance), omega, alpha_value)
+			if beta: data_string += " Beta %.10f" % beta_value
+			output_file.write(data_string + "\n")
 
 			# Plotting ------------------------------------------------
 			plt.clf()
@@ -91,7 +101,7 @@ for N_electron in N_electron_values:
 			del res, N_block_sizes, block_sizes, variance_values, data
 			post_time = time.clock()
 			print "Blocking complete. Time taken: %s seconds" % (post_time - pre_time)
-
+output_file.close()
 
 # # Settings ------------------------------
 # num_processors = 4

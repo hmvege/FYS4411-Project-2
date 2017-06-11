@@ -8,7 +8,10 @@ bin/*
 output/*
 output_run1/*
 output_run2/*
-output*/*
+output_2el_run2/*
+output_imp_run/*
+output_no_imp_run/*
+output_2e_MC1e7/*
 
 #OS junk
 *.DS_Store
@@ -23,6 +26,3 @@ output*/*
 *.toc
 *.bbl
 *.blg
-
-#Datarun folder on the mac
-output_2e_MC1e7/
