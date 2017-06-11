@@ -254,6 +254,15 @@ void VMC::printResults()
      */
     if (processRank == 0)
     {
+        std::ofstream parameterFile("terminal_output/" + filename + "_Particle" + std::to_string(nParticles) + "_MC" + std::to_string(MCCycles) + WF->getParameterString() + "_info" + ".txt");
+        parameterFile << "KE             " << std::setprecision(15) << EKineticSum << endl;
+        parameterFile << "KEVar          " << std::setprecision(15) << (EKineticSquaredSum - EKineticSum*EKineticSum)/double(MCCycles) << endl;
+        parameterFile << "PE             " << std::setprecision(15) << EPotentialSum << endl;
+        parameterFile << "PEVar          " << std::setprecision(15) << (EPotentialSquaredSum - EPotentialSum*EPotentialSum)/double(MCCycles) << endl;
+        parameterFile << "E              " << std::setprecision(15) << ESum << endl;
+        parameterFile << "EVar           " << std::setprecision(15) << (ESumSquared - ESum*ESum)/double(MCCycles) << endl;
+        parameterFile << "AcceptanceRate " << double(acceptanceCounter) / double(nParticles * MCCycles) * 100 << endl;
+        parameterFile.close();
         cout << "Kinetic energy:            " << std::setprecision(15) << EKineticSum << endl;
         cout << "Kinetic energy variance:   " << std::setprecision(15) << (EKineticSquaredSum - EKineticSum*EKineticSum)/double(MCCycles) << endl;
         cout << "Potential energy:          " << std::setprecision(15) << EPotentialSum << endl;

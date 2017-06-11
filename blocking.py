@@ -18,6 +18,7 @@ def block(N_block_size):
 	return (ESquared - E*E)/N_block_size, block_size, N_block_size
 
 num_processors = 8
+verbose = False
 N_electron_values = [2, 6, 12, 20]
 omega_values = [1.0, 0.5, 0.1, 0.05, 0.01]
 res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
@@ -66,10 +67,12 @@ for sampling in ["imp","no_imp"]:
 						if (file_beta != None):
 							beta_value = file_beta
 							print_string += " Beta = %10.8f" % file_beta 
-						print print_string
+						if verbose: print print_string
 				data = np.concatenate(data_files)
-				print "Data loaded from %s for %d electrons, omega = %.6f" % (folder_name, N_electron, omega)
-
+				print_string = "Data loaded from %s for %3d electrons, N_MC = %5g, omega = %8.6f, alpha = %10.8f" % (folder_name, N_electron, N_MC, omega, alpha_value)
+				if (file_beta != None):
+							print_string += " Beta = %10.8f" % beta_value
+				if verbose: print print_string
 				# Setting up blocks ---------------------------------------
 				N = len(data)
 				N_block_sizes = [] # Is the number of blocks we divide into
@@ -105,6 +108,7 @@ for sampling in ["imp","no_imp"]:
 				plt.grid(True)
 				plt.savefig("figures/%s/%s.png" % (sampling, figure_name),dpi=300)
 				plt.close()
+				if verbose: print "figures/%s/%s.png plotted" % (sampling, figure_name)
 				# plt.show()
 
 				del res, N_block_sizes, block_sizes, variance_values, data
