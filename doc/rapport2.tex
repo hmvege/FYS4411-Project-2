@@ -598,7 +598,7 @@ We now need to find the Laplacian of the single particle function.
 	&- \omega \alpha H_{j_x} (\sqrt{\omega\alpha}x_i) + \omega^2 \alpha^2 x_i^2 H_{j_x} (\sqrt{\omega\alpha}x_i) \bigg) \\
 	&\times H_{j_y} (\sqrt{\omega\alpha} y_i) \exp{\left(-\frac{\omega\alpha}{2}\left( x_i^2 + y_i^2 \right)\right)}
 \end{align*}
-Combinging the second derivatives of respectively $x_i$ and $y_i$, we get
+Combining the second derivatives of respectively $x_i$ and $y_i$, we get
 \begin{align}
 	\begin{split}
 		\nabla_i^2 \phi_j(\mathbf{r}_i) &= \bigg(
@@ -714,9 +714,6 @@ We quickly observe, that if one can obtain a value for the speedup\eqref{eq:para
 \section{Implementation}
 The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. 
 
-\subsection{TESTS}
-\husk{2 electron case}
-
 \subsection{Slater determinants}
 An efficient way of updating the inverse of the Slater matrix can be found by \husk{SITER}. 
 
@@ -729,9 +726,24 @@ D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
 \right.
 \end{align}
 
+\subsection{Program verification and tests}
+\subsubsection{Unperturbed energies}
+
+\subsubsection{\texorpdfstring{$2$}{a} electron case without Jastrow}
+
+\subsubsection{\texorpdfstring{$2$}{a} electron case with Jastrow}
+
+\subsubsection{Importance sampling}
+
 
 \section{Results}
+The results for running without importance sampling can be viewed in the following table.
 
+The results for running with importance sampling can be viewed in following table.
+
+The results for parallelization can be viewed in following table and figure.
+
+The results for blocking can be viewed in following table and figure.
 
 
 \section{Discussion and conclusion}
@@ -793,8 +805,6 @@ For finding the $\alpha$ derivative, we can use the recursive derivative relatio
 	H'_n(x) = 2nH_{n-1}(x)
 	\label{eq:hermite-recursive-relation}
 \end{align}
-
-\husk{Ha med polynomene som brukes}
 
 \subsection{Integral formulas}
 Solution to a Gaussian integral is given as,
