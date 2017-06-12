@@ -1,0 +1,402 @@
+====================================================================================================
+N electrons                2
+MC-cycles:                 4000000
+Omega:                     1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.998869844164479
+Kinetic energy variance:   5.00389455827338e-07
+Potential energy:          1.00113015583552
+Potential energy variance: 5.00389455827329e-07
+Energy:                    2
+Energy variance:           0
+Acceptance rate:           52.8141 %
+Run complete. Time used: 2.912045
+====================================================================================================
+N electrons                2
+MC-cycles:                 4000000
+Omega:                     0.5
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.499897949645103
+Kinetic energy variance:   1.25013351036212e-07
+Potential energy:          0.500102050354897
+Potential energy variance: 1.25013351036212e-07
+Energy:                    1
+Energy variance:           0
+Acceptance rate:           51.5994 %
+Run complete. Time used: 2.683505
+====================================================================================================
+N electrons                2
+MC-cycles:                 4000000
+Omega:                     0.1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha = 0.999999999999972
+Kinetic energy:            0.0998351372329404
+Kinetic energy variance:   5.01090634997864e-09
+Potential energy:          0.100164862767063
+Potential energy variance: 5.01090634997881e-09
+Energy:                    0.200000000002666
+Energy variance:           -3.7889136272895e-19
+Acceptance rate:           52.73925 %
+Run complete. Time used: 2.692314
+====================================================================================================
+N electrons                2
+MC-cycles:                 4000000
+Omega:                     0.05
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.0499474109624474
+Kinetic energy variance:   1.25093837652976e-09
+Potential energy:          0.0500525890375512
+Potential energy variance: 1.25093837652961e-09
+Energy:                    0.100000000001333
+Energy variance:           -9.47211059587616e-20
+Acceptance rate:           53.9835 %
+Run complete. Time used: 2.694071
+====================================================================================================
+N electrons                2
+MC-cycles:                 4000000
+Omega:                     0.01
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.00999125961691139
+Kinetic energy variance:   5.00058098078568e-11
+Potential energy:          0.010008740383089
+Potential energy variance: 5.0005809807858e-11
+Energy:                    0.0200000000003437
+Energy variance:           -4.96401964672488e-21
+Acceptance rate:           56.08325 %
+Run complete. Time used: 2.81199
+====================================================================================================
+N electrons                6
+MC-cycles:                 4000000
+Omega:                     1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            5.00154861965873
+Kinetic energy variance:   2.50353161705399e-06
+Potential energy:          4.99845138034127
+Potential energy variance: 2.50353161705566e-06
+Energy:                    10
+Energy variance:           0
+Acceptance rate:           47.6078 %
+Run complete. Time used: 15.616347
+====================================================================================================
+N electrons                6
+MC-cycles:                 4000000
+Omega:                     0.5
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            2.49985609821117
+Kinetic energy variance:   6.26091325820424e-07
+Potential energy:          2.50014390178883
+Potential energy variance: 6.26091325820992e-07
+Energy:                    5
+Energy variance:           0
+Acceptance rate:           46.46975 %
+Run complete. Time used: 16.138592
+====================================================================================================
+N electrons                6
+MC-cycles:                 4000000
+Omega:                     0.1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.499713896605713
+Kinetic energy variance:   2.50792964131907e-08
+Potential energy:          0.500286103394287
+Potential energy variance: 2.5079296413168e-08
+Energy:                    1
+Energy variance:           0
+Acceptance rate:           47.578 %
+Run complete. Time used: 16.941263
+====================================================================================================
+N electrons                6
+MC-cycles:                 4000000
+Omega:                     0.05
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.249961291632213
+Kinetic energy variance:   6.25221873579911e-09
+Potential energy:          0.250038708367787
+Potential energy variance: 6.25221873579944e-09
+Energy:                    0.5
+Energy variance:           0
+Acceptance rate:           48.7955666666667 %
+Run complete. Time used: 16.660746
+====================================================================================================
+N electrons                6
+MC-cycles:                 4000000
+Omega:                     0.01
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.0500118292934095
+Kinetic energy variance:   2.4955955238254e-10
+Potential energy:          0.0499881707065902
+Potential energy variance: 2.4955955238267e-10
+Energy:                    0.100000000001333
+Energy variance:           -9.47211059587616e-20
+Acceptance rate:           50.8833833333333 %
+Run complete. Time used: 16.743243
+====================================================================================================
+N electrons                12
+MC-cycles:                 4000000
+Omega:                     1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            13.9999640937947
+Kinetic energy variance:   7.00007308059284e-06
+Potential energy:          14.0000359062053
+Potential energy variance: 7.00007308057468e-06
+Energy:                    28
+Energy variance:           0
+Acceptance rate:           43.8266166666667 %
+Run complete. Time used: 149.061279
+====================================================================================================
+N electrons                12
+MC-cycles:                 4000000
+Omega:                     0.5
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            6.99984856033251
+Kinetic energy variance:   1.75086500995317e-06
+Potential energy:          7.00015143966749
+Potential energy variance: 1.75086500994924e-06
+Energy:                    14
+Energy variance:           0
+Acceptance rate:           42.7316833333333 %
+Run complete. Time used: 147.249231
+====================================================================================================
+N electrons                12
+MC-cycles:                 4000000
+Omega:                     0.1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha = 1.00000000000006
+Kinetic energy:            1.39928009799723
+Kinetic energy variance:   7.00137995544363e-08
+Potential energy:          1.40071990200276
+Potential energy variance: 7.00137995543868e-08
+Energy:                    2.79999999997786
+Energy variance:           2.46060949393723e-17
+Acceptance rate:           43.7611166666667 %
+Run complete. Time used: 145.38606
+====================================================================================================
+N electrons                12
+MC-cycles:                 4000000
+Omega:                     0.05
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.700038309889284
+Kinetic energy variance:   1.75364554870825e-08
+Potential energy:          0.699961690110701
+Potential energy variance: 1.75364554870635e-08
+Energy:                    1.39999999998893
+Energy variance:           6.14974737800367e-18
+Acceptance rate:           44.9333083333333 %
+Run complete. Time used: 143.921932
+====================================================================================================
+N electrons                12
+MC-cycles:                 4000000
+Omega:                     0.01
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.139989645186931
+Kinetic energy variance:   7.01409950743196e-10
+Potential energy:          0.14001035481307
+Potential energy variance: 7.01409950743768e-10
+Energy:                    0.280000000000777
+Energy variance:           -1.56422097497e-18
+Acceptance rate:           46.936075 %
+Run complete. Time used: 146.724335
+====================================================================================================
+N electrons                20
+MC-cycles:                 4000000
+Omega:                     1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha = 0.999999999999999
+Kinetic energy:            30.0066915538503
+Kinetic energy variance:   1.49957504429323e-05
+Potential energy:          29.9933084461497
+Potential energy variance: 1.49957504429656e-05
+Energy:                    60
+Energy variance:           0
+Acceptance rate:           40.97923 %
+Run complete. Time used: 415.87576
+====================================================================================================
+N electrons                20
+MC-cycles:                 4000000
+Omega:                     0.5
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            14.9983191511086
+Kinetic energy variance:   3.75015739207416e-06
+Potential energy:          15.0016808488914
+Potential energy variance: 3.75015739207728e-06
+Energy:                    30
+Energy variance:           0
+Acceptance rate:           39.95727 %
+Run complete. Time used: 414.620049
+====================================================================================================
+N electrons                20
+MC-cycles:                 4000000
+Omega:                     0.1
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            2.99861052275189
+Kinetic energy variance:   1.50081696104785e-07
+Potential energy:          3.00138947724811
+Potential energy variance: 1.50081696105175e-07
+Energy:                    6
+Energy variance:           0
+Acceptance rate:           40.93318 %
+Run complete. Time used: 410.430277
+====================================================================================================
+N electrons                20
+MC-cycles:                 4000000
+Omega:                     0.05
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            1.49994572066858
+Kinetic energy variance:   3.75540133613694e-08
+Potential energy:          1.50005427933142
+Potential energy variance: 3.75540133615546e-08
+Energy:                    3
+Energy variance:           0
+Acceptance rate:           42.032955 %
+Run complete. Time used: 410.358178
+====================================================================================================
+N electrons                20
+MC-cycles:                 4000000
+Omega:                     0.01
+Alpha:                     1
+Jastrov                    FALSE
+Steepest descent:          TRUE
+Importance sampling:       FALSE
+Coulomb interaction:       FALSE
+RESULTS:
+Updated variational parameters: 
+Alpha =          1
+Kinetic energy:            0.299957600587072
+Kinetic energy variance:   1.49830669988274e-09
+Potential energy:          0.300042399412932
+Potential energy variance: 1.49830669988663e-09
+Energy:                    0.599999999988685
+Energy variance:           4.89025486771766e-18
+Acceptance rate:           43.915295 %
+Run complete. Time used: 422.835512
+====================================================================================================
+Program complete. Time used: 2902.359901

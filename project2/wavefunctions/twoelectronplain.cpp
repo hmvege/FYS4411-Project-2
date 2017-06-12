@@ -59,7 +59,7 @@ void twoElectronPlain::localEnergy(double ** r, double &ETotal, double &EKinetic
      *  r   : particle positions
      */
     double rr = r[0][0]*r[0][0] + r[0][1]*r[0][1] + r[1][0]*r[1][0] + r[1][1]*r[1][1]; // x1^2 + y1^2 + x2^2 + y2^2
-    double kineticEnergy = -0.5*omega*(omega*rr - 4);
+    double kineticEnergy = -0.5*omega*alpha*(alpha*omega*rr - 4); // with or withour alpha?
     double potentialEnergy = 0.5 * omega*omega*rr;
     if (coulombInteraction)
     {
@@ -150,7 +150,7 @@ void twoElectronPlain::printUpdatedVariationalParameters()
      * Prints updated variational parameters from steepest descent.
      */
     cout << "Updated variational parameters: " << endl;
-    cout << "Alpha = " << std::setw(10) << alpha << endl;
+    cout << "Alpha:                     " << std::setw(10) << alpha << endl;
 }
 
 std::string twoElectronPlain::getParameterString()

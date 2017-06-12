@@ -6,6 +6,7 @@
 \usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage{cite}
+\usepackage[numbers]{natbib}
 \usepackage{url}
 \usepackage{color}
 \usepackage{float}
@@ -14,6 +15,7 @@
 % \usepackage{xspace}
 \usepackage{bm}
 \usepackage{tabularx}
+\usepackage[toc,page]{appendix}
 
 \usepackage{algorithm}
 \usepackage{algorithmicx}
@@ -117,12 +119,12 @@ We can use this and the PDF, we can rewrite our $E[H]$ which now also depends on
 	E[H(\alpha)] = \int P(\mathbf{r})E_L(\mathbf{r})d\mathbf{r} \approx \frac{1}{N_{MC}}\sum^{N_{MC}}_{i=1}P(\mathbf{r}_i,\alpha)E_L(\mathbf{r}_i,\alpha)
 \end{align*}
 where $N_{MC}$ is the number of Monte Carlo cycles which we run for. 
-We now have an estimate for the ground state energy from the average of our Monte Carlo samples. The algorithm for the VMC(Variational Monte Carlo) method will be based of the Metropolis algorithm \husk{CITE METROPOLIS!!}, such that a quick review of this is in order.
+We now have an estimate for the ground state energy from the average of our Monte Carlo samples. The algorithm for the VMC(Variational Monte Carlo) method will be based of the Metropolis algorithm(\cite{metropolis}\cite{metropolis_hastings}), such that a quick review of this is in order.
 
 
 
 \subsection{The Metropolis Algorithm}
-The Metropolis algorithm \husk{SITER} is a method for obtaining a sequence of samples when direct sampling is problematic. Given a PDF $P^{(n)}_i$, where $n$ is the time step, and $i$ is the current state, the algorithm is such that a transitioning probability to a new state $j$ is given by $T_{i\rightarrow j}$. Then, the probability of accepting this state is given by $A_{i\rightarrow j}$. If rejected, no move is performed and we remain at state $i$. We will require that $A$ and $T$ is such that $P^{(n\rightarrow \infty)}_i\rightarrow p_i$. This gives rise to the relation
+The Metropolis algorithm (\cite{metropolis}\cite{metropolis_hastings}) is a method for obtaining a sequence of samples when direct sampling is problematic. Given a PDF $P^{(n)}_i$, where $n$ is the time step, and $i$ is the current state, the algorithm is such that a transitioning probability to a new state $j$ is given by $T_{i\rightarrow j}$. Then, the probability of accepting this state is given by $A_{i\rightarrow j}$. If rejected, no move is performed and we remain at state $i$. We will require that $A$ and $T$ is such that $P^{(n\rightarrow \infty)}_i\rightarrow p_i$. This gives rise to the relation
 \begin{align*}
 	P^{(n)}_i &= \sum_j \left[ P^{(n-1)}_j T_{j\rightarrow i} A_{j\rightarrow i} + P^{(n-1)}_i T_{i\rightarrow j} (1 - A_{i\rightarrow j}) \right] \\
 	&= \sum_j \left[ P^{(n-1)}_j T_{j\rightarrow i} A_{j\rightarrow i} - P^{(n-1)}_i T_{i\rightarrow j} A_{i\rightarrow j} + P^{(n-1)}_i T_{i\rightarrow j}) \right] \\
@@ -212,7 +214,7 @@ where the $G(\mathbf{r}^\text{new},\mathbf{r}^\text{old})$ is a Green's function
 	G(\mathbf{r}^\text{new},\mathbf{r}^\text{old}) = \frac{1}{(4\pi D \Delta t)^{3N/2}}\exp \left(-(\rn - \ro - D\delta t \mathbf{F}(\ro))^2/4D\Delta t\right)
 	\label{eq:greens-function}
 \end{align}
-A more detailed derivation of importance sampling can be found in \husk{SITER MORTEN KOMPENDIUM HER}. Is we can already observe, it is possible to simplify the Greens ratio \eqref{eq:transition-probability-importance-sampling} due to the exponential. We will begin by using that the squaring of the exponential implies a dot product for vectors. For simplicity, we dub $\mathbf{x} = \mathbf{r}^\text{old}$ and $\mathbf{y} = \mathbf{r}^\text{new}$. Through a lot of patience, we get \husk{REMOVE THIS???}
+A more detailed derivation of importance sampling can be found in the lecture notes given of the Computational Physics \cite{komp2015}. Is we can already observe, it is possible to simplify the Greens ratio \eqref{eq:transition-probability-importance-sampling} due to the exponential. We will begin by using that the squaring of the exponential implies a dot product for vectors. For simplicity, we dub $\mathbf{x} = \mathbf{r}^\text{old}$ and $\mathbf{y} = \mathbf{r}^\text{new}$. Through a lot of patience, we get \husk{REMOVE THIS???}
 \begin{align*}
 	\frac{G(\mathbf{x},\mathbf{y})}{G(\mathbf{y},\mathbf{x})} &= \exp \bigg[ \frac{1}{4D\Delta t} \Big\{
 	 - \big( x_x^2 - x_x y_x - x_x D\Delta t F_x(\mathbf{y}) + y_x^2 - y_x x_x \\
@@ -290,7 +292,7 @@ with the derivative of $\psi$ with respect to the variational parameter is defin
 	\bar{\psi}_{\alpha_i} = \frac{\psi[\alpha_i]}{d\alpha_i}
 \end{align*}
 
-As evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist\husk{reference?}, but are not implemented in the project.
+As evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist(see lecture notes \cite{komp2015}), but are not implemented in the project.
 
 
 \subsection{Electron wave function}
@@ -388,7 +390,7 @@ Putting this together with the other Gaussian symmetric integral coming from the
 \end{align*}
 We now need to find the constant C.
 \begin{align*}
-	\bra{\Phi_0}\ket{\Phi_0} &= C^2\int\exp \left( -\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right) \right) dx_1dy_1dx_2dy_2 \\
+	\langle \Phi_0 | \Phi_0\rangle &= C^2\int\exp \left( -\omega\left(x_1^2 + y_1^2 + x_2^2 + y_2^2\right) \right) dx_1dy_1dx_2dy_2 \\
 	&= C^2\left( \sqrt{\frac{\pi}{\omega}} \right)^4
 \end{align*}
 Since our wave function is required to be normalized $C$ becomes,
@@ -399,7 +401,12 @@ Inserting this, and we get our expectation value
 \begin{align*}
 	\expect{E_0} &= \frac{\omega^2}{\pi^2}\frac{2\pi^2}{\omega} = 2\omega
 \end{align*}
-Which, is the answer we expected. This will provide a useful test for us later on.
+Which, is the answer we expected. This will provide a useful test for us later on. The local energy for the unperturbed two electron case is thus given as,
+\begin{align}
+	E_L = 2\omega\alpha
+	\label{eq:two-electron-local-energy-unperturbed}
+\end{align}
+assuming we include the variational parameter $\alpha$.
 
 \subsubsection{Local energy}
 We now seek to find an expression for the local energy as given by equation \eqref{eq:local-energy}, for the two electron case.
@@ -502,7 +509,7 @@ For the $N$-electron case, we apply the Hamiltonian as states in equation \eqref
 Since we are calculating the ground state energy, all the lowest lying levels will be filled up according to the Pauli exclusion principle, and the total spin should be zero.
 
 \subsubsection{Jastrow factor derivatives}
-We begin by finding the Jastrow terms. The full derivation can be found in the lecture notes for Computational Physics 2 \husk{CITE KOMPENDIEM}. $k$ is here used instead of $i$ as in the equation to the Hamiltonian \eqref{eq:hamiltonian}. Since the Pade-Jastrow factor is an exponential as given in \eqref{eq:WF_jastrow}, we make following definitions,
+We begin by finding the Jastrow terms. The full derivation can be found in the lecture notes for Computational Physics \cite{komp2015}. $k$ is here used instead of $i$ as in the equation to the Hamiltonian \eqref{eq:hamiltonian}. Since the Pade-Jastrow factor is an exponential as given in \eqref{eq:WF_jastrow}, we make following definitions,
 \begin{align}
 	g_{ij} \equiv g(r_{ij}) = e^{f(r_{ij})} = e^{f_{ij}}
 	\label{eq:pade-jastrow-eq}
@@ -544,7 +551,7 @@ By setting $d=2$(as we only are working in two dimensions), and inserting the pa
 \end{align}
 
 \subsubsection{Slater determinant derivatives}
-We can now look at the Slater determinant. As shown in http://onlinelibrary.wiley.com/doi/10.1002/qua.560200508/abstract, we can split the spin parts into two Slater determinants, one for spin up and one for spin down since our Hamiltonian is spin independent. If we do not do this the determinant will be zero. By using the definition we presented in \eqref{eq:WF_onebody}, we get
+We can now look at the Slater determinant. As shown by \citet{QUA:QUA560200508}, we can split the spin parts into two Slater determinants, one for spin up and one for spin down since our Hamiltonian is spin independent. If we do not do this the determinant will be zero. By using the definition we presented in \eqref{eq:WF_onebody}, we get
 \begin{align}
 	\psi_{SD} = D = D_{\uparrow}D_{\downarrow}
 	\label{eq:slater-det-spin-up-down}
@@ -559,7 +566,7 @@ and the laplacian
 	\frac{{\nabla}^2\psi_{SD}}{\psi_{SD}} = \frac{{\nabla}^2D_{\downarrow}}{D_{\downarrow}} + \frac{{\nabla}^2D_{\uparrow}}{D_{\uparrow}}
 	\label{eq:slater-laplacian-spin-down-up-lap}
 \end{align}
-The gradient of the Slater determinant is given in the \husk{lecture notes 2015} as
+The gradient of the Slater determinant is given in the lecture notes 2015 \cite{komp2015} as
 \begin{align}
 	\frac{\bm{\nabla}_k\psi_{SD}}{\psi_{SD}} = \sum_{i\neq k}^N\bm{\nabla}_k d_{ik}(\mathbf{r})d_{ki}^{-1}(\mathbf{r})
 	\label{eq:gradient-slater}
@@ -645,7 +652,7 @@ Finding the quantum force as stated in equation \eqref{eq:quantum-force} is now 
 where depending on particle $k$, we will either have the gradient of the Slater determinant to be for spin up or down.
 
 \subsubsection{\texorpdfstring{$\alpha$}{a} and \texorpdfstring{$\beta$}{b} derivatives in the steepest descent algorithm}
-From the lecture notes \husk{CITE COMPENDIUM}, we have that the derivative of a variational parameter is given by
+From the lecture notes \cite{komp2015}, we have that the derivative of a variational parameter is given by
 \begin{align*}
 	\frac{\partial E_L[c_m]}{\partial c_m} = 2 \left[ \left\langle E_L[c_m] \frac{\partial \ln \psi_L}{\partial c_m} \right\rangle - \langle E_L[c_m] \rangle \left\langle \frac{\partial \ln \psi_L}{\partial c_m} \right\rangle
 	\right]
@@ -692,7 +699,7 @@ When dealing with large Monte Carlo generated datasets, we will discover that th
 	\item From the new dataset, $\{x_i'\}$, we calculate the variance $\sigma_{N_b}$.
 	\item Repeat this procedure for all the different block sizes, and plot the resulting variance $\sigma_{N_b}$ as a function of the block size or number of blocks.
 \end{itemize}
-The plot one ends up with, will show that the variance stabilizes for some block size, and thus that is where we expect to have an uncorrelated dataset. The full proof for this can be viewed in the article by\husk{reference to Flyvebjerg and Petersen}.
+The plot one ends up with, will show that the variance stabilizes for some block size, and thus that is where we expect to have an uncorrelated dataset. The full proof for this can be viewed in the article by \citet{flyvbjerg1989error}.
 
 \subsection{Parallelization}
 Using the parallelization package Open MPI (Message Passing Interface) for \CC, we can parallelize the programming. It is thus beneficial to look into the type of speedup one may get from parallelizing. Let us define the time taken to run the program by one processor to be $T_1$, and for $p$ processor $T_p$. We define the possible speed-up as
@@ -700,7 +707,7 @@ Using the parallelization package Open MPI (Message Passing Interface) for \CC, 
 	S(p) = \frac{T_1}{T_p}
 	\label{eq:parallel-speed-up}
 \end{align}
-In order to find the possible speedup $S(p)$ for $p$ processors, we have the following relation called \husk{reference!!!} Amdahl's law,
+In order to find the possible speedup $S(p)$ for $p$ processors, we have the following relation called Amdahl's law\cite{Amdahl:1967:VSP:1465482.1465560},
 \begin{align}
 	S(p) = \frac{1}{(1-f) + f/p}
 	\label{eq:amdahls-law}
@@ -712,32 +719,35 @@ We quickly observe, that if one can obtain a value for the speedup\eqref{eq:para
 \end{align}
 
 \section{Implementation}
-The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. 
+The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. The results gathered will be for different electron closed shell configurations, specifically $N = 2, 6, 12, 20$ and $\omega = 1.0, 0.5, 0.1, 0.05, 0.01$.
 
-\subsection{Slater determinants}
-An efficient way of updating the inverse of the Slater matrix can be found by \husk{SITER}. 
+% \subsection{Slater determinants}
+% An efficient way of updating the inverse of the Slater matrix can be found by \husk{SITER}. 
 
-\begin{align}
-D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
-\begin{array}{ll}
-	D_{kj}^{-1}(\mathbf{x}^{old}) - \frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{new})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j\neq i \\
-	\frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{old})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j = i
-\end{array}
-\right.
-\end{align}
+% \begin{align}
+% D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
+% \begin{array}{ll}
+% 	D_{kj}^{-1}(\mathbf{x}^{old}) - \frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{new})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j\neq i \\
+% 	\frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{old})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j = i
+% \end{array}
+% \right.
+% \end{align}
 
 \subsection{Program verification and tests}
 \subsubsection{Unperturbed energies}
+In the case we have unperturbed energies, we should be able to get exact solutions down to the very last decimal. This will be 
 
 \subsubsection{\texorpdfstring{$2$}{a} electron case without Jastrow}
+We have hard coded the two electron case without a Jastrow factor, using wave function seen in the section for the unperturbed two electron case \eqref{eq:two-body-wf} and the local energy \eqref{eq:two-electron-local-energy-unperturbed}.
 
 \subsubsection{\texorpdfstring{$2$}{a} electron case with Jastrow}
+For the hard coded case, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction.
 
 \subsubsection{Importance sampling}
-
+Assuming that the regular sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$\citet{komp2015}.
 
 \section{Results}
-The results for running without importance sampling can be viewed in the following table.
+The results for running without importance sampling can be viewed in the following table. We will be comparing results with \citet{PhysRevB.84.115302}.
 
 The results for running with importance sampling can be viewed in following table.
 
@@ -750,80 +760,84 @@ The results for blocking can be viewed in following table and figure.
 
 
 
-\section{Appendix}
-\subsection{Hermite polynomials}
-The first few Hermite polynomials in the physicists definition that will be used are given as,
-\begin{align*}
-	H_0(x) = 1
-\end{align*}
-\begin{align*}
-	H_1(x) = 2x
-\end{align*}
-\begin{align*}
-	H_2(x) = 4x^2 - 2
-\end{align*}
-\begin{align*}
-	H_3(x) = 8x^3 - 12x
-\end{align*}
-\begin{align*}
-	H_4(x) = 16x^4 - 48x^2 + 12
-\end{align*}
-Their derivatives is given as
-\begin{align*}
-	\frac{\partial H_0(x)}{\partial x} = 0
-\end{align*}
-\begin{align*}
-	\frac{\partial H_1(x)}{\partial x} = 2
-\end{align*}
-\begin{align*}
-	\frac{\partial H_2(x)}{\partial x} = 8x
-\end{align*}
-\begin{align*}
-	\frac{\partial H_3(x)}{\partial x} = 24x^2 - 12
-\end{align*}
-\begin{align*}
-	\frac{\partial H_4(x)}{\partial x} = 64x^3 - 96x
-\end{align*}
-Their second derivatives goes as
-\begin{align*}
-	\frac{\partial^2 H_0(x)}{\partial x^2} = 0
-\end{align*}
-\begin{align*}
-	\frac{\partial^2 H_1(x)}{\partial x^2} = 0
-\end{align*}
-\begin{align*}
-	\frac{\partial^2 H_2(x)}{\partial x^2} = 8
-\end{align*}
-\begin{align*}
-	\frac{\partial^2 H_3(x)}{\partial x^2} = 48x
-\end{align*}
-\begin{align*}
-	\frac{\partial^2 H_4(x)}{\partial x^2} = 192x^2 - 96
-\end{align*}
-For finding the $\alpha$ derivative, we can use the recursive derivative relation,
-\begin{align}
-	H'_n(x) = 2nH_{n-1}(x)
-	\label{eq:hermite-recursive-relation}
-\end{align}
+\begin{appendices}
+	\section{Hermite polynomials}
+	The first few Hermite polynomials in the physicists definition that will be used are given as,
+	\begin{align*}
+		H_0(x) = 1
+	\end{align*}
+	\begin{align*}
+		H_1(x) = 2x
+	\end{align*}
+	\begin{align*}
+		H_2(x) = 4x^2 - 2
+	\end{align*}
+	\begin{align*}
+		H_3(x) = 8x^3 - 12x
+	\end{align*}
+	\begin{align*}
+		H_4(x) = 16x^4 - 48x^2 + 12
+	\end{align*}
+	Their derivatives is given as
+	\begin{align*}
+		\frac{\partial H_0(x)}{\partial x} = 0
+	\end{align*}
+	\begin{align*}
+		\frac{\partial H_1(x)}{\partial x} = 2
+	\end{align*}
+	\begin{align*}
+		\frac{\partial H_2(x)}{\partial x} = 8x
+	\end{align*}
+	\begin{align*}
+		\frac{\partial H_3(x)}{\partial x} = 24x^2 - 12
+	\end{align*}
+	\begin{align*}
+		\frac{\partial H_4(x)}{\partial x} = 64x^3 - 96x
+	\end{align*}
+	Their second derivatives goes as
+	\begin{align*}
+		\frac{\partial^2 H_0(x)}{\partial x^2} = 0
+	\end{align*}
+	\begin{align*}
+		\frac{\partial^2 H_1(x)}{\partial x^2} = 0
+	\end{align*}
+	\begin{align*}
+		\frac{\partial^2 H_2(x)}{\partial x^2} = 8
+	\end{align*}
+	\begin{align*}
+		\frac{\partial^2 H_3(x)}{\partial x^2} = 48x
+	\end{align*}
+	\begin{align*}
+		\frac{\partial^2 H_4(x)}{\partial x^2} = 192x^2 - 96
+	\end{align*}
+	For finding the $\alpha$ derivative, we can use the recursive derivative relation,
+	\begin{align}
+		H'_n(x) = 2nH_{n-1}(x)
+		\label{eq:hermite-recursive-relation}
+	\end{align}
 
-\subsection{Integral formulas}
-Solution to a Gaussian integral is given as,
-\begin{align}
-	\int \exp\left( - \omega x^2 \right) d x = \sqrt{\frac{\pi}{\omega}} = \sqrt{\pi}\omega^{-\frac{1}{2}}
-	\label{eq:gaussian-integral}
-\end{align}
-Another symmetric Gaussian integral is given as,
-\begin{align}
-	\int x^2 \exp\left( - \omega x^2 \right) d x = \frac{\sqrt{\pi}}{2}\omega^{-\frac{3}{2}}
-	\label{eq:gaussian-integral-x-squared}
-\end{align}
-\subsection{Jacobi's formula}
-When finding the derivative of the Slater determinant, we will need the Jacobi formula,
-\begin{align}
-	\frac{d}{dt}\det A(t) = \mathrm{tr} \left( \mathrm{adj}(A(t))\frac{dA(t)}{dt} \right)
-	\label{eq:jacobi-formula}
-\end{align}
+	\section{Integral formulas}
+	Solution to a Gaussian integral is given as,
+	\begin{align}
+		\int \exp\left( - \omega x^2 \right) d x = \sqrt{\frac{\pi}{\omega}} = \sqrt{\pi}\omega^{-\frac{1}{2}}
+		\label{eq:gaussian-integral}
+	\end{align}
+	Another symmetric Gaussian integral is given as,
+	\begin{align}
+		\int x^2 \exp\left( - \omega x^2 \right) d x = \frac{\sqrt{\pi}}{2}\omega^{-\frac{3}{2}}
+		\label{eq:gaussian-integral-x-squared}
+	\end{align}
+	
+	\section{Jacobi's formula}
+	When finding the derivative of the Slater determinant, we will need the Jacobi formula,
+	\begin{align}
+		\frac{d}{dt}\det A(t) = \mathrm{tr} \left( \mathrm{adj}(A(t))\frac{dA(t)}{dt} \right)
+		\label{eq:jacobi-formula}
+	\end{align}
+\end{appendices}
 
-\husk{REFERANSER!!}
+\bibliography{refs}{}
+%\bibliographystyle{plain}
+\bibliographystyle{plainnat}
 
 \end{document}

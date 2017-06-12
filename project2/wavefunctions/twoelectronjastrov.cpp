@@ -181,8 +181,8 @@ void twoElectronJastrov::printUpdatedVariationalParameters()
      * Prints updated variational parameters from steepest descent.
      */
     cout << "Updated variational parameters: " << endl;
-    cout << "Alpha = " << std::setw(10) << alpha << endl;
-    cout << "Beta = " << std::setw(10) << beta << endl;
+    cout << "Alpha:                     " << std::setw(10) << alpha << endl;
+    cout << "Beta:                      " << std::setw(10) << beta << endl;
 }
 
 std::string twoElectronJastrov::getParameterString()

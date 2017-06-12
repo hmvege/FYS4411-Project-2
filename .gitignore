@@ -26,3 +26,6 @@ output_2e_MC1e7/*
 *.toc
 *.bbl
 *.blg
+
+# References
+doc/references/*

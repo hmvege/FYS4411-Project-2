@@ -382,10 +382,10 @@ void NElectron::printUpdatedVariationalParameters()
      * Prints updated variational parameters from steepest descent.
      */
     cout << "Updated variational parameters: " << endl;
-    cout << "Alpha = " << std::setw(10) << alpha << endl;;
+    cout << "Alpha:                     " << std::setw(10) << alpha << endl;
     if (runJastrow)
     {
-        cout << "Beta = " << std::setw(10) << beta << endl;
+        cout << "Beta:                      " << std::setw(10) << beta << endl;
     }
 }
 
