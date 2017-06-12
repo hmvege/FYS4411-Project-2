@@ -30,6 +30,10 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
  * [x] Parallelize code
  * [x] Clean up main to a simpler interface for the heavy data gathering run
  * [x] Setup blocking
+ * [ ] Production runs for no importance sampling 2,6,12,20 electrons
+ * [ ] Production run for 8e8 parallelized and non-parallelized.
+ * [ ] Production runs for hard-coded cases
+ * [ ] Also need for no interaction
  */
 
 
@@ -42,10 +46,10 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 1e7; // RUN THIS WITH 1 CORE!! 8e8
+    unsigned int MCCycles   = 1e8; // RUN THIS WITH 1 CORE!! 8e8
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
-    int maxSDIterations     = 300; // 0 turns it completely off, 200 is default
+    int maxSDIterations     = 250; // 0 turns it completely off, 200 is default
     int nDimensions         = 2;
     // Values for running parallel
     int nParticles[4]       = {2,6,12,20};
@@ -75,7 +79,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     double SDStepLength     = 0.001; // Steepest descent step length
 //    double seed             = -10-processRank;//std::time(nullptr)-processRank;
     double seed             = std::time(nullptr)-processRank;
-    bool importanceSampling = true;
+    bool importanceSampling = false;
     bool coulombInteraction = true;
     // Timers
     clock_t programStart, programEnd;
@@ -87,6 +91,11 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     // Main loop for all different cases
     for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
     {
+        if (i == 2) {
+            MCCycles = 1e7;
+        } else if (i == 3) {
+            MCCycles = 1e6;
+        }
         for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
         {
             for (int k = 0; k < 2; k++) // Jastrow factor, jastrow off/on, default is k=0; k < 2
@@ -214,8 +223,20 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
     }
     else
     {
+        double stepLength = 1.20;
+        if (omega == 1.0) {
+            stepLength = 1.20;
+        } else if (omega == 0.5) {
+            stepLength = 1.75;
+        } else if (omega == 0.1) {
+            stepLength = 3.8;
+        } else if (omega == 0.05) {
+            stepLength = 5.2;
+        } else {
+            stepLength = 11.0;
+        }
         UniformSampling uniformSampling(nParticles, nDimensions, numprocs, processRank);
-        uniformSampling.initializeSampling(1.14, seed);
+        uniformSampling.initializeSampling(stepLength, seed);
         VMC_NElectron.setMetropolisSampler(&uniformSampling);
         VMC_NElectron.runVMC(MCCycles,optCycles,maxNSD, MCSamplingFrequency);
         VMC_NElectron.printResults();
