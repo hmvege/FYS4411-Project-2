@@ -6,7 +6,7 @@ def block(N_block_size):
 	Argument:
 		N_block_sizes	: number of blocks we will split our data set into 
 	"""
-	# print "Process %d now running for: %d" % (os.getpid(), N_block_size)
+	print "Process %d now running for: %d" % (os.getpid(), N_block_size)
 	block_size = N / N_block_size # Gets the size of each block
 	temporary_average_values = np.zeros(N_block_size)
 	for j in xrange(0,N_block_size):
@@ -17,8 +17,8 @@ def block(N_block_size):
 	# variance_value = (ESquared - E*E)/N_block_size
 	return (ESquared - E*E)/N_block_size, block_size, N_block_size
 
-num_processors = 8
-verbose = False
+num_processors = 4
+verbose = True
 N_electron_values = [2, 6, 12, 20]
 omega_values = [1.0, 0.5, 0.1, 0.05, 0.01]
 res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
@@ -28,27 +28,34 @@ res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
 # output_file = open("output_blocking/optimal_variance_output.txt","a")  # No importance sampling
 # # output_file = open("output_blocking_imp/optimal_variance_output.txt","a")
 
-for sampling in ["imp","no_imp"]:
-	folder_name = "output/" + sampling
-	output_file = open("blocking_output/" + sampling + "/blocking_data.txt", "a")
-	for N_electron in N_electron_values[:1]:
+for data_sub_folder in ["imp","no_imp","2e_jastrow","2e_jastrowWithCoulomb","2e_plain","no_interaction"]:
+	folder_name = "output/" + data_sub_folder
+	output_file = open("blocking_output/" + data_sub_folder + "/blocking_data.txt", "w")
+	for N_electron in N_electron_values:
 		for beta in [False, True]:
 			for omega, resulting_block_size in zip(omega_values, res_b_sizes):
 
 				pre_time = time.clock()
 				figure_name = "electron%d_omega%f_beta%.4f" % (N_electron,omega,beta)
-				file_list = os.listdir(folder_name)
+				try:
+					file_list = os.listdir(folder_name)
+				except OSError:
+					print "The folder: %s does not exist." % folder_name
+					continue
 
 				if len(file_list) == 0:
-					print "No files for %s sampling, N=%d electrons, Jastrow=%g, omega=%g" % (sampling,N_electron,beta,omega)
+					print "No files for %s sampling, N=%d electrons, Jastrow=%g, omega=%g" % (data_sub_folder,N_electron,beta,omega)
 					continue
-				
+
 				data_files = []
 				getDigit = lambda s : float(re.findall(r"[\d]+",s)[0])
 				getFraction = lambda s : float(re.findall(r"[\d.]+",s)[0])
 				alpha_value = 0 # For writing to file
 				beta_value = 0 # For writing to file
 				N_MC = 0
+
+				# Retrieves data
+				if verbose: print "\nLoading data from folder %s..." % folder_name
 				for file in file_list:
 					file_beta = None
 					file_values = file.split('_')
@@ -59,7 +66,7 @@ for sampling in ["imp","no_imp"]:
 					file_alpha = getFraction(file_values[4])
 					if len(file_values) > 5:
 						file_beta = getFraction(file_values[5])
-					if ((N_electron == file_particles) and (file_omega == omega) and (((not beta) and (file_beta == None)) or (beta and (file_beta != None)))):
+					if ((N_electron == int(file_particles)) and (file_omega == omega) and (((not beta) and (file_beta == None)) or (beta and (file_beta != None)))):
 						data_files.append(np.fromfile(folder_name + "/" + file))
 						alpha_value = file_alpha
 						N_MC = file_MC
@@ -68,21 +75,28 @@ for sampling in ["imp","no_imp"]:
 							beta_value = file_beta
 							print_string += " Beta = %10.8f" % file_beta 
 						if verbose: print print_string
+				if (file_beta != None) and not beta:
+					print "No data for beta with configuration N=%s and omega=%s in folder %s" % (N_electron, omega, folder_name)
+					continue
 				data = np.concatenate(data_files)
+				del data_files
 				print_string = "Data loaded from %s for %3d electrons, N_MC = %5g, omega = %8.6f, alpha = %10.8f" % (folder_name, N_electron, N_MC, omega, alpha_value)
 				if (file_beta != None):
 							print_string += " Beta = %10.8f" % beta_value
 				if verbose: print print_string
+
 				# Setting up blocks ---------------------------------------
 				N = len(data)
 				N_block_sizes = [] # Is the number of blocks we divide into
 				for i in xrange(1,N/2): # Finds the number of blocks to divide the data into.
 					if (N % i == 0):
 						N_block_sizes.append(N/i)
-				N_block_sizes = N_block_sizes[8:-1] # Skipping first four and last one
+				N_block_sizes = N_block_sizes[10:-2] # Skipping first four and last one
 				N_blocks = len(N_block_sizes)
 
 				# Run parallelized blocking -------------------------------
+				if N_MC >= 1e8: num_processors = 2 # In order to not kill my computer
+				if verbose: "Performing blocking with %d processors" % num_processors
 				pool = multiprocessing.Pool(processes=num_processors)
 				res = pool.map(block,N_block_sizes)
 				pool.close()
@@ -106,9 +120,9 @@ for sampling in ["imp","no_imp"]:
 				plt.ylabel(r"Variance $\sigma^2$")
 				plt.title(r"Blocking for $%d$ electrons, $\omega=%.2f$, $N_{MC}=%d$" % (N_electron, omega, N_MC))
 				plt.grid(True)
-				plt.savefig("figures/%s/%s.png" % (sampling, figure_name),dpi=300)
+				plt.savefig("figures/%s/%s.png" % (data_sub_folder, figure_name),dpi=300)
 				plt.close()
-				if verbose: print "figures/%s/%s.png plotted" % (sampling, figure_name)
+				if verbose: print "figures/%s/%s.png plotted" % (data_sub_folder, figure_name)
 				# plt.show()
 
 				del res, N_block_sizes, block_sizes, variance_values, data
