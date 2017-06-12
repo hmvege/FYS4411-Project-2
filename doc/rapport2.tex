@@ -48,9 +48,9 @@ NAN
 \tableofcontents
 
 \section{Introduction}
-The goal of this project is to study closed shell systems of electrons confined in a harmonic oscillator potential - a quantum dot. Within this scope we are investigating the ground state energies, \husk{exception values kinetic and potential energies, single particle densities and one-body densities}. The system we are interested in is a two dimensional system of $N$ electrons, and since we have closed shell systems we will look at $N=2,6$ and $12$ electrons.
+The goal of this project is to study closed shell systems of electrons confined in a harmonic oscillator potential - a quantum dot. Within this scope we are investigating the ground state energies and exception values of kinetic and potential energies. The system we are interested in is a two dimensional system of $N$ electrons, and since we have closed shell systems we will look at $N=2,6,12$ and $20$ electrons.
 
-
+In order to begin this project, let us first go through the theory behind variational Monte Carlo, and all that entails. The following theory part is lengthy, so if the reader feels so inclined, he or she is free to skip to the implementation section.
 
 \section{Theory}
 As tradition demands we begin by looking at the Hamiltonian of the system we are to solve,
@@ -714,12 +714,18 @@ In order to find the possible speedup $S(p)$ for $p$ processors, we have the fol
 \end{align}
 We quickly observe, that if one can obtain a value for the speedup\eqref{eq:parallel-speed-up}, on can find the fraction $f$ of the program that is parallelizable by,
 \begin{align}
-	f = \frac{1-S(p)}{S(p)(1+1/p)}
+	f = \frac{1-S(p)}{S(p)(1/p-1)}
 	\label{eq:f-parallelizable-fraction}
 \end{align}
 
 \section{Implementation}
 The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. The results gathered will be for different electron closed shell configurations, specifically $N = 2, 6, 12, 20$ and $\omega = 1.0, 0.5, 0.1, 0.05, 0.01$.
+
+The program was run on primarily two computers.
+\begin{itemize}
+	\item MacBook Pro(Retina, 15-inch, Mid 2015), 2.2 GHz Intel Core i7(4 cores), 16 GB ram.
+	\item Ubuntu 16.04 LTS, Intel Core i7-2600 3.4 GHz(8 cores), 16 GB ram.
+\end{itemize}
 
 % \subsection{Slater determinants}
 % An efficient way of updating the inverse of the Slater matrix can be found by \husk{SITER}. 
@@ -744,16 +750,54 @@ We have hard coded the two electron case without a Jastrow factor, using wave fu
 For the hard coded case, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction.
 
 \subsubsection{Importance sampling}
-Assuming that the regular sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$\citet{komp2015}.
+Assuming that the regular sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$ (see lectures notes by \citet{komp2015}).
 
+\subsubsection{Parallelization versus non-parallelization}
+We set up the program to run with all available cores, and without any cores.
 \section{Results}
 The results for running without importance sampling can be viewed in the following table. We will be comparing results with \citet{PhysRevB.84.115302}.
+\subsection{Importance sampling}
+\subsection{Regular sampling}
 
 The results for running with importance sampling can be viewed in following table.
 
 The results for parallelization can be viewed in following table and figure.
 
 The results for blocking can be viewed in following table and figure.
+
+\subsection{Program verification and tests}
+\subsubsection{Unperturbed energies}
+In the case we have unperturbed energies, we should be able to get exact solutions down to the very last decimal. This will be 
+
+\subsubsection{\texorpdfstring{$2$}{a} electron case without Jastrow}
+We have hard coded the two electron case without a Jastrow factor, using wave function seen in the section for the unperturbed two electron case \eqref{eq:two-body-wf} and the local energy \eqref{eq:two-electron-local-energy-unperturbed}.
+
+\subsubsection{\texorpdfstring{$2$}{a} electron case with Jastrow}
+For the hard coded case, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction.
+
+\subsubsection{Importance sampling}
+Assuming that the regular sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$\citet{komp2015}.
+
+\subsubsection{Parallelization versus non-parallelization}
+We made five runs with and without parallelization for $4\cdot 10^7$ Monte Carlo cycles on four cores.
+
+\begin{table}[H]
+	\centering
+	\caption{Times for parallelization. Right column is with program run with 1 core, right one is for 4 cores. Run for 2 electrons with $\omega = 1.0$ for $N_{MC}=4\cdot10^7$.}
+	\begin{tabular}{c c}
+		\\ \hline \hline
+		$T_1$ [s]& $T_p$ [s] \\ \hline
+		22.313027 & 75.566675 \\
+		22.484323 & 74.749889 \\
+		22.220841 & 75.247932 \\
+		22.757712 & 75.280813 \\
+        \hline \hline
+	\end{tabular}
+	\label{tab:parallelization-times}
+\end{table}
+
+From the values listed in table \ref{tab:parallelization-times}, we get that the speed from equation \eqref{eq:parallel-speed-up} is $S(p=4) = 3.351 \pm 0.036$, and that the fraction of the program that is parallelizable is $f = 0.702 \pm 0.003$.
+
 
 
 \section{Discussion and conclusion}

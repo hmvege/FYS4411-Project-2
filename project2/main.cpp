@@ -33,7 +33,7 @@ void runNElectrons(unsigned int MCCycles, unsigned int optCycles, int maxNSD, in
  * [ ] Production runs for no importance sampling 2,6,12,20 electrons
  * [ ] Production run for 8e8 parallelized and non-parallelized.
  * [x] Production runs for hard-coded cases
- * [ ] Production runs for no interaction(coulombInteraction=false)
+ * [x] Production runs for no interaction(coulombInteraction=false)
  */
 
 
@@ -46,7 +46,7 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     MPI_Comm_rank (MPI_COMM_WORLD, &processRank);
 
     // Constants
-    unsigned int MCCycles   = 1e8; // RUN THIS WITH 1 CORE!! 8e8
+    unsigned int MCCycles   = 1e8;
     unsigned int optCycles  = 1e4;
     int MCSamplingFrequency = 1e5;
     int maxSDIterations     = 250; // 0 turns it completely off, 200 is default
@@ -80,25 +80,25 @@ int main(int numberOfArguments, char* cmdLineArguments[])
     clock_t runStart, runEnd;
     programStart = clock();
 
-//    // Main loop for all different cases
-//    for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
-//    {
-//        if (i == 2) {
-//            MCCycles = 1e7;
-//        } else if (i == 3) {
-//            MCCycles = 1e6;
-//        }
-//        for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
-//        {
-//            for (int k = 0; k < 2; k++) // Jastrow factor, jastrow off/on, default is k=0; k < 2
-//            {
-//                runStart = clock();
-//                runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", outputFolder, MCSamplingFrequency, numprocs, processRank);
-//                runEnd= clock();
-//                if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
-//            }
-//        }
-//    }
+    // Main loop for all different cases
+    for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
+    {
+        if (i == 2) {
+            MCCycles = 1e7;
+        } else if (i == 3) {
+            MCCycles = 1e6;
+        }
+        for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
+        {
+            for (int k = 0; k < 2; k++) // Jastrow factor, jastrow off/on, default is k=0; k < 2
+            {
+                runStart = clock();
+                runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NElectron", outputFolder, MCSamplingFrequency, numprocs, processRank);
+                runEnd= clock();
+                if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
+            }
+        }
+    }
 
     // For testing on 2 particles
 //    int nParticles_2        = 2;
@@ -119,24 +119,24 @@ int main(int numberOfArguments, char* cmdLineArguments[])
 //    run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrovWithCoulomb", outputFolder, MCSamplingFrequency, numprocs, processRank);
 
 
-    // Loop for unperturbed energies
-    MCCycles = 1e6;
-    outputFolder= "output/no_interaction";
-    importanceSampling = false;
-    coulombInteraction = false;
-    for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
-    {
-        for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
-        {
-            for (int k = 0; k < 1; k++) // Jastrow factor, jastrow off/on, default is k=0; k < 2
-            {
-                runStart = clock();
-                runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NoInteractionNElectron", outputFolder, MCSamplingFrequency, numprocs, processRank);
-                runEnd= clock();
-                if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
-            }
-        }
-    }
+//    // Loop for unperturbed energies
+//    MCCycles = 1e6;
+//    outputFolder= "output/no_interaction";
+//    importanceSampling = false;
+//    coulombInteraction = false;
+//    for (int i = 0; i < 4; i++) // Default is i=0, i < 4, particles
+//    {
+//        for (int j = 0; j < 5; j++) // Default is j=0; j < 5, omega values
+//        {
+//            for (int k = 0; k < 1; k++) // Jastrow factor, jastrow off/on, default is k=0; k < 2
+//            {
+//                runStart = clock();
+//                runNElectrons(MCCycles, optCycles, maxSDIterations, nParticles[i], nDimensions, omega[j], alpha[i][j][1-k], beta[i][j], D, deltat,seed, SDStepLength, importanceSampling, coulombInteraction, k, "NoInteractionNElectron", outputFolder, MCSamplingFrequency, numprocs, processRank);
+//                runEnd= clock();
+//                if (processRank == 0) cout << "Run complete. Time used: " << ((runEnd - runStart)/((double)CLOCKS_PER_SEC)) << endl;
+//            }
+//        }
+//    }
 
     MPI_Finalize();
 
