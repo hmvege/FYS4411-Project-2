@@ -99,20 +99,20 @@ int main(int numberOfArguments, char* cmdLineArguments[])
             }
         }
     }
+
     // For testing on 2 particles
     int nParticles_2        = 2;
     double alpha_2plain     = 0.686717; // No jastrow, 2 electrons
     double omega_2          = 1.0;
     double alpha_2jas       = 1.0;//0.988559; // 2 electrons
     double beta_2jas        = 0.4;//0.398665; // 2 electrons
-    importanceSampling      = true;
     MCCycles                = 1e8;
     std::string outputFolder= "output/2e_plain";
     run2Electron(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2plain, D, deltat, 1.31, seed, importanceSampling, coulombInteraction, "2ElectronPlain", outputFolder, MCSamplingFrequency, numprocs, processRank);
+    importanceSampling      = true;
     MCCycles                = 1e8;
     std::string outputFolder= "output/2e_jastrow";
     run2eImpSampling(MCCycles, optCycles, maxSDIterations, nParticles_2, nDimensions, omega_2, alpha_2jas, 1.0, beta_2jas,D, deltat, seed, SDStepLength, importanceSampling, coulombInteraction, "2ElectronJastrov", outputFolder, MCSamplingFrequency, numprocs, processRank);
-    // No coulomb, no Jastrow test
 
     MPI_Finalize();
 
