@@ -19,83 +19,124 @@ def block(N_block_size):
 
 num_processors = 4
 verbose = True
+dry_run = False # For just testing if everyting apart from blocking and plotting works
 N_electron_values = [2, 6, 12, 20]
 omega_values = [1.0, 0.5, 0.1, 0.05, 0.01]
 res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
 
-# folder_name = "output_imp_run"
-# folder_name = "output_no_imp_run" # No importance sampling
-# output_file = open("output_blocking/optimal_variance_output.txt","a")  # No importance sampling
-# # output_file = open("output_blocking_imp/optimal_variance_output.txt","a")
+def config_string(_folder,_n,_omega,_beta):
+	return "folder: %s N_electrons: %2g Omega: %4g Beta: %2g" % (_folder, _n, _omega, _beta)
 
-for data_sub_folder in ["imp","no_imp","2e_jastrow","2e_jastrowWithCoulomb","2e_plain","no_interaction"]:
+def configuration_error(error_message, _folder,_n,_omega,_beta):
+	print "%s. Configuration does not exist: " % error_message + config_string(_folder,_n,_omega,_beta)
+
+def factors(number):
+    b = np.arange(1,number+1)
+    res, = np.where((number % b) == 0)
+    return np.array(res + 1)
+
+for data_sub_folder in ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCoulomb","no_interaction"]:
 	folder_name = "output/" + data_sub_folder
-	output_file = open("blocking_output/" + data_sub_folder + "/blocking_data.txt", "w")
+	output_file = open("blocking_output/" + data_sub_folder + "/blocking_data_" + data_sub_folder + ".txt", "w")
 	for N_electron in N_electron_values:
-		for beta in [False, True]:
-			for omega, resulting_block_size in zip(omega_values, res_b_sizes):
+		for omega, resulting_block_size in zip(omega_values, res_b_sizes):
+			for beta in [False,True]:
 
 				pre_time = time.clock()
 				figure_name = "electron%d_omega%f_beta%.4f" % (N_electron,omega,beta)
 				try:
-					file_list = os.listdir(folder_name)
+					raw_file_list = os.listdir(folder_name)
 				except OSError:
-					print "The folder: %s does not exist." % folder_name
+					configuration_error("Warning: folder missing",data_sub_folder,N_electron,omega,beta)
 					continue
 
-				if len(file_list) == 0:
-					print "No files for %s sampling, N=%d electrons, Jastrow=%g, omega=%g" % (data_sub_folder,N_electron,beta,omega)
+				if len(raw_file_list) == 0:
+					configuration_error("Warning: file list is empty", data_sub_folder,N_electron,omega,beta)
 					continue
 
-				data_files = []
+				# Building correct file list
 				getDigit = lambda s : float(re.findall(r"[\d]+",s)[0])
 				getFraction = lambda s : float(re.findall(r"[\d.]+",s)[0])
-				alpha_value = 0 # For writing to file
-				beta_value = 0 # For writing to file
-				N_MC = 0
-
-				# Retrieves data
-				if verbose: print "\nLoading data from folder %s..." % folder_name
-				for file in file_list:
+				file_list = []
+				for file in raw_file_list:
 					file_beta = None
 					file_values = file.split('_')
-					file_processor = getDigit(file_values[0])
+					file_processor = getDigit(file_values[0][1:]) # the [1:] ensures we dont pick up any unnessecary numbers from folder
 					file_particles = getDigit(file_values[1])
 					file_MC = getDigit(file_values[2])
 					file_omega = getFraction(file_values[3])
 					file_alpha = getFraction(file_values[4])
-					if len(file_values) > 5:
-						file_beta = getFraction(file_values[5])
-					if ((N_electron == int(file_particles)) and (file_omega == omega) and (((not beta) and (file_beta == None)) or (beta and (file_beta != None)))):
-						data_files.append(np.fromfile(folder_name + "/" + file))
-						alpha_value = file_alpha
-						N_MC = file_MC
-						print_string = "Data loaded from processor %2d: N = %2d MC Cycles = %10d Omega = %10.8f Alpha = %10.8f" % (file_processor, file_particles, file_MC, file_omega, file_alpha)
-						if (file_beta != None):
-							beta_value = file_beta
-							print_string += " Beta = %10.8f" % file_beta 
-						if verbose: print print_string
-				if (file_beta != None) and not beta:
-					print "No data for beta with configuration N=%s and omega=%s in folder %s" % (N_electron, omega, folder_name)
+					if beta:
+						if "beta" in file:
+							file_beta = getFraction(file_values[5])
+						else:
+							continue
+					else:
+						if "beta" in file:
+							continue
+					if file_particles != N_electron:
+						continue
+					if file_omega != omega:
+						continue
+					file_list.append(file)
+				if len(file_list) == 0:
+					if verbose: configuration_error("No data files found", data_sub_folder,N_electron,omega,beta)
 					continue
+
+				data_files = []
+				# Constants to be written to file++
+				alpha_value = 0
+				beta_value = 0
+				N_MC = 0
+
+				# Retrieves data
+				if verbose: print "\nLoading data for configuration: %s" % config_string(folder_name,N_electron,omega,beta)
+				for file in file_list:
+					file_beta = None
+					file_values = file.split('_')
+					file_processor = getDigit(file_values[0][1:]) # the [1:] ensures we dont pick up any unnessecary numbers from folder
+					file_particles = getDigit(file_values[1])
+					file_MC = getDigit(file_values[2])
+					file_omega = getFraction(file_values[3])
+					file_alpha = getFraction(file_values[4])
+					if beta:
+						file_beta = getFraction(file_values[5])
+					data_files.append(np.fromfile(folder_name + "/" + file))
+					alpha_value = file_alpha
+					N_MC = file_MC
+					print_string = "Data loaded from processor %d: N = %2d MC Cycles = %10d Omega = %10.8f Alpha = %10.8f" % (file_processor, file_particles, file_MC, file_omega, file_alpha)
+					if beta and (file_beta != None):
+						beta_value = file_beta
+						print_string += " Beta = %10.8f" % file_beta 
+					if verbose: print print_string
+
+				if len(data_files) == 0:
+					if verbose: configuration_error("No data files found. SHOULD NOT SEE THIS MESSAGE", data_sub_folder,N_electron,omega,beta)
+					continue
+
 				data = np.concatenate(data_files)
 				del data_files
-				print_string = "Data loaded from %s for %3d electrons, N_MC = %5g, omega = %8.6f, alpha = %10.8f" % (folder_name, N_electron, N_MC, omega, alpha_value)
-				if (file_beta != None):
-							print_string += " Beta = %10.8f" % beta_value
+				print_string = "All data loaded from %s for %3d electrons, N_MC = %5g, omega = %8.6f, alpha = %10.8f" % (folder_name, N_electron, N_MC, omega, alpha_value)
+				if beta: print_string += " Beta = %10.8f" % beta_value
 				if verbose: print print_string
 
 				# Setting up blocks ---------------------------------------
 				N = len(data)
 				N_block_sizes = [] # Is the number of blocks we divide into
-				for i in xrange(1,N/2): # Finds the number of blocks to divide the data into.
-					if (N % i == 0):
-						N_block_sizes.append(N/i)
-				N_block_sizes = N_block_sizes[10:-2] # Skipping first four and last one
+				temp_N = N
+				while temp_N >= 1e6:
+					temp_N /= 10
+				# for i in xrange(1,temp_N/2): # Finds the number of blocks to divide the data into.
+				# 	if (N % i == 0):
+				# 		N_block_sizes.append(N/i)
+				N_block_sizes = factors(temp_N)[::-1]
+				N_block_sizes = N_block_sizes[:-2] # Skipping first four and last one(since the last one varies alot and is unreliable)
 				N_blocks = len(N_block_sizes)
+				print N_block_sizes
+				if dry_run: continue
 
 				# Run parallelized blocking -------------------------------
-				if N_MC >= 1e8: num_processors = 2 # In order to not kill my computer
+				if N >= 1e8: num_processors = 2 # In order to not kill my computer
 				if verbose: "Performing blocking with %d processors" % num_processors
 				pool = multiprocessing.Pool(processes=num_processors)
 				res = pool.map(block,N_block_sizes)
