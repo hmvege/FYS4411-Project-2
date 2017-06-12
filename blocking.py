@@ -6,7 +6,7 @@ def block(N_block_size):
 	Argument:
 		N_block_sizes	: number of blocks we will split our data set into 
 	"""
-	print "Process %d now running for: %d" % (os.getpid(), N_block_size)
+	# print "Process %d now running for: %d" % (os.getpid(), N_block_size)
 	block_size = N / N_block_size # Gets the size of each block
 	temporary_average_values = np.zeros(N_block_size)
 	for j in xrange(0,N_block_size):
@@ -17,11 +17,13 @@ def block(N_block_size):
 	return (ESquared - E*E)/N_block_size, block_size, N_block_size
 
 num_processors = 4
-verbose = True
+verbose = False
 dry_run = False # For just testing if everyting apart from blocking and plotting works
+supress_err = True
 N_electron_values = [2, 6, 12, 20]
 omega_values = [1.0, 0.5, 0.1, 0.05, 0.01]
 res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
+data_folders = ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCoulomb","no_interaction"]
 
 def config_string(_folder,_n,_omega,_beta):
 	return "folder: %s N_electrons: %2g Omega: %4g Beta: %2g" % (_folder, _n, _omega, _beta)
@@ -34,7 +36,7 @@ def factors(number):
     res, = np.where((number % b) == 0)
     return np.array(res + 1)
 
-for data_sub_folder in ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCoulomb","no_interaction"]:
+for data_sub_folder in data_folders:
 	folder_name = "output/" + data_sub_folder
 	output_file = open("blocking_output/" + data_sub_folder + "/blocking_data_" + data_sub_folder + ".txt", "w")
 	for N_electron in N_electron_values:
@@ -46,11 +48,11 @@ for data_sub_folder in ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCo
 				try:
 					raw_file_list = os.listdir(folder_name)
 				except OSError:
-					configuration_error("Warning: folder missing",data_sub_folder,N_electron,omega,beta)
+					if not supress_err: configuration_error("Warning: folder missing",data_sub_folder,N_electron,omega,beta)
 					continue
 
 				if len(raw_file_list) == 0:
-					configuration_error("Warning: file list is empty", data_sub_folder,N_electron,omega,beta)
+					if not supress_err: configuration_error("Warning: file list is empty", data_sub_folder,N_electron,omega,beta)
 					continue
 
 				# Building correct file list
@@ -81,7 +83,9 @@ for data_sub_folder in ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCo
 				if len(file_list) == 0:
 					if verbose: configuration_error("No data files found", data_sub_folder,N_electron,omega,beta)
 					continue
-
+				
+				print "Running for %s" % config_string(data_sub_folder,N_electron,omega,beta)
+				
 				data_files = []
 				# Constants to be written to file++
 				alpha_value = 0
@@ -123,15 +127,11 @@ for data_sub_folder in ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCo
 				N = len(data)
 				N_block_sizes = [] # Is the number of blocks we divide into
 				temp_N = N
-				while temp_N >= 1e6:
+				while temp_N > 1e6:
 					temp_N /= 10
-				# for i in xrange(1,temp_N/2): # Finds the number of blocks to divide the data into.
-				# 	if (N % i == 0):
-				# 		N_block_sizes.append(N/i)
 				N_block_sizes = factors(temp_N)[::-1]
 				N_block_sizes = N_block_sizes[:-2] # Skipping first four and last one(since the last one varies alot and is unreliable)
 				N_blocks = len(N_block_sizes)
-				print N_block_sizes
 				if dry_run: continue
 
 				# Run parallelized blocking -------------------------------
