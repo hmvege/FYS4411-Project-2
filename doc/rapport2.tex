@@ -45,13 +45,13 @@
 \maketitle
 
 \begin{abstract}
-Results for simulating a quantum mechanical system of electrons $N=2,6,12$ and $N=20$ with the variational Monte Carlo method is presented in this paper. The electrons are confined in their ground state of a harmonic oscillator potential, interacting only through the Coulomb interaction. To account for this interaction, we have introduced a correlating Jastrow factor. The results have been obtained with both uniform sampling and importance sampling, although the latter proved problematic for $N>2$. For $N=2$ we got an estimate for the ground state energy $\langle E\rangle=3.0005\pm10^{-5}$ a.u. For $N=6$ electrons we found $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., for $N=12$ electrons $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u and for $N=20$ electrons we got $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. Comparing this to corresponding results from the article by \citet{PhysRevB.84.115302}, $\langle E \rangle_1 = 3.0$ a.u., $\langle E \rangle_1 = 20.174$ a.u., $\langle E \rangle_1=65.741$ a.u. and $\langle E \rangle_1 = 155.96$ a.u., we see we have a remarkable good agreement in results.
+Results for a quantum mechanical system of $N=2,6,12$ and $N=20$ electrons simulated with the variational Monte Carlo method is presented in this paper. The electrons are confined in their ground state of a harmonic oscillator potential, interacting only through the Coulomb interaction. To account for this interaction, we have introduced a correlating Jastrow factor. The results have been obtained with both uniform sampling and importance sampling, although the latter proved problematic for $N>2$. On the final results, a blocking analysis were performed. For $N=2$ we got an estimate for the ground state energy $\langle E\rangle=3.0005\pm10^{-5}$ a.u. For $N=6$ electrons we found $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., for $N=12$ electrons $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u and for $N=20$ electrons we got $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. Comparing this to corresponding results from the article by \citet{PhysRevB.84.115302}, $\langle E \rangle_1 = 3.0$ a.u., $\langle E \rangle_1 = 20.174$ a.u., $\langle E \rangle_1=65.741$ a.u. and $\langle E \rangle_1 = 155.96$ a.u., we see we have a remarkable good agreement in results.
 \end{abstract}
 
 \tableofcontents
 
 \section{Introduction}
-The goal of this project is to study closed shell systems of electrons confined in a harmonic oscillator potential - a quantum dot. Within this scope we are investigating the ground state energies and exception values of kinetic and potential energies. The system we are interested in is a two dimensional system of $N$ electrons, and since we have closed shell systems we will look at $N=2,6,12$ and $20$ electrons.
+The goal of this project is to study closed shell systems of electrons confined in a harmonic oscillator potential - a quantum dot. Expectation values for the ground state energies, kinetic and potential energies will be retrieved. We are interested in is a two dimensional system of $N$ electrons, and since we have closed shell systems we will look at $N=2,6,12$ and $20$ electrons. The program used can be viewed at GitHub \cite{github}.
 
 In order to begin this project, let us first go through the theory behind variational Monte Carlo, and all that entails. The following theory part is lengthy, so if the reader feels so inclined, he or she is free to skip to the implementation section.
 
@@ -122,7 +122,7 @@ We can use this and the PDF, we can rewrite our $E[H]$ which now also depends on
 	E[H(\alpha)] = \int P(\mathbf{r})E_L(\mathbf{r})d\mathbf{r} \approx \frac{1}{N_{MC}}\sum^{N_{MC}}_{i=1}P(\mathbf{r}_i,\alpha)E_L(\mathbf{r}_i,\alpha)
 \end{align*}
 where $N_{MC}$ is the number of Monte Carlo cycles which we run for. 
-We now have an estimate for the ground state energy from the average of our Monte Carlo samples. The algorithm for the VMC(Variational Monte Carlo) method will be based of the Metropolis algorithm(\cite{metropolis}\cite{metropolis_hastings}), such that a quick review of this is in order.
+We now have an estimate for the ground state energy from the average of our Monte Carlo samples. The algorithm for the VMC(Variational Monte Carlo) method will be based of the Metropolis algorithm(\cite{metropolis}\cite{metropolis_hastings}), thus a quick review of this is in order.
 
 
 
@@ -257,18 +257,18 @@ Summing over dimensions, and we get
 \subsubsection{Steepest descent}
 The steepest descent method is a simple iterative method for finding a local minimum in parameters. It is used when we are tasked to solve systems of linear equations on the form of
 \begin{align*}
-	A \mathbf{x} = \mathbf{b}
+	A \mathbf{x} = \mathbf{b}.
 \end{align*}
-where we through an iterative process seeks to minimize the following,
+Through an iterative process we seek to minimize the following,
 \begin{align*}
-	\mathbf{r} = \mathbf{b} - A \mathbf{x}
+	\mathbf{r} = \mathbf{b} - A \mathbf{x},
 \end{align*}
 where the exact solution implies that $\mathbf{r}=0$. The process for solving this through steepest descent can be set up as, 
 \begin{align}
 	\mathbf{x}_{i+1} = \mathbf{x}_i - \bm{\nabla} f(\mathbf{x}_i) \delta t
 	\label{eq:steepest-descent}
 \end{align}
-Applied to our VMC problem, where we will have one or two variational parameters, $\alpha$ and $\beta$, the equations will take on the form of \eqref{eq:steepest-descent},
+Applied to our VMC case with one or two variational parameters, $\alpha$ and $\beta$, the equations will take on the form of \eqref{eq:steepest-descent},
 \begin{align}
 	\begin{pmatrix}
 		\alpha_{i+1} \\
@@ -292,7 +292,7 @@ Where the $\langle E_L \rangle$ is the expectation value of the local energy and
 \end{align}
 with the derivative of $\psi$ with respect to the variational parameter is defined as
 \begin{align*}
-	\bar{\psi}_{\alpha_i} = \frac{\psi[\alpha_i]}{d\alpha_i}
+	\bar{\psi}_{\alpha_i} = \frac{d\psi[\alpha_i]}{d\alpha_i}
 \end{align*}
 
 As evident, this method may oscillate around the solution, since the step size is fixed. Other more optimal methods such as the conjugate gradient method exist(see lecture notes \cite{komp2015}), but are not implemented in the project.
@@ -406,10 +406,10 @@ Inserting this, and we get our expectation value
 \end{align*}
 Which, is the answer we expected. This will provide a useful test for us later on. The local energy for the unperturbed two electron case is thus given as,
 \begin{align}
-	E_L = 2\omega\alpha
-	\label{eq:two-electron-local-energy-unperturbed}
+	E_L = 2\omega
+	\label{eq:two-electron-local-energy-unperturbed}.
 \end{align}
-assuming we include the variational parameter $\alpha$.
+Similar results can be retrieved for $N=6, 12$ and $20$ electrons, corresponding to $10\omega$, $28\omega$ and $60\omega$.
 
 \subsubsection{Local energy}
 We now seek to find an expression for the local energy as given by equation \eqref{eq:local-energy}, for the two electron case.
@@ -695,17 +695,17 @@ The derivatives of the Hermite polynomials with respect to $\alpha$ are given by
 \end{align}
 
 \subsection{Blocking}
-When dealing with large Monte Carlo generated datasets, we will discover that they often are correlated. That is, the random number generator is not entirely random. To remedy this, we introduce a statistical technique called \textit{blocking}. The idea behind this, can be summarized as following:
+When dealing with large Monte Carlo generated datasets, we will discover that they often are correlated. That is, the random number generator is not truly random. To remedy this, we introduce a statistical technique called \textit{blocking}. The idea behind this, can be summarized as following:
 \begin{itemize}
 	\item Define a set of different block sizes $\{N_b\}$, in which we will divide our data set into $n_b$ such blocks.
 	\item Calculate the mean of each block with size $N_b$, such that the size of the data set $\{x_i\}$ is reduced the number of $n_b$ blocks of size $N_b$, thus creating a new dataset $\{x_i'\}$
 	\item From the new dataset, $\{x_i'\}$, we calculate the variance $\sigma_{N_b}$.
 	\item Repeat this procedure for all the different block sizes, and plot the resulting variance $\sigma_{N_b}$ as a function of the block size or number of blocks.
 \end{itemize}
-The plot one ends up with, will show that the variance stabilizes for some block size, and thus that is where we expect to have an uncorrelated dataset. The full proof for this can be viewed in the article by \citet{flyvbjerg1989error}.
+The plot one ends up with will show that the variance stabilizes after some time for a certain range of block sizes. This range is where we expect to have an uncorrelated dataset. The full proof for this can be viewed in the article by \citet{flyvbjerg1989error}.
 
 \subsection{Parallelization}
-Using the parallelization package Open MPI (Message Passing Interface) for \CC, we can parallelize the programming. It is thus beneficial to look into the type of speedup one may get from parallelizing. Let us define the time taken to run the program by one processor to be $T_1$, and for $p$ processor $T_p$. We define the possible speed-up as
+Using the package Open MPI (Message Passing Interface) for \CC, we can parallelize the our program. It is thus beneficial to look into the type of speedup one may get from parallelizing. Let us define the time taken to run the program by one processor to be $T_1$, and for $p$ processor $T_p$. We define the possible speed-up as
 \begin{align}
 	S(p) = \frac{T_1}{T_p}
 	\label{eq:parallel-speed-up}
@@ -722,7 +722,7 @@ We quickly observe, that if one can obtain a value for the speedup\eqref{eq:para
 \end{align}
 
 \section{Implementation}
-The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. The results gathered will be for different electron closed shell configurations, specifically $N = 2, 6, 12, 20$ and $\omega = 1.0, 0.5, 0.1, 0.05, 0.01$. Further, the program was run for both uniform sampling and importance sampling as long as it was feasible.
+The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. The results gathered will be for different electron closed shell configurations, specifically $N = 2, 6, 12, 20$ and $\omega = 1.0, 0.5, 0.1, 0.05, 0.01$. Further, the program was run for both uniform sampling and importance sampling as long as it was feasible. The program used can be viewed at GitHub \cite{github}.
 
 The program was run on primarily two computers.
 \begin{itemize}
@@ -735,13 +735,13 @@ For all variances found, statistical blocking will have been performed as descri
 
 \subsection{Program verification and tests}
 \subsubsection{Unperturbed energies}
-In the case we have unperturbed energies, we should be able to get exact solutions down to the very last decimal. This will be 
+In the case we have unperturbed energies, we should be able to get exact solutions down to the very last decimal. This will provide a useful test to check if our program is correctly set up.
 
 \subsubsection{\texorpdfstring{$2$}{a} electron case with and without Jastrow}
 For the hard coded case with the Jastrow factor, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction. We have hard coded the two electron case without a Jastrow factor, using wave function seen in the section for the unperturbed two electron case \eqref{eq:two-body-wf} and the local energy \eqref{eq:two-electron-local-energy-unperturbed}.
 
 \subsubsection{Importance sampling}
-Assuming that the uniform sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$ (see lectures notes by \citet{komp2015}).
+Assuming that the uniform sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$ (see lectures notes \cite{komp2015}).
 
 \subsubsection{Parallelization versus non-parallelization}
 A test were made, running for $4\cdot 10^7$ Monte Carlo steps on a MacBook Pro computer. Statistics with all 4 cores and then only a single core were obtained.
@@ -788,7 +788,7 @@ $             20$ &$           0.01$ &$         -208.3$ &$        0.13049$ & -  
 \end{table}
 
 \subsection{Optimal parameters}
-The optimal parameters as found through 250 steepest descent iterations and with uniform sampling can be viewed in the table below. All uniform sampling results found in table \ref{tab:reg-sampling} used the optimal value as listed below.
+The optimal parameters as found through 250 steepest descent iterations and with uniform sampling can be viewed in the table below. All uniform sampling results \ref{tab:reg-sampling} used the optimal parameters as listed in following table.
 
 \begin{table}[H]
 	\centering
@@ -822,7 +822,7 @@ The optimal parameters as found through 250 steepest descent iterations and with
 \end{table}
 
 \subsection{Importance sampling}
-Assuming that the uniform sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$\citet{komp2015}. The $\Delta t = 0.001$ for the importance sampling runs(same as for the steepest descent). We observe that for $\omega=1.0$ with importance sampling, we have a local energy of $\langle E\rangle = 3.0005\pm 10^{-4}$ a.u., while without importance sampling we have $\langle E\rangle = 3.0004\pm 2\cdot10^{-6}$ a.u.
+Assuming that the uniform sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\% $\cite{komp2015}. The $\Delta t = 0.001$ for the importance sampling runs(same as for the steepest descent). We observe that for $\omega=1.0$ with importance sampling, we have a local energy of $\langle E\rangle = 3.0005\pm 10^{-4}$ a.u., while without importance sampling we have $\langle E\rangle = 3.0004\pm 2\cdot10^{-6}$ a.u.
 
 \begin{table}[H]
 	\small
@@ -879,7 +879,7 @@ The results for blocking can be viewed in following figures. A subset of all ava
 
 \subsection{Program verification and tests}
 \subsubsection{Unperturbed energies}
-In the case we have unperturbed energies, we should be able to get exact solutions down to the very last decimal. This will be 
+The unperturbed energies can be viewed in the following table.
 
 \begin{table}[H]
 	\centering
@@ -955,19 +955,19 @@ From the values listed in table \ref{tab:parallelization-times}, we get that the
 
 
 \section{Discussion and conclusion}
-The road to achieving a satisfactory result have been long and a difficult one. The goal in which I had in mind when starting was to create a program both flexible and efficient. While the first may be true, the latter still has a lot of potential(although the author suspects another month might have been needed for this). 
+The road to achieving a satisfactory result have been long and a difficult one. The target I had in mind when starting was to create a program both flexible and efficient. While the first may be true, the latter still has a lot of potential(the author suspects another month might have been needed). 
 
 % Introduction to problems during simulations
 \subsection{Issues related to implementation}
-The most pertinent issue remaining is the one regarding importance sampling for $N > 2$ electrons, in which singular matrices appear. The main suspect for this was the quantum force. After careful analysis of the code no faults could be found so the root of the problem remain hidden.
+The most pertinent issue remaining is the one regarding importance sampling for $N > 2$ electrons, in which singular matrices appear. The main suspect for this was the quantum force. After careful analysis of the code, no faults could be found and root problem remain hidden.
 
 % uniform sampling
 \subsection{Uniform sampling}
-However, usable results were achievable despite programming issues. Results using uniform sampling(see equation \eqref{tab:reg-sampling}) were presented in table \ref{tab:reg-sampling}. One worrying aspect of these results is the low variance. For cases comparable with results from importance sampling, we have almost six orders of magnitude in difference. Since the results appear to be in good agreement with cited articles, it is difficult to pinpoint exact reason for this. It should be pointed out that results without importance sampling were run with $8\cdot 10^8$ Monte Carlo cycles, while with importance sampling for only $8\cdot 10^7$ cycles. 
+However, usable results were achievable despite implementation issues. Results using uniform sampling(see equation \eqref{tab:reg-sampling}) were presented in table \ref{tab:reg-sampling}. One worrying aspect of these results is the low variance. For cases comparable with results from importance sampling, we have almost six orders of magnitude in difference. Since the results appear to be in good agreement with cited articles, it is difficult to pinpoint exact reason for this. It should be pointed out that results without importance sampling were run with $8\cdot 10^8$ Monte Carlo cycles, while with importance sampling for only $8\cdot 10^7$ cycles. 
 
 Instabilities for $N=12$ and $N=20$ electrons were found for small $\omega$ values. One possible remedy to this might be to decrease step size $\Delta t$, which is a possible improvement for the future.
 
-Let us now look at three cases. For $N=6$ electrons we have $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., compared to $\langle E \rangle_1 = 20.174$ a.u. For $N=12$ electrons, we have $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u., compared to $\langle E \rangle_1=65.741$ a.u. At last, for $N=20$ electrons, we have $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. and a reference of $\langle E \rangle_1 = 155.96$ a.u. What this tells us, is that our method using \textit{Uniform} sampling is correct, even though the are problems with importance sampling.
+Let us now look at three cases. For $N=6$ electrons we have $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., compared to $\langle E \rangle_1 = 20.174$ a.u. For $N=12$ electrons, we have $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u., compared to $\langle E \rangle_1=65.741$ a.u. At last, for $N=20$ electrons, we have $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. and a reference of $\langle E \rangle_1 = 155.96$ a.u. What this tells us, is that our method using \textit{uniform} sampling is correctly implemented.
 
 % Optimal parameters from uniform sampling
 \subsection{Optimal parameters from uniform sampling}
@@ -975,7 +975,7 @@ The optimal parameters found through steepest descent can be viewed in table \re
 
 % Importance sampling
 \subsection{Importance sampling}
-Due to the error with singular matrices and thus not being able to find their inverse, importance sampling was only achievable for $N=2$ electrons. Still, we were able to achieve results corresponding good with reference values as well as results obtained for without importance sampling. For $\omega = 1.0$, we have results that for both with and without importance sampling are in the very close proximity.
+Due to the error with singular matrices and thus not being able to find their inverse, importance sampling was only achievable for $N=2$ electrons. Still, we were able to produce results corresponding good with reference values as well as results obtained without importance sampling. For $\omega = 1.0$, we have results that are in close proximity for those from uniform sampling.
 % \husk{Optimal parameters from importance sampling?}
 
 % Blocking
@@ -984,9 +984,10 @@ The results from blocking can be viewed in figure \ref{fig:blocking-plots}. We s
 
 \subsection{Verification and tests}
 % Unperturbed energies
-A number of different tests were implemented. As we demonstrated in equation \eqref{eq:two-electron-local-energy-unperturbed}, the unperturbed energy should come out be exactly 2 a.u.(atomic unites) with zero variance for 2 electrons. For 6, 12 and 20 electrons we should get respectively $10\omega$, $28\omega$ and $60\omega$ and zero variance. From the table \ref{tab:unperturbed-energies} we observe that this is fulfilled to almost the exact decimal. By almost, I imply that we have certain instabilities for small $\omega$ values. We can also see that the acceptance ratio is not necessarily at $50\%$ either. This can be attributed to poor calibration, as one need to calibrate this to be $50\%$ for \textit{all} cases. Possible to automate if time is not of the essence. All in all, this is a good indication that our program is correct(at least for uniform sampling).
+A number of different tests were implemented. As we demonstrated in equation \eqref{eq:two-electron-local-energy-unperturbed}, the unperturbed energy should come out be exactly 2 a.u.(atomic unites) with zero variance for 2 electrons. For 6, 12 and 20 electrons we should get respectively $10\omega$, $28\omega$ and $60\omega$ and zero variance. From the table \ref{tab:unperturbed-energies} we observe that this is fulfilled to almost the exact decimal. By almost, I imply that we have certain instabilities for small $\omega$ values. We can also see that the acceptance ratio is not necessarily at $50\%$ either. This can be attributed to poor calibration, as one need to calibrate this to be $50\%$ for \textit{all} cases. If time were not of the essence, this could be automated. All in all, this is a good indication that our program is correct(at least for uniform sampling).
 % Hardcoded electron case
-From table \ref{tab:hc2} we observe three different hard-coded cases. From comparing these values with the ones obtained from the general case we have a what appears to be a good 1-1 mapping. If we look at the 2 electron case with $\omega=1.0$, for the hard coded case with importance sampling we have $\langle E\rangle=3.0004\pm10^{-5}$a.u., and for the general method we have $\langle E\rangle=3.0005\pm10^{-5}$a.u. This compared to the results obtained by \citet{PhysRevB.84.115302} $\langle E \rangle = 3.0$, we observe we have a rather good result for both hard-coded and general method. This, and the high acceptance rate($\sim 99\%$), leads us to believe that our method is working as intended.
+
+From table \ref{tab:hc2} we observe three different hard-coded cases. From comparing these values with the ones obtained from the general case we have a what appears to be a good one-to-one mapping. If we look at the 2 electron case with $\omega=1.0$, for the hard coded case with importance sampling we have $\langle E\rangle=3.0004\pm10^{-5}$a.u., and for the general method we have $\langle E\rangle=3.0005\pm10^{-5}$a.u. This compared to the results obtained by \citet{PhysRevB.84.115302} $\langle E \rangle = 3.0$, we observe we have a rather good result for both hard-coded and general method. This, and the high acceptance rate($\sim 99\%$), leads us to believe that our method is working as intended.
 
 % Parallelization
 We also achieved a speedup by parallelizing our programs(the blocking method was also parallelized). For our main program, we achieved a parallelizable fraction of $f=0.702\pm 0.003$. The low $f$ is somewhat spurious, as one should expect from a naively and simple parallelization with little cross-communication to have a fraction closer to 1. Further investigation is needed to determine the cause of this.
