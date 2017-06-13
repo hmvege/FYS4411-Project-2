@@ -16,14 +16,14 @@ def block(N_block_size):
 	del temporary_average_values # FOR RELEAVING MEMORY?
 	return (ESquared - E*E)/N_block_size, block_size, N_block_size
 
-num_processors = 8
+num_processors = 4
 verbose = False
 dry_run = False # For just testing if everyting apart from blocking and plotting works
-supress_err = False
+supress_err = True
 N_electron_values = [2, 6, 12, 20]
 omega_values = [1.0, 0.5, 0.1, 0.05, 0.01]
 res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
-data_folders = ["imp","no_imp"]#,"2e_plain","2e_jastrow","2e_jastrowWithCoulomb","no_interaction"]
+data_folders = ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCoulomb","no_interaction"]
 
 def config_string(_folder,_n,_omega,_beta):
 	return "folder: %s N_electrons: %2g Omega: %4g Beta: %2g" % (_folder, _n, _omega, _beta)
@@ -106,7 +106,6 @@ for data_sub_folder in data_folders:
 						file_beta = getFraction(file_values[5])
 					data_files.append(np.fromfile(folder_name + "/" + file))
 					alpha_value = file_alpha
-					N_MC = file_MC
 					print_string = "Data loaded from processor %d: N = %2d MC Cycles = %10d Omega = %10.8f Alpha = %10.8f" % (file_processor, file_particles, file_MC, file_omega, file_alpha)
 					if beta and (file_beta != None):
 						beta_value = file_beta
@@ -119,12 +118,12 @@ for data_sub_folder in data_folders:
 
 				data = np.concatenate(data_files)
 				del data_files
-				print_string = "All data loaded from %s for %3d electrons, N_MC = %5g, omega = %8.6f, alpha = %10.8f" % (folder_name, N_electron, N_MC, omega, alpha_value)
+				N = len(data)
+				print_string = "All data loaded from %s for %3d electrons, N_MC = %5g, omega = %8.6f, alpha = %10.8f" % (folder_name, N_electron, N, omega, alpha_value)
 				if beta: print_string += " Beta = %10.8f" % beta_value
 				if verbose: print print_string
 
 				# Setting up blocks ---------------------------------------
-				N = len(data)
 				N_block_sizes = [] # Is the number of blocks we divide into
 				temp_N = N
 				while temp_N > 1e6:
@@ -148,7 +147,7 @@ for data_sub_folder in data_folders:
 				# Finding the energy mean ---------------------------------
 				energy_mean = np.mean(data)
 				energy_variance = block(int(N/resulting_block_size))[0]
-				data_string = "N %4d N_MC %10d E %18.16f EVar %12.g EStd %12.g Omega %6.4f Alpha %12.10f" % (N_electron, N_MC, energy_mean, energy_variance, np.sqrt(energy_variance), omega, alpha_value)
+				data_string = "N %4d N_MC %10d E %18.16f EVar %12.g EStd %12.g Omega %6.4f Alpha %12.10f" % (N_electron, N, energy_mean, energy_variance, np.sqrt(energy_variance), omega, alpha_value)
 				if beta: data_string += " Beta %.10f" % beta_value
 				output_file.write(data_string + "\n")
 
@@ -158,7 +157,7 @@ for data_sub_folder in data_folders:
 				plt.semilogx(block_sizes[::-1], variance_values[::-1])
 				plt.xlabel("Block size")
 				plt.ylabel(r"Variance $\sigma^2$")
-				plt.title(r"Blocking for $%d$ electrons, $\omega=%.2f$, $N_{MC}=%d$" % (N_electron, omega, N_MC))
+				plt.title(r"Blocking for $%d$ electrons, $\omega=%.2f$, $N_{MC}=%d$" % (N_electron, omega, N))
 				plt.grid(True)
 				plt.savefig("figures/%s/%s.png" % (data_sub_folder, figure_name),dpi=300)
 				plt.close()
