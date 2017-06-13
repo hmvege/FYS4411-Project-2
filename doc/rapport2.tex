@@ -44,47 +44,8 @@
 \begin{document}
 \maketitle
 
-% The road to achieving a satisfactory result have been long and a difficult one. The goal in which I had in mind when starting was to create a program both flexible and efficient. While the first may be true, the latter still has a lot of potential(although the author suspects another month might have been needed for this). 
-
-% % Introduction to problems during simulations
-% \subsection{Issues related to implementation}
-% The most pertinent issue remaining is the one regarding importance sampling for $N > 2$ electrons, in which singular matrices appear. The main suspect for this was the quantum force. After careful analysis of the code no faults could be found so the root of the problem remain hidden.
-
-% % uniform sampling
-% \subsection{Uniform sampling}
-% However, usable results were achievable despite programming issues. Results using uniform sampling(see equation \eqref{tab:reg-sampling}) were presented in table \ref{tab:reg-sampling}. One worrying aspect of these results is the low variance. For cases comparable with results from importance sampling, we have almost six orders of magnitude in difference. Since the results appear to be in good agreement with cited articles, it is difficult to pinpoint exact reason for this. It should be pointed out that results without importance sampling were run with $8\cdot 10^8$ Monte Carlo cycles, while with importance sampling for only $8\cdot 10^7$ cycles. 
-
-% Instabilities for $N=12$ and $N=20$ electrons were found for small $\omega$ values. One possible remedy to this might be to decrease step size $\Delta t$, which is a possible improvement for the future.
-
-% Let us now look at three cases. For $N=6$ electrons we have $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., compared to $\langle E \rangle_1 = 20.174$ a.u. For $N=12$ electrons, we have $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u., compared to $\langle E \rangle_1=65.741$ a.u. At last, for $N=20$ electrons, we have $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. and a reference of $\langle E \rangle_1 = 155.96$ a.u. What this tells us, is that our method using \textit{Uniform} sampling is correct, even though the are problems with importance sampling.
-
-% % Optimal parameters from uniform sampling
-% \subsection{Optimal parameters from uniform sampling}
-% The optimal parameters found through steepest descent can be viewed in table \ref{tab:optimal-parameters}. As seen, there are no obvious outliers. No convergence criteria were implemented, nor any other methods for improving step size as one gradually creeps towards the local minimum. Had time been not been a constraint, methods for achieving an better step sizes $\Delta t$ when in the vicinity of a minimum, would have been implemented.
-
-% % Importance sampling
-% \subsection{Importance sampling}
-% Due to the error with singular matrices and thus not being able to find their inverse, importance sampling was only achievable for $N=2$ electrons. Still, we were able to achieve results corresponding good with reference values as well as results obtained for without importance sampling. For $\omega = 1.0$, we have results that for both with and without importance sampling are in the very close proximity.
-% % \husk{Optimal parameters from importance sampling?}
-
-% % Blocking
-% \subsection{Blocking}
-% The results from blocking can be viewed in figure \ref{fig:blocking-plots}. We see that we get significant oscillations in the variance as the block-sizes increases beyond $10^6$ samples per block. As mentioned earlier, I chose block-sizes to be around $\sim 10^4-10^5$ when retrieving the optimal variances. If we look close at the plot for 2 electrons and $\omega = 1.0$ with importance sampling \ref{fig:blocking-2e-imp-general-method}, we see that from running importance sampling we get over a order of magnitude in improvement(assuming that the variance keeps increasing for continuously smaller block-sizes).
-
-% \subsection{Verification and tests}
-% % Unperturbed energies
-% A number of different tests were implemented. As we demonstrated in equation \eqref{eq:two-electron-local-energy-unperturbed}, the unperturbed energy should come out be exactly 2 a.u.(atomic unites) with zero variance for 2 electrons. For 6, 12 and 20 electrons we should get respectively $10\omega$, $28\omega$ and $60\omega$ and zero variance. From the table \ref{tab:unperturbed-energies} we observe that this is fulfilled to almost the exact decimal. By almost, I imply that we have certain instabilities for small $\omega$ values. We can also see that the acceptance ratio is not necessarily at $50\%$ either. This can be attributed to poor calibration, as one need to calibrate this to be $50\%$ for \textit{all} cases. Possible to automate if time is not of the essence. All in all, this is a good indication that our program is correct(at least for uniform sampling).
-% % Hardcoded electron case
-% From table \ref{tab:hc2} we observe three different hard-coded cases. From comparing these values with the ones obtained from the general case we have a what appears to be a good 1-1 mapping. If we look at the 2 electron case with $\omega=1.0$, for the hard coded case with importance sampling we have $\langle E\rangle=3.0004\pm10^{-5}$a.u., and for the general method we have $\langle E\rangle=3.0005\pm10^{-5}$a.u. This compared to the results obtained by \citet{PhysRevB.84.115302} $\langle E \rangle = 3.0$, we observe we have a rather good result for both hard-coded and general method. This, and the high acceptance rate($\sim 99\%$), leads us to believe that our method is working as intended.
-
-% % Parallelization
-% We also achieved a speedup by parallelizing our programs(the blocking method was also parallelized). For our main program, we achieved a parallelizable fraction of $f=0.702\pm 0.003$. The low $f$ is somewhat spurious, as one should expect from a naively and simple parallelization with little cross-communication to have a fraction closer to 1. Further investigation is needed to determine the cause of this.
-
-% % Final thoughts and conclusions
-% \subsection{Closing thoughts and remarks.}
-% As we now have observed, results have been obtained even though certain elements of the simulation remains out of scope. We can infer from comparing results with tests and other articles\cite{PhysRevB.84.115302}, that using uniform sampling have provided good results. Suspicion wetter the variance is correct or not still remains, but the local energy $\langle E\rangle$ appears to be within acceptable ranges. Further investigations into the root bug of using importance sampling would be interesting, but only when available time tends to infinity.
 \begin{abstract}
-NAN
+Results for simulating a quantum mechanical system of electrons $N=2,6,12$ and $N=20$ with the variational Monte Carlo method is presented in this paper. The electrons are confined in their ground state of a harmonic oscillator potential, interacting only through the Coulomb interaction. To account for this interaction, we have introduced a correlating Jastrow factor. The results have been obtained with both uniform sampling and importance sampling, although the latter proved problematic for $N>2$. For $N=2$ we got an estimate for the ground state energy $\langle E\rangle=3.0005\pm10^{-5}$ a.u. For $N=6$ electrons we found $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., for $N=12$ electrons $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u and for $N=20$ electrons we got $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. Comparing this to corresponding results from the article by \citet{PhysRevB.84.115302}, $\langle E \rangle_1 = 3.0$ a.u., $\langle E \rangle_1 = 20.174$ a.u., $\langle E \rangle_1=65.741$ a.u. and $\langle E \rangle_1 = 155.96$ a.u., we see we have a remarkable good agreement in results.
 \end{abstract}
 
 \tableofcontents
