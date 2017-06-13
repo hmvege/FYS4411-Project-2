@@ -16,14 +16,14 @@ def block(N_block_size):
 	del temporary_average_values # FOR RELEAVING MEMORY?
 	return (ESquared - E*E)/N_block_size, block_size, N_block_size
 
-num_processors = 4
+num_processors = 8
 verbose = False
 dry_run = False # For just testing if everyting apart from blocking and plotting works
-supress_err = True
+supress_err = False
 N_electron_values = [2, 6, 12, 20]
 omega_values = [1.0, 0.5, 0.1, 0.05, 0.01]
 res_b_sizes = [2e4, 3e5, 5e5, 5e5, 5e5]
-data_folders = ["imp","no_imp","2e_plain","2e_jastrow","2e_jastrowWithCoulomb","no_interaction"]
+data_folders = ["imp","no_imp"]#,"2e_plain","2e_jastrow","2e_jastrowWithCoulomb","no_interaction"]
 
 def config_string(_folder,_n,_omega,_beta):
 	return "folder: %s N_electrons: %2g Omega: %4g Beta: %2g" % (_folder, _n, _omega, _beta)
