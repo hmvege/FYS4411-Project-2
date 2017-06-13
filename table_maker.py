@@ -7,7 +7,7 @@ n_precision = 5
 
 #n 2,6,12,20
 #omega 1,0.5,0.1,0.05,0.01
-ERef = ["3.0000","1.659722",0,0,0,
+ERef = ["3.00000","1.659722",0,0,0,
 		"20.1737", "11.8055",0,0,0,
 		"65.7409", "39.2194",0,0,0,
 		"155.9601","93.9891",0,0,0]
@@ -53,13 +53,15 @@ def create_table(value_matrix, column_values=[], row_values=[]):
 			row += value_matrix[i][j]
 			if j < N_cols-1: row += " &"
 		row += " \\\ "
+		if i==0: row += "\hline"
 		tab += row + "\n"
 	return tab
 
-clean_string = lambda s : "%15.5g" % float(s)
-clean_omega = lambda s : "%15g" % float(s)
+clean_string = lambda s : r"$%15.5g$" % float(s)
+clean_omega = lambda s : r"$%15g$" % float(s)
 getDigit = lambda s : float(re.findall(r"[\d]+",s)[0])
 getFraction = lambda s : float(re.findall(r"[\d.]+",s)[0])
+
 def clean_eref(s):
 	if s == 0:
 		return "-"+14*" " 
@@ -86,8 +88,8 @@ def create_value_matrix(block_data, terminal_data,item_list):
 				line.append(clean_string(bd["Beta"]))
 			except KeyError:
 				line.append("-" + " "*14)
-		if "N_MC" 	in item_list: 			line.append("%15g" % int(bd["N_MC"]))
-		if "AcceptanceRate" in item_list: 	line.append("%15.3g" % float(td["AcceptanceRate"]))
+		if "N_MC" 	in item_list: 			line.append(r"$%15g$" % int(bd["N_MC"]))
+		if "AcceptanceRate" in item_list: 	line.append(r"$%15.3g$" % float(td["AcceptanceRate"]))
 		value_matrix.append(line)
 	return value_matrix
 
@@ -138,11 +140,11 @@ for i in range(len(hc_folders)):
 		line.append(clean_string(bd["Beta"]))
 	except KeyError:
 		line.append("-" + " "*14)
-	line.append("%15g" % int(bd["N_MC"]))
-	line.append("%15.3g" % float(td["AcceptanceRate"]))
+	line.append(r"$%15g$" % int(bd["N_MC"]))
+	line.append(r"$%15.3g$" % float(td["AcceptanceRate"]))
 	hc_value_matrix.append(line)
 
-hc_tab = create_table(hc_value_matrix, row_values=hc_header_string, column_values=hc_col_string), "\n\n"
+hc_tab = create_table(hc_value_matrix, row_values=hc_header_string, column_values=hc_col_string)
 # print "Hard-coded table:\n"
 # print hc_tab
 
@@ -226,22 +228,31 @@ imp_blocking_data = retrieve_file_contents(imp_blocking_files)
 imp_terminal_data = retrieve_file_contents(imp_terminal_files,True)
 new_imp_data = []
 
-for i in zip( imp_blocking_data, imp_terminal_data, no_imp_blocking_data, no_imp_terminal_data, ERef):
+imp_data = zip( imp_blocking_data, imp_terminal_data, no_imp_blocking_data[:10], no_imp_terminal_data[:10], ERef[:10])
+imp_matrix = []
+for i in xrange(len(imp_data)/2):
 	new_dict = {}
-	new_dict["Omega"] = i[0]["Omega"]
-	new_dict["E"] = i[0]["E"]
-	new_dict["EnoJ"]
-	new_dict["EnoImp"] = 
-	new_dict["EnoJnoImp"]
-	new_dict["ERef"]
-	new_dict["EVar"] = i[0]["EVar"]
-	new_dict["EVarNoImp"] = i[2]["EVar"]
-	new_dict["AcceptanceRate"] = 
+	line = []
+	new_dict["Omega"] = imp_data[2*i][0]["Omega"]
+	line.append(clean_omega(imp_data[2*i][0]["Omega"]))
+	new_dict["E"] = imp_data[2*i+1][0]["E"]
+	line.append(clean_string(imp_data[2*i+1][0]["E"]))
+	new_dict["EnoJ"] = imp_data[2*i][0]["E"]
+	line.append(clean_string(imp_data[2*i][0]["E"]))
+	new_dict["EnoImp"] = imp_data[2*i+1][2]["E"]
+	line.append(clean_string(imp_data[2*i+1][2]["E"]))
+	new_dict["EnoJnoImp"] = imp_data[2*i][2]["E"]
+	line.append(clean_string(imp_data[2*i][2]["E"]))
+	new_dict["ERef"] = ERef[i]
+	line.append(clean_string(ERef[i]))
+	new_dict["EVar"] = imp_data[2*i][0]["EVar"]
+	line.append(clean_string(imp_data[2*i][0]["EVar"]))
+	new_dict["EVarNoImp"] = imp_data[2*i][2]["EVar"]
+	line.append(clean_string(imp_data[2*i][2]["EVar"]))
+	new_dict["AcceptanceRate"] = imp_data[2*i][1]["AcceptanceRate"]
+	line.append(clean_string("%15.3g" % float(imp_data[2*i][1]["AcceptanceRate"])))
+	imp_matrix.append(line)
 	new_imp_data.append(new_dict)
-	# print i
-	# print i[0]["E"], i[1]["E"]
-
-
 
 imp_header = [	r"$\omega$", 
 				r"$\langle E \rangle$", 
@@ -253,13 +264,16 @@ imp_header = [	r"$\omega$",
 				r"$\sigma^2_\text{no imp.}$", 
 				r"Imp. Acceptance"]
 
+imp_tab = create_table(imp_matrix,row_values=imp_header)
 
 ###### FINAL RESULTS
-# print "Hard-coded table:\n"
-# print hc_tab
-# print "No interaction table"
-# print no_int_tab
-# print "Paramater table:"
-# print no_imp_param_tab
-# print "No importance sampling table: "
-# print no_imp_tab
+print "Hard-coded table:\n"
+print hc_tab
+print "No interaction table"
+print no_int_tab
+print "Paramater table:"
+print no_imp_param_tab
+print "No importance sampling table: "
+print no_imp_tab
+print "Importance sampling versus regular matrix"
+print imp_tab

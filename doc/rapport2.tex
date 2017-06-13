@@ -4,7 +4,10 @@
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{amsfonts}
+% For figures and graphics'n stuff
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{cite}
 \usepackage[numbers]{natbib}
 \usepackage{url}
@@ -41,6 +44,45 @@
 \begin{document}
 \maketitle
 
+% The road to achieving a satisfactory result have been long and a difficult one. The goal in which I had in mind when starting was to create a program both flexible and efficient. While the first may be true, the latter still has a lot of potential(although the author suspects another month might have been needed for this). 
+
+% % Introduction to problems during simulations
+% \subsection{Issues related to implementation}
+% The most pertinent issue remaining is the one regarding importance sampling for $N > 2$ electrons, in which singular matrices appear. The main suspect for this was the quantum force. After careful analysis of the code no faults could be found so the root of the problem remain hidden.
+
+% % uniform sampling
+% \subsection{Uniform sampling}
+% However, usable results were achievable despite programming issues. Results using uniform sampling(see equation \eqref{tab:reg-sampling}) were presented in table \ref{tab:reg-sampling}. One worrying aspect of these results is the low variance. For cases comparable with results from importance sampling, we have almost six orders of magnitude in difference. Since the results appear to be in good agreement with cited articles, it is difficult to pinpoint exact reason for this. It should be pointed out that results without importance sampling were run with $8\cdot 10^8$ Monte Carlo cycles, while with importance sampling for only $8\cdot 10^7$ cycles. 
+
+% Instabilities for $N=12$ and $N=20$ electrons were found for small $\omega$ values. One possible remedy to this might be to decrease step size $\Delta t$, which is a possible improvement for the future.
+
+% Let us now look at three cases. For $N=6$ electrons we have $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., compared to $\langle E \rangle_1 = 20.174$ a.u. For $N=12$ electrons, we have $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u., compared to $\langle E \rangle_1=65.741$ a.u. At last, for $N=20$ electrons, we have $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. and a reference of $\langle E \rangle_1 = 155.96$ a.u. What this tells us, is that our method using \textit{Uniform} sampling is correct, even though the are problems with importance sampling.
+
+% % Optimal parameters from uniform sampling
+% \subsection{Optimal parameters from uniform sampling}
+% The optimal parameters found through steepest descent can be viewed in table \ref{tab:optimal-parameters}. As seen, there are no obvious outliers. No convergence criteria were implemented, nor any other methods for improving step size as one gradually creeps towards the local minimum. Had time been not been a constraint, methods for achieving an better step sizes $\Delta t$ when in the vicinity of a minimum, would have been implemented.
+
+% % Importance sampling
+% \subsection{Importance sampling}
+% Due to the error with singular matrices and thus not being able to find their inverse, importance sampling was only achievable for $N=2$ electrons. Still, we were able to achieve results corresponding good with reference values as well as results obtained for without importance sampling. For $\omega = 1.0$, we have results that for both with and without importance sampling are in the very close proximity.
+% % \husk{Optimal parameters from importance sampling?}
+
+% % Blocking
+% \subsection{Blocking}
+% The results from blocking can be viewed in figure \ref{fig:blocking-plots}. We see that we get significant oscillations in the variance as the block-sizes increases beyond $10^6$ samples per block. As mentioned earlier, I chose block-sizes to be around $\sim 10^4-10^5$ when retrieving the optimal variances. If we look close at the plot for 2 electrons and $\omega = 1.0$ with importance sampling \ref{fig:blocking-2e-imp-general-method}, we see that from running importance sampling we get over a order of magnitude in improvement(assuming that the variance keeps increasing for continuously smaller block-sizes).
+
+% \subsection{Verification and tests}
+% % Unperturbed energies
+% A number of different tests were implemented. As we demonstrated in equation \eqref{eq:two-electron-local-energy-unperturbed}, the unperturbed energy should come out be exactly 2 a.u.(atomic unites) with zero variance for 2 electrons. For 6, 12 and 20 electrons we should get respectively $10\omega$, $28\omega$ and $60\omega$ and zero variance. From the table \ref{tab:unperturbed-energies} we observe that this is fulfilled to almost the exact decimal. By almost, I imply that we have certain instabilities for small $\omega$ values. We can also see that the acceptance ratio is not necessarily at $50\%$ either. This can be attributed to poor calibration, as one need to calibrate this to be $50\%$ for \textit{all} cases. Possible to automate if time is not of the essence. All in all, this is a good indication that our program is correct(at least for uniform sampling).
+% % Hardcoded electron case
+% From table \ref{tab:hc2} we observe three different hard-coded cases. From comparing these values with the ones obtained from the general case we have a what appears to be a good 1-1 mapping. If we look at the 2 electron case with $\omega=1.0$, for the hard coded case with importance sampling we have $\langle E\rangle=3.0004\pm10^{-5}$a.u., and for the general method we have $\langle E\rangle=3.0005\pm10^{-5}$a.u. This compared to the results obtained by \citet{PhysRevB.84.115302} $\langle E \rangle = 3.0$, we observe we have a rather good result for both hard-coded and general method. This, and the high acceptance rate($\sim 99\%$), leads us to believe that our method is working as intended.
+
+% % Parallelization
+% We also achieved a speedup by parallelizing our programs(the blocking method was also parallelized). For our main program, we achieved a parallelizable fraction of $f=0.702\pm 0.003$. The low $f$ is somewhat spurious, as one should expect from a naively and simple parallelization with little cross-communication to have a fraction closer to 1. Further investigation is needed to determine the cause of this.
+
+% % Final thoughts and conclusions
+% \subsection{Closing thoughts and remarks.}
+% As we now have observed, results have been obtained even though certain elements of the simulation remains out of scope. We can infer from comparing results with tests and other articles\cite{PhysRevB.84.115302}, that using uniform sampling have provided good results. Suspicion wetter the variance is correct or not still remains, but the local energy $\langle E\rangle$ appears to be within acceptable ranges. Further investigations into the root bug of using importance sampling would be interesting, but only when available time tends to infinity.
 \begin{abstract}
 NAN
 \end{abstract}
@@ -214,7 +256,7 @@ where the $G(\mathbf{r}^\text{new},\mathbf{r}^\text{old})$ is a Green's function
 	G(\mathbf{r}^\text{new},\mathbf{r}^\text{old}) = \frac{1}{(4\pi D \Delta t)^{3N/2}}\exp \left(-(\rn - \ro - D\delta t \mathbf{F}(\ro))^2/4D\Delta t\right)
 	\label{eq:greens-function}
 \end{align}
-A more detailed derivation of importance sampling can be found in the lecture notes given of the Computational Physics \cite{komp2015}. Is we can already observe, it is possible to simplify the Greens ratio \eqref{eq:transition-probability-importance-sampling} due to the exponential. We will begin by using that the squaring of the exponential implies a dot product for vectors. For simplicity, we dub $\mathbf{x} = \mathbf{r}^\text{old}$ and $\mathbf{y} = \mathbf{r}^\text{new}$. Through a lot of patience, we get \husk{REMOVE THIS???}
+A more detailed derivation of importance sampling can be found in the lecture notes given of the Computational Physics \cite{komp2015}. Is we can already observe, it is possible to simplify the Greens ratio \eqref{eq:transition-probability-importance-sampling} due to the exponential. We will begin by using that the squaring of the exponential implies a dot product for vectors. For simplicity, we dub $\mathbf{x} = \mathbf{r}^\text{old}$ and $\mathbf{y} = \mathbf{r}^\text{new}$. Through a lot of patience, we get
 \begin{align*}
 	\frac{G(\mathbf{x},\mathbf{y})}{G(\mathbf{y},\mathbf{x})} &= \exp \bigg[ \frac{1}{4D\Delta t} \Big\{
 	 - \big( x_x^2 - x_x y_x - x_x D\Delta t F_x(\mathbf{y}) + y_x^2 - y_x x_x \\
@@ -296,7 +338,7 @@ As evident, this method may oscillate around the solution, since the step size i
 
 
 \subsection{Electron wave function}
-Our wave function will consist of two parts: one that comes from the harmonic oscillator potential and is built up based on the fermionic nature of the system, and one that proved a correlation between two particles - the so-called Jastrow factor. The wave function we construct, will be called our \textit{trial wave function}.
+Our wave function will consist of two parts: one that comes from the harmonic oscillator potential and is built up based on the fermionic nature of the system, and one that provides a correlation between two particles - the so-called Jastrow factor. The wave function we construct, will be called our \textit{trial wave function}.
 \begin{align}
 	\psi_T(\mathbf{r}) = \psi_J(\mathbf{r})\psi_{SD}(\mathbf{r})
 	\label{eq:WF_trial}
@@ -719,7 +761,7 @@ We quickly observe, that if one can obtain a value for the speedup\eqref{eq:para
 \end{align}
 
 \section{Implementation}
-The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. The results gathered will be for different electron closed shell configurations, specifically $N = 2, 6, 12, 20$ and $\omega = 1.0, 0.5, 0.1, 0.05, 0.01$.
+The Variational Monte Carlo method for solving this many-body problem was implemented in the programming language \CC. The results gathered will be for different electron closed shell configurations, specifically $N = 2, 6, 12, 20$ and $\omega = 1.0, 0.5, 0.1, 0.05, 0.01$. Further, the program was run for both uniform sampling and importance sampling as long as it was feasible.
 
 The program was run on primarily two computers.
 \begin{itemize}
@@ -727,56 +769,206 @@ The program was run on primarily two computers.
 	\item Ubuntu 16.04 LTS, Intel Core i7-2600 3.4 GHz(8 cores), 16 GB ram.
 \end{itemize}
 
-% \subsection{Slater determinants}
-% An efficient way of updating the inverse of the Slater matrix can be found by \husk{SITER}. 
-
-% \begin{align}
-% D_{kj}^{-1}(\mathbf{x}^\text{new}) = \left\{
-% \begin{array}{ll}
-% 	D_{kj}^{-1}(\mathbf{x}^{old}) - \frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{new})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j\neq i \\
-% 	\frac{D_{ki}^{-1}(\mathbf{x}^{old})}{R}\sum^N_{l=1} D_{il}(\mathbf{x}^{old})D^{-1}_{lj}(\mathbf{x}^{old}) & \text{if } j = i
-% \end{array}
-% \right.
-% \end{align}
+\subsection{Blocking}
+For all variances found, statistical blocking will have been performed as described in blocking section. An optimal block size to run statistics can be chosen from looking at the subsequent plots for the variance $\sigma^2$ versus block size.
 
 \subsection{Program verification and tests}
 \subsubsection{Unperturbed energies}
 In the case we have unperturbed energies, we should be able to get exact solutions down to the very last decimal. This will be 
 
-\subsubsection{\texorpdfstring{$2$}{a} electron case without Jastrow}
-We have hard coded the two electron case without a Jastrow factor, using wave function seen in the section for the unperturbed two electron case \eqref{eq:two-body-wf} and the local energy \eqref{eq:two-electron-local-energy-unperturbed}.
-
-\subsubsection{\texorpdfstring{$2$}{a} electron case with Jastrow}
-For the hard coded case, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction.
+\subsubsection{\texorpdfstring{$2$}{a} electron case with and without Jastrow}
+For the hard coded case with the Jastrow factor, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction. We have hard coded the two electron case without a Jastrow factor, using wave function seen in the section for the unperturbed two electron case \eqref{eq:two-body-wf} and the local energy \eqref{eq:two-electron-local-energy-unperturbed}.
 
 \subsubsection{Importance sampling}
-Assuming that the regular sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$ (see lectures notes by \citet{komp2015}).
+Assuming that the uniform sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$ (see lectures notes by \citet{komp2015}).
 
 \subsubsection{Parallelization versus non-parallelization}
-We set up the program to run with all available cores, and without any cores.
+A test were made, running for $4\cdot 10^7$ Monte Carlo steps on a MacBook Pro computer. Statistics with all 4 cores and then only a single core were obtained.
+
+
+
+
+
 \section{Results}
-The results for running without importance sampling can be viewed in the following table. We will be comparing results with \citet{PhysRevB.84.115302}.
+The results for running without importance sampling can be viewed in the following table. We will be comparing results with the paper by \citet{PhysRevB.84.115302}.
+
+\subsection{Uniform sampling}
+The results for using uniform sampling can be viewed in table \ref{tab:reg-sampling}.
+
+\begin{table}[H]
+	\centering
+	\caption{Results for uniform sampling. Note that for 12 and 20 electrons, we get significant instabilities for small $\omega$. The local energies $\langle E\rangle_1$ is retrieved from the article by \citet{PhysRevB.84.115302}. Energies are in atomic units.}
+	\resizebox{\textwidth}{!}{\begin{tabular}{c c c c c c c c c c}
+		\\ \hline \hline
+$N$ &       $\omega$ &$\langle E \rangle$ &$\langle E \rangle_\text{no-J}$ &$\langle E \rangle_1$ &     $\sigma^2$ &$\langle K\rangle$ &$\langle V \rangle$ &       $N_{MC}$ &     Acceptance \\ \hline
+$              2$ &$              1$ &$         3.0004$ &$        0.74177$ &$              3$ &$ 5\cdot10^{-12}$ &$        0.89511$ &$         2.1053$ &$          10^8$ &$           55.8$ \\ 
+$              2$ &$            0.5$ &$         1.6607$ &$        0.67789$ &$         1.6597$ &$ 5\cdot10^{-12}$ &$        0.43592$ &$         1.2248$ &$          10^8$ &$           55.3$ \\ 
+$              2$ &$            0.1$ &$        0.44174$ &$        0.63311$ & -                &$ 1\cdot10^{-12}$ &$       0.092115$ &$        0.34962$ &$          10^8$ &$           55.5$ \\ 
+$              2$ &$           0.05$ &$        0.25506$ &$         0.4889$ & -                &$ 6\cdot10^{-13}$ &$       0.045761$ &$         0.2093$ &$          10^8$ &$           56.8$ \\ 
+$              2$ &$           0.01$ &$       0.080072$ &$        0.48552$ & -                &$ 9\cdot10^{-13}$ &$      0.0098149$ &$       0.070258$ &$          10^8$ &$           57.8$ \\ 
+$              6$ &$              1$ &$         20.207$ &$        0.62917$ &$         20.174$ &$ 7\cdot10^{-10}$ &$         3.7597$ &$         16.447$ &$          10^8$ &$           52.6$ \\ 
+$              6$ &$            0.5$ &$         11.811$ &$        0.58145$ &$         11.806$ &$ 2\cdot10^{-10}$ &$         1.7463$ &$         10.065$ &$          10^8$ &$           52.8$ \\ 
+$              6$ &$            0.1$ &$         3.5695$ &$        0.55456$ & -                &$ 3\cdot10^{-11}$ &$        0.32922$ &$         3.2403$ &$          10^8$ &$           54.3$ \\ 
+$              6$ &$           0.05$ &$         2.1681$ &$        0.56093$ & -                &$ 1\cdot10^{-11}$ &$        0.17099$ &$         1.9971$ &$          10^8$ &$           54.3$ \\ 
+$              6$ &$           0.01$ &$        0.70304$ &$         0.5785$ & -                &$ 4\cdot10^{-12}$ &$       0.036174$ &$        0.66687$ &$          10^8$ &$           54.7$ \\ 
+$             12$ &$              1$ &$         65.932$ &$        0.57152$ &$         65.741$ &$ 4\cdot10^{-08}$ &$         9.5685$ &$         56.364$ &$          10^7$ &$           49.6$ \\ 
+$             12$ &$            0.5$ &$         39.252$ &$        0.49623$ &$         39.219$ &$  6\cdot10^{-9}$ &$         4.2899$ &$         34.962$ &$          10^7$ &$           50.4$ \\ 
+$             12$ &$            0.1$ &$          12.33$ &$        0.36874$ & -                &$  1\cdot10^{-9}$ &$        0.80906$ &$         11.521$ &$          10^7$ &$           51.6$ \\ 
+$             12$ &$           0.05$ &$         7.6106$ &$        0.28426$ & -                &$  1\cdot10^{-9}$ &$        0.43071$ &$         7.1799$ &$          10^7$ &$           51.1$ \\ 
+$             12$ &$           0.01$ &$       -0.75377$ &$        0.20099$ & -                &$          0.007$ &$        -5.3587$ &$         4.6049$ &$          10^7$ &$    2.8\cdot10^{-5}$ \\ 
+$             20$ &$              1$ &$         156.31$ &$        0.52079$ &$         155.96$ &$  9\cdot10^{-7}$ &$         18.556$ &$         137.75$ &$          10^6$ &$           47.9$ \\ 
+$             20$ &$            0.5$ &$         94.109$ &$         0.4415$ &$         93.989$ &$  1\cdot10^{-7}$ &$         8.4593$ &$          85.65$ &$          10^6$ &$           48.3$ \\ 
+$             20$ &$            0.1$ &$         30.395$ &$        0.28958$ & -                &$          0.001$ &$         2.4679$ &$         27.927$ &$          10^6$ &$         0.0149$ \\ 
+$             20$ &$           0.05$ &$         23.516$ &$        0.22152$ & -                &$           0.02$ &$        -3.0374$ &$         26.553$ &$          10^6$ &$        0.00023$ \\ 
+$             20$ &$           0.01$ &$         -208.3$ &$        0.13049$ & -                &$             20$ &$        -326.16$ &$         117.87$ &$          10^6$ &$   4.5\cdot10^{-5}$ \\ 
+		\hline \hline
+	\end{tabular}}
+	\label{tab:reg-sampling}
+\end{table}
+
+\subsection{Optimal parameters}
+The optimal parameters as found through 250 steepest descent iterations and with uniform sampling can be viewed in the table below. All uniform sampling results found in table \ref{tab:reg-sampling} used the optimal value as listed below.
+
+\begin{table}[H]
+	\centering
+	\caption{Optimal parameters obtained by running steepest descent for 250 iterations with a step size of $\Delta t = 0.001$.}
+	\begin{tabular}{c c c c c}
+		\\ \hline \hline
+		$N$ &       $\omega$ &       $\alpha$ &        $\beta$ &$\alpha_\text{no-J}$ \\ \hline
+		2 &$              1$ &$         0.9949$ &$        0.39597$ &$        0.74177$ \\ 
+		2 &$            0.5$ &$        0.95089$ &$        0.34845$ &$        0.67789$ \\ 
+		2 &$            0.1$ &$        0.94509$ &$        0.19661$ &$        0.63311$ \\ 
+		2 &$           0.05$ &$        0.90622$ &$         0.1616$ &$         0.4889$ \\ 
+		2 &$           0.01$ &$        0.90493$ &$        0.14358$ &$        0.48552$ \\ 
+		6 &$              1$ &$         1.0242$ &$         0.4374$ &$        0.62917$ \\ 
+		6 &$            0.5$ &$        0.93161$ &$        0.38809$ &$        0.58145$ \\ 
+		6 &$            0.1$ &$        0.83303$ &$        0.21247$ &$        0.55456$ \\ 
+		6 &$           0.05$ &$        0.84182$ &$        0.15325$ &$        0.56093$ \\ 
+		6 &$           0.01$ &$        0.84112$ &$       0.077169$ &$         0.5785$ \\ 
+		12 &$              1$ &$         1.0976$ &$        0.42928$ &$        0.57152$ \\ 
+		12 &$            0.5$ &$        0.93292$ &$        0.41348$ &$        0.49623$ \\ 
+		12 &$            0.1$ &$        0.83223$ &$        0.22546$ &$        0.36874$ \\ 
+		12 &$           0.05$ &$        0.84117$ &$         0.1693$ &$        0.28426$ \\ 
+		12 &$           0.01$ &$        0.86067$ &$       0.072959$ &$        0.20099$ \\ 
+		20 &$              1$ &$         1.0597$ &$        0.50139$ &$        0.52079$ \\ 
+		20 &$            0.5$ &$        0.94244$ &$         0.4374$ &$         0.4415$ \\ 
+		20 &$            0.1$ &$         0.8492$ &$        0.26526$ &$        0.28958$ \\ 
+		20 &$           0.05$ &$        0.84246$ &$        0.26443$ &$        0.22152$ \\ 
+		20 &$           0.01$ &$           0.84$ &$            0.1$ &$        0.13049$ \\ 
+		\hline \hline
+	\end{tabular}
+	\label{tab:optimal-parameters}
+\end{table}
+
 \subsection{Importance sampling}
-\subsection{Regular sampling}
+Assuming that the uniform sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$\citet{komp2015}. The $\Delta t = 0.001$ for the importance sampling runs(same as for the steepest descent). We observe that for $\omega=1.0$ with importance sampling, we have a local energy of $\langle E\rangle = 3.0005\pm 10^{-4}$ a.u., while without importance sampling we have $\langle E\rangle = 3.0004\pm 2\cdot10^{-6}$ a.u.
 
-The results for running with importance sampling can be viewed in following table.
+\begin{table}[H]
+	\small
+	\centering
+	\caption{Importance sampling results together with energies and variances obtained without importance sampling. Energies are in atomic units.}
+	\resizebox{\textwidth}{!}{\begin{tabular}{c c c c c c c c c}
+		\\ \hline \hline
+		$\omega$ &$\langle E \rangle$ &$\langle E \rangle_\text{no-J}$ &$\langle E \rangle_\text{no imp.}$ &$\langle E \rangle_\text{no J/imp.}$ &$\langle E \rangle_1$ &     $\sigma^2$ &$\sigma^2_\text{no imp.}$ &Imp. Acceptance \\ \hline
+		$              1$ &$         3.0005$ &$         3.1696$ &$         3.0004$ &$         3.1692$ &$              3$ &$ 6\cdot10^{-6}$ &$  10^{-8}$       &$99.983545$ \\ 
+		$            0.5$ &$         1.6607$ &$          1.813$ &$         1.6607$ &$         1.8062$ &$         1.6597$ &$ 6\cdot10^{-6}$ &$  5\cdot10^{-9}$ &$ 99.99067$ \\ 
+		$            0.1$ &$        0.44431$ &$        0.52961$ &$        0.44174$ &$        0.53671$ &$              0$ &$ 6\cdot10^{-6}$ &$  1\cdot10^{-9}$ &$ 99.99766$ \\ 
+		$           0.05$ &$         0.2599$ &$        0.32027$ &$        0.25506$ &$        0.32266$ &$              0$ &$ 5\cdot10^{-6}$ &$ 4\cdot10^{-10}$ &$  99.9989$ \\ 
+		$           0.01$ &$       0.087904$ &$        0.11449$ &$       0.080072$ &$         0.1128$ &$              0$ &$ 7\cdot10^{-6}$ &$ 8\cdot10^{-11}$ &$ 99.99968$ \\ 
+		\hline \hline
+	\end{tabular}}
+	\label{tab:imp-sampling}
+\end{table}
 
-The results for parallelization can be viewed in following table and figure.
+\subsection{Blocking}
+The results for blocking can be viewed in following figures. A subset of all available plots were chosen, as well as the choice to only block for a certain range of blocks. The smallest block-sizes were around $10^2-10^3$ samples per block. This gave a \textit{significant} speed-up when performing blocking. From the resulting plots, acceptable block-sizes for uncorrelated variances were determined to be around $10^4-10^5$.
 
-The results for blocking can be viewed in following table and figure.
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../figures/figures_to_use/electron2_omega1_beta1.png} 
+        \caption{With hard coded importance sampling. $2\cdot10^8$ MC samples, $\omega=1.0$.}
+        \label{fig:blocking-2e-imp-hc}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../figures/figures_to_use/imp_electron2_omega1_beta1.png} 
+        \caption{With importance sampling. $10^7$ MC samples, $\omega=1.0$.}
+        \label{fig:blocking-2e-imp-general-method}
+    \end{subfigure}
+    \vspace{1cm}
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../figures/figures_to_use/noImp_electron2_omega1_beta1.png} 
+        \caption{2 electron case without importance sampling. $10^8$ MC samples, $\omega=1.0$.}
+        \label{fig:blocking-2e-no-imp-general-method}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\textwidth}
+        \centering
+        \includegraphics[width=1.0\linewidth]{../figures/figures_to_use/noImp_electron20_omega05_beta1.png} 
+        \caption{20 electron case without importance sampling. $10^6$ MC samples, $\omega=0.5$.}
+        \label{fig:blocking-20e-no-imp-general-method}
+    \end{subfigure}
+    \caption{Different plots of variance $\sigma^2$ versus different block-sizes.}
+    \label{fig:blocking-plots}
+\end{figure}
 
 \subsection{Program verification and tests}
 \subsubsection{Unperturbed energies}
 In the case we have unperturbed energies, we should be able to get exact solutions down to the very last decimal. This will be 
 
-\subsubsection{\texorpdfstring{$2$}{a} electron case without Jastrow}
-We have hard coded the two electron case without a Jastrow factor, using wave function seen in the section for the unperturbed two electron case \eqref{eq:two-body-wf} and the local energy \eqref{eq:two-electron-local-energy-unperturbed}.
+\begin{table}[H]
+	\centering
+	\caption{Unperturbed cases where the variational parameter $\alpha=1.0$. All results obtained using $10^6$ Monte Carlo steps and with uniform sampling.}
+	\begin{tabular}{c c c c c c c c}
+		\\ \hline \hline
+		$N$ 			  &       $\omega$   &$\langle E \rangle$ &     $\sigma^2$ &$\langle K\rangle$ &$\langle V \rangle$ &     Accept. \\ \hline
+		$              2$ &$              1$ &$              2$ &$              0$ &$        0.99887$ &$         1.0011$ & $           52.8$ \\ 
+		$              2$ &$            0.5$ &$              1$ &$              0$ &$         0.4999$ &$         0.5001$ & $           51.6$ \\ 
+		$              2$ &$            0.1$ &$            0.2$ &$              0$ &$       0.099835$ &$        0.10016$ & $           52.7$ \\ 
+		$              2$ &$           0.05$ &$            0.1$ &$              0$ &$       0.049947$ &$       0.050053$ & $             54$ \\ 
+		$              2$ &$           0.01$ &$           0.02$ &$      -10^{-20}$ &$      0.0099913$ &$       0.010009$ & $           56.1$ \\ 
+		$              6$ &$              1$ &$             10$ &$              0$ &$         5.0015$ &$         4.9985$ & $           47.6$ \\ 
+		$              6$ &$            0.5$ &$              5$ &$              0$ &$         2.4999$ &$         2.5001$ & $           46.5$ \\ 
+		$              6$ &$            0.1$ &$              1$ &$              0$ &$        0.49971$ &$        0.50029$ & $           47.6$ \\ 
+		$              6$ &$           0.05$ &$            0.5$ &$              0$ &$        0.24996$ &$        0.25004$ & $           48.8$ \\ 
+		$              6$ &$           0.01$ &$            0.1$ &$              0$ &$       0.050012$ &$       0.049988$ & $           50.9$ \\ 
+		$             12$ &$              1$ &$             28$ &$              0$ &$             14$ &$             14$ & $           43.8$ \\ 
+		$             12$ &$            0.5$ &$             14$ &$              0$ &$         6.9998$ &$         7.0002$ & $           42.7$ \\ 
+		$             12$ &$            0.1$ &$            2.8$ &$2\cdot 10^{-16}$ &$         1.3993$ &$         1.4007$ & $           43.8$ \\ 
+		$             12$ &$           0.05$ &$            1.4$ &$6\cdot 10^{-17}$ &$        0.70004$ &$        0.69996$ & $           44.9$ \\ 
+		$             12$ &$           0.01$ &$           0.28$ &$3\cdot 10^{-18}$ &$        0.13999$ &$        0.14001$ & $           46.9$ \\ 
+		$             20$ &$              1$ &$             60$ &$              0$ &$         30.007$ &$         29.993$ & $             41$ \\ 
+		$             20$ &$            0.5$ &$             30$ &$              0$ &$         14.998$ &$         15.002$ & $             40$ \\ 
+		$             20$ &$            0.1$ &$              6$ &$              0$ &$         2.9986$ &$         3.0014$ & $           40.9$ \\ 
+		$             20$ &$           0.05$ &$              3$ &$              0$ &$         1.4999$ &$         1.5001$ & $             42$ \\ 
+		$             20$ &$           0.01$ &$            0.6$ &$-7\cdot10^{-18}$ &$        0.29996$ &$        0.30004$ & $           43.9$ \\ 
+		\hline \hline
+	\end{tabular}
+	\label{tab:unperturbed-energies}
+\end{table}
 
-\subsubsection{\texorpdfstring{$2$}{a} electron case with Jastrow}
-For the hard coded case, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction.
+\subsubsection{\texorpdfstring{$2$}{a} electron case with and without Jastrow}
+For the hard coded case with the Jastrow factor, we should get an energy that equal 3 a.u. as found by \citet{PhysRevA.48.3561} when running with Jastrow factor and Coulomb interaction. We have hard coded the two electron case without a Jastrow factor, using wave function seen in the section for the unperturbed two electron case \eqref{eq:two-body-wf} and the local energy \eqref{eq:two-electron-local-energy-unperturbed}. 
 
-\subsubsection{Importance sampling}
-Assuming that the regular sampling method has been implemented \eqref{eq:uniform-sampling}, we should get the exact same result as when running with importance sampling \eqref{eq:importance-sampling}. Also, the acceptance rate for importance sampling should be around $99\%$\citet{komp2015}.
+We observe that for the hard coded case with Jastrow factor and importance sampling, we have a local energy of $\langle E\rangle = 3.0004\pm 10^{-5}$ a.u.
+
+\begin{table}[H]
+	\centering
+	\caption{Case (a) is for hard-coded 2 electron case with Jastrow and Coulomb included. Case (b) is for hard-coded 2 electron case with Jastrow but no Coulomb interaction. Case (c) is with neither Jastrow or Coulomb interaction included. The acceptance rate for (a) and (b) where both around $98.5\%$, while for case (c) the acceptance rate were at $56.6\%$. Energies are in atomic units.}
+	\begin{tabular}{c c c c c c c c c}
+		\\ \hline \hline
+		Case &$\langle E \rangle$ &     $\sigma^2$ &$\langle K\rangle$ &$\langle V \rangle$ &       $\alpha$ &        $\beta$ &       $N_{MC}$ \\ \hline
+		(a) &$ 3.0004$ &$        10^{-9}$ &$        0.89959$ &$         2.1008$ &$        0.99651$ &$        0.39915$ &$          2\cdot10^8$ \\ 
+		(b) &$ 2.1243$ &$  2\cdot10^{-7}$ &$        0.99493$ &$         1.1294$ &$         1.0905$ &$        0.49336$ &$          2\cdot10^8$ \\ 
+		(c) &$      2$ &$              0$ &$        0.54379$ &$         1.4562$ &$        0.68672$ &  -               &$          2\cdot10^8$ \\ 
+		\hline \hline
+	\end{tabular}
+	\label{tab:hc2}
+\end{table}
 
 \subsubsection{Parallelization versus non-parallelization}
 We made five runs with and without parallelization for $4\cdot 10^7$ Monte Carlo cycles on four cores.
@@ -800,9 +992,47 @@ From the values listed in table \ref{tab:parallelization-times}, we get that the
 
 
 
+
 \section{Discussion and conclusion}
+The road to achieving a satisfactory result have been long and a difficult one. The goal in which I had in mind when starting was to create a program both flexible and efficient. While the first may be true, the latter still has a lot of potential(although the author suspects another month might have been needed for this). 
 
+% Introduction to problems during simulations
+\subsection{Issues related to implementation}
+The most pertinent issue remaining is the one regarding importance sampling for $N > 2$ electrons, in which singular matrices appear. The main suspect for this was the quantum force. After careful analysis of the code no faults could be found so the root of the problem remain hidden.
 
+% uniform sampling
+\subsection{Uniform sampling}
+However, usable results were achievable despite programming issues. Results using uniform sampling(see equation \eqref{tab:reg-sampling}) were presented in table \ref{tab:reg-sampling}. One worrying aspect of these results is the low variance. For cases comparable with results from importance sampling, we have almost six orders of magnitude in difference. Since the results appear to be in good agreement with cited articles, it is difficult to pinpoint exact reason for this. It should be pointed out that results without importance sampling were run with $8\cdot 10^8$ Monte Carlo cycles, while with importance sampling for only $8\cdot 10^7$ cycles. 
+
+Instabilities for $N=12$ and $N=20$ electrons were found for small $\omega$ values. One possible remedy to this might be to decrease step size $\Delta t$, which is a possible improvement for the future.
+
+Let us now look at three cases. For $N=6$ electrons we have $\langle E \rangle = 20.207\pm 3.0\cdot 10^{-5}$ a.u., compared to $\langle E \rangle_1 = 20.174$ a.u. For $N=12$ electrons, we have $\langle E \rangle = 65.932\pm 2.0\cdot 10^{-4}$ a.u., compared to $\langle E \rangle_1=65.741$ a.u. At last, for $N=20$ electrons, we have $\langle E \rangle = 156.31\pm 10^{-3}$ a.u. and a reference of $\langle E \rangle_1 = 155.96$ a.u. What this tells us, is that our method using \textit{Uniform} sampling is correct, even though the are problems with importance sampling.
+
+% Optimal parameters from uniform sampling
+\subsection{Optimal parameters from uniform sampling}
+The optimal parameters found through steepest descent can be viewed in table \ref{tab:optimal-parameters}. As seen, there are no obvious outliers. No convergence criteria were implemented, nor any other methods for improving step size as one gradually creeps towards the local minimum. Had time been not been a constraint, methods for achieving an better step sizes $\Delta t$ when in the vicinity of a minimum, would have been implemented.
+
+% Importance sampling
+\subsection{Importance sampling}
+Due to the error with singular matrices and thus not being able to find their inverse, importance sampling was only achievable for $N=2$ electrons. Still, we were able to achieve results corresponding good with reference values as well as results obtained for without importance sampling. For $\omega = 1.0$, we have results that for both with and without importance sampling are in the very close proximity.
+% \husk{Optimal parameters from importance sampling?}
+
+% Blocking
+\subsection{Blocking}
+The results from blocking can be viewed in figure \ref{fig:blocking-plots}. We see that we get significant oscillations in the variance as the block-sizes increases beyond $10^6$ samples per block. As mentioned earlier, I chose block-sizes to be around $\sim 10^4-10^5$ when retrieving the optimal variances. If we look close at the plot for 2 electrons and $\omega = 1.0$ with importance sampling \ref{fig:blocking-2e-imp-general-method}, we see that from running importance sampling we get over a order of magnitude in improvement(assuming that the variance keeps increasing for continuously smaller block-sizes).
+
+\subsection{Verification and tests}
+% Unperturbed energies
+A number of different tests were implemented. As we demonstrated in equation \eqref{eq:two-electron-local-energy-unperturbed}, the unperturbed energy should come out be exactly 2 a.u.(atomic unites) with zero variance for 2 electrons. For 6, 12 and 20 electrons we should get respectively $10\omega$, $28\omega$ and $60\omega$ and zero variance. From the table \ref{tab:unperturbed-energies} we observe that this is fulfilled to almost the exact decimal. By almost, I imply that we have certain instabilities for small $\omega$ values. We can also see that the acceptance ratio is not necessarily at $50\%$ either. This can be attributed to poor calibration, as one need to calibrate this to be $50\%$ for \textit{all} cases. Possible to automate if time is not of the essence. All in all, this is a good indication that our program is correct(at least for uniform sampling).
+% Hardcoded electron case
+From table \ref{tab:hc2} we observe three different hard-coded cases. From comparing these values with the ones obtained from the general case we have a what appears to be a good 1-1 mapping. If we look at the 2 electron case with $\omega=1.0$, for the hard coded case with importance sampling we have $\langle E\rangle=3.0004\pm10^{-5}$a.u., and for the general method we have $\langle E\rangle=3.0005\pm10^{-5}$a.u. This compared to the results obtained by \citet{PhysRevB.84.115302} $\langle E \rangle = 3.0$, we observe we have a rather good result for both hard-coded and general method. This, and the high acceptance rate($\sim 99\%$), leads us to believe that our method is working as intended.
+
+% Parallelization
+We also achieved a speedup by parallelizing our programs(the blocking method was also parallelized). For our main program, we achieved a parallelizable fraction of $f=0.702\pm 0.003$. The low $f$ is somewhat spurious, as one should expect from a naively and simple parallelization with little cross-communication to have a fraction closer to 1. Further investigation is needed to determine the cause of this.
+
+% Final thoughts and conclusions
+\subsection{Closing thoughts and remarks.}
+As we now have observed, results have been obtained even though certain elements of the simulation remains out of scope. We can infer from comparing results with tests and other articles\cite{PhysRevB.84.115302}, that using uniform sampling have provided good results. Suspicion wetter the variance is correct or not still remains, but the local energy $\langle E\rangle$ appears to be within acceptable ranges. Further investigations into the root bug of using importance sampling would be interesting, but only when available time tends to infinity.
 
 \begin{appendices}
 	\section{Hermite polynomials}
