@@ -1,11 +1,12 @@
 #include <random>
-#include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <ctime>
 #include <mpi.h>
 #include "vmc.h"
 #include "samplers/metropolissampler.h"
+
 
 using std::cout;
 using std::endl;
@@ -181,6 +182,7 @@ void VMC::writeToFile()
     /*
      * Writing out to file every MCSamplingFrequency.
      */
+
     std::ofstream file(outputFolder + "/" + filename + "_Particle" + std::to_string(nParticles) + "_MC" + std::to_string(MCCycles) + WF->getParameterString(), std::ofstream::binary | std::ofstream::app);
     file.write(reinterpret_cast<const char*> (EArr), MCSamplingFrequency*sizeof(double));
     file.close();
